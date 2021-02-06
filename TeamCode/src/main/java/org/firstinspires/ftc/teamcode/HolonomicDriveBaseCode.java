@@ -20,28 +20,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
 public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebcam {
+
+    //Setting up each motor
     public DcMotor frontRight;
     public DcMotor backRight;
     public DcMotor backLeft;
     public DcMotor frontLeft;
+
+    // These are used later to help with straight driving
     public double degree = 0;
     public BNO055IMU imu;
     Orientation angles;
     Acceleration gravity;
-
+    //the number of motor tick counts, each motor has a different number
     private double ticksPerTorqenado = 480;
-
-
     //The post gear box gear ratio.
     private double gearRatio = 1.0;
     //The circumference of the drive wheel.
     private double wheelCircumference = 31.4; // ??
     //Formula to calculate ticks per centimeter for the current drive set up.FORWARDS/BACKWARD ONLY - correction with 2/3
     private double ticksPerCm = (ticksPerTorqenado * gearRatio) / wheelCircumference * (2.0 / 3.2);
-    //Formula to calculate ticks per centimeter for the current drive set up.SIDEWAYS
 
-    boolean calib;
-
+    //this ensures that all the drivetrain motors and other variables are initiated
     public void initDriveHardware() {
         // init the motors
         frontRight = hardwareMap.dcMotor.get("fr");
@@ -49,12 +49,13 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         frontLeft = hardwareMap.dcMotor.get("fl");
         backLeft = hardwareMap.dcMotor.get("bl");
 
-        // set wheel direction
+        // set wheel direction (If a motor is put on backwards the direction may need to be reversed)
         frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //This is all used to assist forward driving with straightness
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -66,10 +67,10 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         //Gyro stuff
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        //   colorSensor = hardwareMap.colorSensor.get("color");
+        // (not used this year)  colorSensor = hardwareMap.colorSensor.get("color");
     }
 
-    //from the sample code
+    // this class is from the sample code
     void composeTelemetry() {
 
         // At the beginning of each telemetry update, grab a bunch of data
@@ -137,6 +138,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
                 });
     }
 
+    //This is from the control hub imu, used to find angle of robot
     String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
@@ -153,7 +155,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         backRight.setZeroPowerBehavior(behv);
     }
 
-    // Sometimes the motors arwe on backwords and this fixes that
+    // Sometimes the motors are on backwards and this fixes that
     public void setDirection() {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -199,13 +201,35 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
     }
 
     //move forward forever
-    public void forwardForever() {
-        frontLeft.setPower(1);
-        frontRight.setPower(1);
-        backLeft.setPower(1);
-        backRight.setPower(1);
+    public void forwardForever( double speed) {
+        frontLeft.setPower(speed);
+        frontRight.setPower(speed);
+        backLeft.setPower(speed);
+        backRight.setPower(speed);
     }
 
+    public void backwardForever(double speed) {
+        frontLeft.setPower(-speed);
+        frontRight.setPower(-speed);
+        backLeft.setPower(-speed);
+        backRight.setPower(-speed);
+    }
+
+    public void leftwardForever( double speed) {
+        frontLeft.setPower(speed);
+        frontRight.setPower(-speed);
+        backLeft.setPower(-speed);
+        backRight.setPower(speed);
+    }
+
+    public void rightwardForever(double speed) {
+        frontLeft.setPower(-speed);
+        frontRight.setPower(speed);
+        backLeft.setPower(speed);
+        backRight.setPower(-speed);
+    }
+
+    //can pass run with encoder or run to position
     public void setDriveMode(DcMotor.RunMode mode) {
         frontLeft.setMode(mode);
         frontRight.setMode(mode);
@@ -260,7 +284,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         stopMotors();
     }
 
-    //this is not calibrated for the robot itsself
+    //this is not calibrated for the robot itsself yet, but turns
     public void pivotCC(double degree, double power) {
 
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -277,6 +301,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         stopMotors();
     }
 
+    //hopefully straight sideways
     public void sidewaysWithGyro(double targetDistance, double power) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -326,6 +351,8 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         stopMotors();
     }
 
+    //straight forwards and back
+    //pass centimeter distance and negate power if nessesary
     public void forwardWithGyro(double targetDistance, double power) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -378,6 +405,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    //im not really sure swhat this is for tbh
     public AngularVelocity proportionalDriveStuff(AngularVelocity angleV) {
         telemetry.addData("AV", imu.getAngularVelocity());
         long last = angleV.acquisitionTime;
@@ -406,8 +434,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
 
         return error;
     }
-
-    //
+    
     public void gyroPivot(double targetDistance, double power) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -482,27 +509,98 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
             fl = fl / maxMax;
             br = fl / maxMax;
             bl = bl / maxMax;
-        }
+        } 
 
         // slow buttons
         if (gamepad1.left_trigger > 0) {
-            frontRight.setPower(-fr);
-            frontLeft.setPower(-fl);
-            backLeft.setPower(-bl);
-            backRight.setPower(-br);
+            frontRight.setPower(-fr / 4);
+            frontLeft.setPower(-fl / 4);
+            backLeft.setPower(-bl / 4);
+            backRight.setPower(-br / 4);
         } else if (gamepad1.right_trigger > 0) {
             frontRight.setPower(-fr / 2);
             frontLeft.setPower(-fl / 2);
             backLeft.setPower(-bl / 2);
             backRight.setPower(-br / 2);
         } else {
-            frontRight.setPower(-fr / 4);
-            frontLeft.setPower(-fl / 4);
-            backLeft.setPower(-bl / 4);
-            backRight.setPower(-br / 4);
+            frontRight.setPower(-fr);
+            frontLeft.setPower(-fl);
+            backLeft.setPower(-bl);
+            backRight.setPower(-br);
+        }
+    }
+
+    public void buttonMoveTeleop(){
+        double speedy;
+        //sloooow buttons
+        if (gamepad1.left_trigger == 1){
+             speedy = .5;
+        } else {
+            speedy = 1;
         }
 
+        //Dpad driving
+        if(gamepad1.dpad_up){
+            forwardForever(speedy);
+        } else if (gamepad1.dpad_down){
+            backwardForever(speedy);
+        } else if (gamepad1.dpad_right){
+            rightwardForever(speedy);
+        } else if (gamepad1.dpad_left){
+            leftwardForever(speedy);
+        } else{
+            stopMotors();
+        }
+
+        //turn
+        double power = gamepad1.right_stick_x ;
+        if(gamepad1.right_trigger ==1){
+            power = power/2;
+        }else {
+            frontLeft.setPower(-power/2);
+            frontRight.setPower(power/2);
+            backLeft.setPower(-power/2);
+            backRight.setPower(power/2);
+        }
     }
+
+    double[] wheelPowers = new double[4];
+    public void altmoveTeleop(double x, double y, double rotation)
+    {
+
+        wheelPowers[0] = x + y + rotation;
+        wheelPowers[1] = -x + y - rotation;
+        wheelPowers[2] = -x + y + rotation;
+        wheelPowers[3] = x + y - rotation;
+
+        normalize(wheelPowers);
+
+        frontLeft.setPower(wheelPowers[0]);
+        frontRight.setPower(wheelPowers[1]);
+        backLeft.setPower(wheelPowers[2]);
+        backRight.setPower(wheelPowers[3]);
+    }   //holonomicDrive
+
+    public void normalize(double[] nums)
+    {
+        double maxMagnitude = Math.abs(wheelPowers[0]);
+        for (int i = 1; i < wheelPowers.length; i++)
+        {
+            double magnitude = Math.abs(wheelPowers[i]);
+            if (magnitude > maxMagnitude)
+            {
+                maxMagnitude = magnitude;
+            }
+        }
+
+        if (maxMagnitude > 1.0)
+        {
+            for (int i = 0; i < wheelPowers.length; i++)
+            {
+                wheelPowers[i] /= maxMagnitude;
+            }
+        }
+    }   //normalizeInPlace
 
     @Override
     public void runOpMode() throws InterruptedException {
