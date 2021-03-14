@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
@@ -11,11 +12,19 @@ import java.util.List;
 @Autonomous(name = "MecanumAuto", group = "Autonomous")
 public class AutoBasic extends HolonomicDriveBaseCode {
     public DcMotor intake;
+    public DcMotor lf_flywheel;
+    public Servo grabby;
 
-    public void attachInit() {
+    public void attachInit(){
         intake = hardwareMap.dcMotor.get("IN");
+        lf_flywheel = hardwareMap.dcMotor.get("LF");
+        grabby = hardwareMap.servo.get("grab");
+
         intake.setPower(0);
+        lf_flywheel.setPower(0);
+        grabby.setPosition(0);
     }
+
     public void park(){
         forward(230, .25);
     }
@@ -72,19 +81,22 @@ public class AutoBasic extends HolonomicDriveBaseCode {
             tfod.activate();
             tfod.setZoom(1.0, 1.78);
         } */
-        waitForStart();
 
-       /* if(opModeIsActive()) {
+        waitForStart();
+        if(opModeIsActive()) {
+            grabby.setPosition(1);
+            forward(50, .3);
+            grabby.setPosition(0);
             forward(100, -.2);
             //vision thingy
-            if (){
+        //    if (){
                 //the one ring
-            } else if  (){
+        //    } else if  (){
                 //dwarf rings but three are in the lava
-            } else (){
+         //   } else (){
                 //the rings are all in the lava
             }
             thirdBox();
-        } */
-    }
+        }
+   // }
 }
