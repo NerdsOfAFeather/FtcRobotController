@@ -43,7 +43,7 @@ public class AutoBasic extends HolonomicDriveBaseCode {
         stopMotors();
         forward(30, -.2);
     }
-    public void secondBox() {
+    public void middleBox() {
         // one ring to rule them all
         stopMotors();
         sideLeft(400, .2);
@@ -77,26 +77,27 @@ public class AutoBasic extends HolonomicDriveBaseCode {
         initVuforia();
         initTfod();
 
-     /*   if (tfod != null) {
+        if (tfod != null) {
             tfod.activate();
             tfod.setZoom(1.0, 1.78);
-        } */
+        }
 
         waitForStart();
         if(opModeIsActive()) {
-            grabby.setPosition(1);
-            forward(50, .3);
-            grabby.setPosition(0);
-            forward(100, -.2);
             //vision thingy
-        //    if (){
-                //the one ring
-        //    } else if  (){
-                //dwarf rings but three are in the lava
-         //   } else (){
-                //the rings are all in the lava
+         /*   if (){
+                //the one ring (one)
+                middleBox();
+            } else if  (){
+                //dwarf rings but three are in the lava (four)
+                thirdBox();
+           } else (){
+                //the rings are all in the lava (none)
+                firstBox();
             }
             thirdBox();
         }
-   // }
+        */
+        }
+    }
 }

@@ -17,33 +17,37 @@ public class AutoCompOne extends HolonomicDriveBaseCode {
 
         intake.setPower(0);
         lf_flywheel.setPower(0);
-        grabby.setPosition(0);
+        grabby.setPosition(.1);
     }
 
-    public void middleBox(int speed){
-        // will get box points if there is one ring on the feild
-        // otherwise, will shoot two-three rings and park
+
+    public void middleBox(){
+        // will get box points when there is one ring on the feild
 
         //move to box
         stopMotors();
-        sideLeft(400, -.2);
+        forwardWithGyro(50, .25);
+        pivotCC(60, .3);
+        forwardWithGyro(210, .25);
         stopMotors();
-        forward( 210, .2);
-        intake.setPower(-.5);
+        sideLeft(760, -.25);
         stopMotors();
-        grabby.setPosition(.5);
+        pivotCC(35, .3);
+        forward( 50, .2);
+        intake.setPower(.2);
+       sleep(3000);
         intake.setPower(0);
-        forward(40, -.2);
+        forward(30, -.2);
         stopMotors();
-        sideLeft(200, -.5);
-        pivotCC(180, .5);
-        lf_flywheel.setPower(1);
-        grabby.setPosition(.2);
-        grabby.setPosition(.5);
-        grabby.setPosition(.2);
-        grabby.setPosition(.5);
-        grabby.setPosition(.2);
-        forward(15, .2);
+        pivotCC(180, .3);
+
+    }
+
+    public void runOpMode(){
+        attachInit();
+        initDriveHardware();
+        waitForStart();
+        middleBox();
     }
 }
 

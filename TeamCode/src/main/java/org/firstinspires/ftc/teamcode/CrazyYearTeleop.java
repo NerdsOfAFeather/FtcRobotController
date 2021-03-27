@@ -43,8 +43,12 @@ public class CrazyYearTeleop extends HolonomicDriveBaseCode {
     }
 
     public void moveAndAttachTeleOp(){
-        //altmoveTeleop(-gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_y);
-        buttonMoveTeleop();
+        if (gamepad1.a){
+            altmoveTeleop(-gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_y);
+        }
+        else if (gamepad1.b){
+            buttonMoveTeleop();
+        }
         attachTeleop(gamepad2.right_stick_y, -gamepad2.left_stick_y);
     }
 

@@ -176,10 +176,10 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
             telemetry.addData("Target pos ticks: ", targetDistanceTicks);
             telemetry.addData("Target Distance:", targetDistance + "cm");
             currentDistanceTicks = (
-                    frontRight.getCurrentPosition() +
+                    frontRight.getCurrentPosition()+
                             frontLeft.getCurrentPosition() +
-                            backRight.getCurrentPosition() +
-                            backLeft.getCurrentPosition()) / 4.0;
+                           backRight.getCurrentPosition() +
+                           backLeft.getCurrentPosition()) / 4.0;
             telemetry.addData("Current pos ticks Avg: ", currentDistanceTicks);
             telemetry.addData("Current Distance cm", currentDistanceTicks / ticksPerCm);
             telemetry.update();
@@ -269,6 +269,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
     }
 
     //clockwise is 0 cc is 1
+
     public void pivotCW(double degree, double power) {
 
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -276,13 +277,15 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
 
         double currentDegree = 0;
         while ((currentDegree < degree) && opModeIsActive()) {
-            currentDegree = (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 2;
+            // Division by ten below takes into account the 5:1 encoder count to angular degree ratio, and averages the front wheels for a more accurate sense of turning
+            currentDegree = (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 10;
             frontLeft.setPower(power);
             frontRight.setPower(-power);
             backRight.setPower(-power);
         }
         stopMotors();
     }
+
 
     //this is not calibrated for the robot itsself yet, but turns
     public void pivotCC(double degree, double power) {
@@ -405,7 +408,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    //im not really sure swhat this is for tbh
+    //im not really sure what this is for tbh
     public AngularVelocity proportionalDriveStuff(AngularVelocity angleV) {
         telemetry.addData("AV", imu.getAngularVelocity());
         long last = angleV.acquisitionTime;

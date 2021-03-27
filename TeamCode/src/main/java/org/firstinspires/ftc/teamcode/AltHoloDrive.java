@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.net.wifi.aware.WifiAwareManager;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 @TeleOp(name="AltHoloDrive", group="Pushbot")
 public class AltHoloDrive extends ConceptTensorFlowObjectDetectionWebcam{
@@ -59,17 +63,9 @@ public class AltHoloDrive extends ConceptTensorFlowObjectDetectionWebcam{
     @Override
     public void runOpMode() {
 
-        while(!opModeIsActive()){}
-
-        while(opModeIsActive()){
-            drive();
-            resetAngle();
-            //driveSimple();
-            telemetry.update();
-        }
     }
     public void driveSimple(){
-        double power = .5;
+        double power = 1;
         if(gamepad1.dpad_up){ //Forward
             frontLeft.setPower(-power);
             backLeft.setPower(-power);
@@ -108,9 +104,9 @@ public class AltHoloDrive extends ConceptTensorFlowObjectDetectionWebcam{
         }
     }
     public void drive() {
-        double Protate = gamepad1.right_stick_x/4;
-        double stick_x = gamepad1.left_stick_x * Math.sqrt(Math.pow(1-Math.abs(Protate), 2)/2); //Accounts for Protate when limiting magnitude to be less than 1
-        double stick_y = gamepad1.left_stick_y * Math.sqrt(Math.pow(1-Math.abs(Protate), 2)/2);
+        double rotate = gamepad1.right_stick_x/4;
+        double stick_x = gamepad1.left_stick_x * Math.sqrt(Math.pow(1-Math.abs(rotate), 2)/2); //Accounts for rrotate when limiting magnitude to be less than 1
+        double stick_y = gamepad1.left_stick_y * Math.sqrt(Math.pow(1-Math.abs(rotate), 2)/2);
         double theta = 0;
         double Px = 0;
         double Py = 0;
@@ -131,16 +127,28 @@ public class AltHoloDrive extends ConceptTensorFlowObjectDetectionWebcam{
 
         //Linear directions in case you want to do straight lines.
         if(gamepad1.dpad_right){
-            stick_x = 0.5;
+            stick_x = -1;
+            if (gamepad1.left_bumper){
+                stick_x = -.5;
+            }
         }
         else if(gamepad1.dpad_left){
-            stick_x = -0.5;
+            stick_x = 1;
+            if (gamepad1.left_bumper){
+                stick_x = .5;
+            }
         }
         if(gamepad1.dpad_up){
-            stick_y = -0.5;
+            stick_y = 1;
+            if (gamepad1.left_bumper){
+                stick_y = .5;
+            }
         }
         else if(gamepad1.dpad_down){
-            stick_y = 0.5;
+            stick_y = -1;
+            if (gamepad1.left_bumper){
+                stick_y = -.5;
+            }
         }
 
 
@@ -152,15 +160,15 @@ public class AltHoloDrive extends ConceptTensorFlowObjectDetectionWebcam{
         telemetry.addData("Stick_X", stick_x);
         telemetry.addData("Stick_Y", stick_y);
         telemetry.addData("Magnitude",  Math.sqrt(Math.pow(stick_x, 2) + Math.pow(stick_y, 2)));
-        telemetry.addData("Front Left", Py - Protate);
-        telemetry.addData("Back Left", Px - Protate);
-        telemetry.addData("Back Right", Py + Protate);
-        telemetry.addData("Front Right", Px + Protate);
+        telemetry.addData("Front Left", Py - rotate);
+        telemetry.addData("Back Left", Px - rotate);
+        telemetry.addData("Back Right", Py + rotate);
+        telemetry.addData("Front Right", Px + rotate);
 
-        frontLeft.setPower(Py - Protate);
-        backLeft.setPower(Px - Protate);
-        backRight.setPower(Py + Protate);
-        frontRight.setPower(Px + Protate);
+        frontLeft.setPower(-(Py - rotate));
+        backLeft.setPower(-(Px - rotate));
+        backRight.setPower(-(Py + rotate));
+        frontRight.setPower(-(Px + rotate));
     }
     public void resetAngle(){
         if(gamepad1.a){
