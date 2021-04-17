@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -40,6 +43,9 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
     private double wheelCircumference = 31.4; // ??
     //Formula to calculate ticks per centimeter for the current drive set up.FORWARDS/BACKWARD ONLY - correction with 2/3
     private double ticksPerCm = (ticksPerTorqenado * gearRatio) / wheelCircumference * (2.0 / 3.2);
+
+    public DistanceSensor distanceSensorL;
+    public DistanceSensor distanceSensorR;
 
     //this ensures that all the drivetrain motors and other variables are initiated
     public void initDriveHardware() {
@@ -68,7 +74,42 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
         // (not used this year)  colorSensor = hardwareMap.colorSensor.get("color");
+
+        // you can use this as a regular DistanceSensor.
+        distanceSensorL= hardwareMap.get(DistanceSensor.class, "sensor_range1");
+        distanceSensorR = hardwareMap.get(DistanceSensor.class, "sensor_range2");
+
+        // you can also cast this to a Rev2mDistanceSensor if you want to use added
+        // methods associated with the Rev2mDistanceSensor class.
+        Rev2mDistanceSensor sensorLTimeOfFlight = (Rev2mDistanceSensor)distanceSensorL;
+        Rev2mDistanceSensor sensorRTimeOfFlight = (Rev2mDistanceSensor)distanceSensorR;
     }
+
+    public void alignWithWall(double distance, double speed, double tolerance){
+        if(distanceSensorR.getDistance(DistanceUnit.CM) - distance <= -tolerance){
+            // drive backwards
+            forward(Math.abs((distanceSensorR.getDistance(DistanceUnit.CM) - distance)), -speed);
+        } else if(distanceSensorR.getDistance(DistanceUnit.CM) - distance >=  + tolerance ){
+            // drive forwards
+            forward(Math.abs((distanceSensorR.getDistance(DistanceUnit.CM) - distance)), speed);
+        }
+        while (Math.abs(distanceSensorL.getDistance(DistanceUnit.CM) - distance) > tolerance && opModeIsActive()){
+            // step two - adjust left
+            if(distanceSensorL.getDistance(DistanceUnit.CM) - distance <= -tolerance) {
+                // drive backwards
+                leftSideMove(Math.abs((distanceSensorL.getDistance(DistanceUnit.CM) - distance)), -speed);
+            } else if(distanceSensorL.getDistance(DistanceUnit.CM) - distance >=  + tolerance ){
+                // drive forward
+                leftSideMove(Math.abs((distanceSensorR.getDistance(DistanceUnit.CM) - distance)), speed);
+            }  else if (gamepad1.y){
+                stopMotors();
+                break;
+            } else {
+                stopMotors();
+            }
+        }
+    }
+
 
     // this class is from the sample code
     void composeTelemetry() {
@@ -192,6 +233,46 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         stopMotors();
     }
 
+    public void leftSideMove(double targetDistance, double power) {
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double targetDistanceTicks = Math.abs(targetDistance * ticksPerCm);
+        double currentDistanceTicks = 0;
+        while ((Math.abs(currentDistanceTicks) < targetDistanceTicks) && opModeIsActive()) {
+            telemetry.addData("Target pos ticks: ", targetDistanceTicks);
+            telemetry.addData("Target Distance:", targetDistance + "cm");
+            currentDistanceTicks = (
+                            frontLeft.getCurrentPosition() +
+                            backLeft.getCurrentPosition()) / 2.0;
+            telemetry.addData("Current pos ticks Avg: ", currentDistanceTicks);
+            telemetry.addData("Current Distance cm", currentDistanceTicks / ticksPerCm);
+            telemetry.update();
+
+            frontLeft.setPower(power);
+            backLeft.setPower(power);
+        }
+        stopMotors();
+    }
+    public void rightSideMove(double targetDistance, double power) {
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double targetDistanceTicks = Math.abs(targetDistance * ticksPerCm);
+        double currentDistanceTicks = 0;
+        while ((Math.abs(currentDistanceTicks) < targetDistanceTicks) && opModeIsActive()) {
+            telemetry.addData("Target pos ticks: ", targetDistanceTicks);
+            telemetry.addData("Target Distance:", targetDistance + "cm");
+            currentDistanceTicks = (
+                    frontRight.getCurrentPosition()+
+                            backRight.getCurrentPosition() ) / 2.0;
+            telemetry.addData("Current pos ticks Avg: ", currentDistanceTicks);
+            telemetry.addData("Current Distance cm", currentDistanceTicks / ticksPerCm);
+            telemetry.update();
+
+            frontRight.setPower(power);
+            backRight.setPower(power);
+        }
+        stopMotors();
+    }
     //stop. Just stop
     public void stopMotors() {
         frontLeft.setPower(0);
@@ -278,7 +359,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         double currentDegree = 0;
         while ((currentDegree < degree) && opModeIsActive()) {
             // Division by ten below takes into account the 5:1 encoder count to angular degree ratio, and averages the front wheels for a more accurate sense of turning
-            currentDegree = (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 10;
+            currentDegree = (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 10.0;
             frontLeft.setPower(power);
             frontRight.setPower(-power);
             backRight.setPower(-power);
@@ -295,7 +376,7 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
 
         double currentDegree = 0;
         while (currentDegree < degree && opModeIsActive()) {
-            currentDegree = (frontRight.getCurrentPosition() + backRight.getCurrentPosition()) / 2;
+            currentDegree = (frontRight.getCurrentPosition() + backRight.getCurrentPosition()) / 2.0;
             frontLeft.setPower(-power);
             frontRight.setPower(power);
             backLeft.setPower(-power);
@@ -536,10 +617,10 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
     public void buttonMoveTeleop(){
         double speedy;
         //sloooow buttons
-        if (gamepad1.left_trigger == 1){
+        if (gamepad1.left_bumper){
              speedy = .5;
         } else {
-            speedy = 1;
+            speedy = .9;
         }
 
         //Dpad driving
@@ -557,13 +638,14 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
 
         //turn
         double power = gamepad1.right_stick_x ;
-        if(gamepad1.right_trigger ==1){
-            power = power/2;
-        }else {
-            frontLeft.setPower(-power/2);
-            frontRight.setPower(power/2);
-            backLeft.setPower(-power/2);
-            backRight.setPower(power/2);
+        if(gamepad1.left_bumper ){
+            power = power/2.0;
+        }
+        {
+            frontLeft.setPower(-power/2.0);
+            frontRight.setPower(power/2.0);
+            backLeft.setPower(-power/2.0);
+            backRight.setPower(power/2.0);
         }
     }
 

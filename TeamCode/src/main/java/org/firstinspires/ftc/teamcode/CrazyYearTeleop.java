@@ -6,48 +6,54 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @TeleOp(name = "MecanumTeleOp", group = "TeleOp")
 public class CrazyYearTeleop extends HolonomicDriveBaseCode {
     public DcMotor intake;
     public DcMotor lf_flywheel;
-    public Servo grabby;
+    public DcMotor rf_flywheel;
+    public Servo right;
+    public Servo left;
+
 
     public void attachInit(){
         intake = hardwareMap.dcMotor.get("IN");
         lf_flywheel = hardwareMap.dcMotor.get("LF");
-        grabby = hardwareMap.servo.get("grab");
+        rf_flywheel = hardwareMap.dcMotor.get("RF");
+        right = hardwareMap.servo.get("rs");
+        left = hardwareMap.servo.get("ls");
+
 
         intake.setPower(0);
         lf_flywheel.setPower(0);
-        grabby.setPosition(.5);
+
+        rf_flywheel.setPower(0);
+       
     }
 
     public void attachTeleop( double inPower, double outPower){
         //Intake
         intake.setPower(-inPower);
         //phwoop`
-        lf_flywheel.setPower(-outPower);
-        //grabbbby
-        if(gamepad2.right_bumper){
-            grabby.setPosition(.55);
-            telemetry.addData("grab", "down");
-            telemetry.addData("servopos", grabby.getPosition());
-            telemetry.update();
-        }
-        if(gamepad2.left_bumper){
-            grabby.setPosition(.27);
-            telemetry.addData("grab", "up");
-            telemetry.addData("servopos", grabby.getPosition());
-            telemetry.update();
-        }
+        lf_flywheel.setPower(outPower);
+        rf_flywheel.setPower(-outPower);
+
     }
 
     public void moveAndAttachTeleOp(){
-        if (gamepad1.a){
-            altmoveTeleop(-gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_y);
+        if(gamepad1.x){
+            if (!gamepad1.y ) {
+                alignWithWall(20, .2, 2);
+            } else {stopMotors(); }
         }
-        else if (gamepad1.b){
-            buttonMoveTeleop();
+        buttonMoveTeleop();
+        if(gamepad2.a){
+            right.setPosition(.5);
+           left.setPosition(.3);
+        } if (gamepad2.x){
+            right.setPosition(.94);
+            left.setPosition(0);
         }
         attachTeleop(gamepad2.right_stick_y, -gamepad2.left_stick_y);
     }
@@ -59,6 +65,9 @@ public class CrazyYearTeleop extends HolonomicDriveBaseCode {
         waitForStart();
         while (opModeIsActive()) {
             moveAndAttachTeleOp();
+            telemetry.addData("rightdis", distanceSensorR.getDistance(DistanceUnit.CM));
+            telemetry.addData("leftdis", distanceSensorL.getDistance(DistanceUnit.CM));
+            telemetry.update();
         }
     }
 }
