@@ -632,8 +632,6 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
             rightwardForever(speedy);
         } else if (gamepad1.dpad_left){
             leftwardForever(speedy);
-        } else{
-            stopMotors();
         }
 
         //turn
@@ -641,11 +639,14 @@ public class HolonomicDriveBaseCode extends ConceptTensorFlowObjectDetectionWebc
         if(gamepad1.left_bumper ){
             power = power/2.0;
         }
-        {
+        if (power != 0.0) {
             frontLeft.setPower(-power/2.0);
             frontRight.setPower(power/2.0);
             backLeft.setPower(-power/2.0);
             backRight.setPower(power/2.0);
+        }
+        if (!gamepad1.dpad_down && !gamepad1.dpad_up && !gamepad1.dpad_left && !gamepad1.dpad_right && power == 0.0 ) {
+            stopMotors();
         }
     }
 
