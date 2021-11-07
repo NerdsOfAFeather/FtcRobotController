@@ -194,6 +194,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
       Velocity PIDF values: `P = 4.96`, `I = 0.496`, `F = 49.6`
       Position PIDF values: `P = 5.0`
 
+
 ### New features
 * Includes TensorFlow inference model and sample op modes to detect Ultimate Goal Starter Stacks (four rings vs single ring stack).
 * Includes Vuforia Ultimate Goal vision targets and sample op modes.

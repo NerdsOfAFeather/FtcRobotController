@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ultimategoal;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "auto2", group= "auto")
+import org.firstinspires.ftc.teamcode.HolonomicDriveBaseCode;
+
+//@Autonomous(name = "auto2", group= "auto")
 public class AutoCompOne extends HolonomicDriveBaseCode {
     public DcMotor intake;
     public DcMotor lf_flywheel;

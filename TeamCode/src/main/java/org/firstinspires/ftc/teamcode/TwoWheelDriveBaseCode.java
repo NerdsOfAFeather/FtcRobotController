@@ -31,9 +31,6 @@ public class TwoWheelDriveBaseCode extends LinearOpMode {
         left.setDirection(DcMotorSimple.Direction.FORWARD);
         right.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        gamepad1.setJoystickDeadzone(0.1f);
-        gamepad2.setJoystickDeadzone(0.1f);
-
         setZeroPowBehv(behv);
     }
 
@@ -96,10 +93,10 @@ public class TwoWheelDriveBaseCode extends LinearOpMode {
     }
     //Teleop
     public void basicTeleop(){
-        while(opModeIsActive()){
            forward(-gamepad1.right_stick_y);
            turnCW(gamepad1.left_stick_x);
-        }
+           telemetry.addData("Left Motor", left.getPower());
+           telemetry.addData("Right Motor", right.getPower());
     }
     @Override
     public void runOpMode() throws InterruptedException {}

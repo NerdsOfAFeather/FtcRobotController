@@ -27,7 +27,7 @@ public class FourWheelDriveBaseCode extends LinearOpMode {
         rightFront.setZeroPowerBehavior(behv);
         rightBack.setZeroPowerBehavior(behv);
     }
-    //set up the bascics.
+    //set up the basics.
     public void initialize(DcMotor.ZeroPowerBehavior behv){
         leftFront = hardwareMap.dcMotor.get("lf");
         leftBack = hardwareMap.dcMotor.get("lb");
@@ -39,8 +39,8 @@ public class FourWheelDriveBaseCode extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        gamepad1.setJoystickDeadzone(0.1f);
-        gamepad2.setJoystickDeadzone(0.1f);
+        //gamepad1.setJoystickDeadzone(0.1f);
+        //gamepad2.setJoystickDeadzone(0.1f);
 
         setZeroPowBehv(behv);
     }

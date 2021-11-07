@@ -1,15 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ultimategoal;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.HolonomicDriveBaseCode;
 
-import java.util.List;
-
-@Autonomous(name = "MecanumAuto", group = "Autonomous")
+//@Autonomous(name = "MecanumAuto", group = "Autonomous")
 public class AutoBasic extends HolonomicDriveBaseCode {
     public DcMotor intake;
     public DcMotor lf_flywheel;
