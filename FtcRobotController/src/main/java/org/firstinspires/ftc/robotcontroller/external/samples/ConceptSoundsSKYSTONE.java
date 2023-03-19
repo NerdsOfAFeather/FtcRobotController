@@ -41,8 +41,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * It does this by creating a simple "chooser" controlled by the gamepad Up Down buttons.
  * This code also prevents sounds from stacking up by setting a "playing" flag, which is cleared when the sound finishes playing.
  *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  * Operation:
  *      Use the DPAD to change the selected sound, and the Right Bumper to play it.
@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 public class ConceptSoundsSKYSTONE extends LinearOpMode {
 
     // List of available sound resources
-    String[] sounds =  {"ss_alarm", "ss_bb8_down", "ss_bb8_up", "ss_darth_vader", "ss_fly_by",
+    String  sounds[] =  {"ss_alarm", "ss_bb8_down", "ss_bb8_up", "ss_darth_vader", "ss_fly_by",
             "ss_mf_fail", "ss_laser", "ss_laser_burst", "ss_light_saber", "ss_light_saber_long", "ss_light_saber_short",
             "ss_light_speed", "ss_mine", "ss_power_up", "ss_r2d2_up", "ss_roger_roger", "ss_siren", "ss_wookie" };
     boolean soundPlaying = false;
