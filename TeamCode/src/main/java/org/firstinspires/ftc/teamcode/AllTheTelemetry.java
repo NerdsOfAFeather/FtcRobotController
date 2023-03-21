@@ -6,12 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 /** Created by Gavin for Team 6347 */
 @TeleOp(name = "Telemetry")
 @Disabled
-public class AllTheTelemetry extends NewPowerPlayConfig{
+public class AllTheTelemetry extends PowerPlayConfig{
 
     @Override
     public void init() {
-        initDriveHardware();
-        initLift();
+        initAuto();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class AllTheTelemetry extends NewPowerPlayConfig{
                     .addData("ARGB", color.argb());
             telemetry.addData("DesiredPosition", getDesiredLocation());
             telemetry.addData("Lift Motor", liftLiftMotor.getCurrentPosition());
+            telemetry.addData("IMU Heading", getRawHeading());
             telemetry.update();
-        }
     }
 }

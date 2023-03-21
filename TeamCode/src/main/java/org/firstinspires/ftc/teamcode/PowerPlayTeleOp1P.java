@@ -41,26 +41,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 @TeleOp(name = "PowerPlayTeleOp1P", group = "Linear Opmode")
 @Disabled
-public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
+public class PowerPlayTeleOp1P extends PowerPlayConfig {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    public DcMotor leftFrontDrive = null;
-    public DcMotor leftBackDrive = null;
-    public DcMotor rightFrontDrive = null;
-    public DcMotor rightBackDrive = null;
-    public DcMotor liftLiftMotor = null;
-    public Servo rightClawServo = null;
-    public Servo leftClawServo = null;
 
     public double axial;
     public double lateral;
     public double yaw;
     public boolean slowMode;
+    public double liftPressTime = 0;
 
     @Override
     public void init() {
         initDriveHardware();
+        initLift();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -78,9 +73,9 @@ public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
         double leftBackPower;
         double rightBackPower;
         double liftLiftPower;
-        if (gamepad1.left_bumper && !slowMode) {
+        if (gamepad1.a && !slowMode) {
             slowMode = true;
-        } else if (gamepad1.left_bumper && slowMode) {
+        } else if (gamepad1.a && slowMode) {
             slowMode = false;
         }
         if (slowMode) {
@@ -133,16 +128,6 @@ public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
             rightBackPower /= max;
         }
 
-        // This is test code:
-        //
-        // Uncomment the following code to test your motor directions.
-        // Each button should make the corresponding motor run FORWARD.
-        //   1) First get all the motors to take to correct positions on the robot
-        //      by adjusting your Robot Configuration if necessary.
-        //   2) Then make sure they run in the correct direction by modifying the
-        //      the setDirection() calls above.
-        // Once the correct motors move in the correct direction re-comment this code.
-
             /*
             leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
             leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
@@ -150,10 +135,45 @@ public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
 
-        if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
-            liftLiftPower = (gamepad2.left_stick_y / 1.25);
+        if (runtime.milliseconds() - liftPressTime >= 250 || runtime.milliseconds() < 250) {
+            if (gamepad1.right_bumper) {
+                liftPressTime = runtime.milliseconds();
+                if (desiredLiftPosition == -2) {
+                    desiredLiftPosition = 0;
+                }
+                if (desiredLiftPosition >= 2) {
+                    desiredLiftPosition = 2;
+                }
+                desiredLiftPosition++;
+            } else if (gamepad1.left_bumper) {
+                liftPressTime = runtime.milliseconds();
+                if (desiredLiftPosition <= 1) {
+                    desiredLiftPosition = 1;
+                }
+                desiredLiftPosition--;
+            }
+        }
+
+        if (gamepad1.dpad_up) {
+            desiredLiftPosition = -2;
+            liftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftLiftPower = -1;
+            if (liftLiftMotor.getCurrentPosition() < lvl3 - 500) {
+                liftLiftPower = 0;
+            }
+        } else if (gamepad1.dpad_down){
+            desiredLiftPosition = -2;
+            liftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftLiftPower = 1;
+            if (liftLiftMotor.getCurrentPosition() > lvl0) {
+                liftLiftPower = 0;
+            }
+        } else if (desiredLiftPosition != -2) {
+            liftLiftMotor.setTargetPosition(desiredLift());
+            liftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftLiftPower = 1.0;
         } else {
-            liftLiftPower = 0;
+            liftLiftPower = 0.0;
         }
 
         if (gamepad2.left_trigger >= 0.4) {
@@ -164,12 +184,6 @@ public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
             leftClawServo.setPosition(0.0);
             rightClawServo.setPosition(1.0);
         }
-            /*
-            if (gamepad2.dpad_down){
-                goingDown = true;
-            }
-
-             */
 
         // Send calculated power to wheels
         leftFrontDrive.setPower(leftFrontPower);
@@ -177,7 +191,6 @@ public class PowerPlayTeleOp1P extends NewPowerPlayConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         liftLiftMotor.setPower(liftLiftPower);
-        //liftGoDown();
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);

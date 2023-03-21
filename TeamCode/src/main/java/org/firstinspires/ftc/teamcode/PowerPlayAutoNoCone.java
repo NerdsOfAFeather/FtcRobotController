@@ -40,7 +40,7 @@ import java.util.List;
 /** Created by Gavin for Team 6347*/
 @Autonomous(name = "PowerPlay Auto", group = "Robot")
 
-public class PowerPlayAutoNoCone extends OldPowerPlayConfig {
+public class PowerPlayAutoNoCone extends PowerPlayConfig {
 
     @Override
     public void init() {
@@ -55,7 +55,6 @@ public class PowerPlayAutoNoCone extends OldPowerPlayConfig {
         if (tfod != null){
             tfod.activate();
             tfod.setZoom(1.0, 16.0/9.0);
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         }
         telemetry.addData("Status", "Ready to run");
         telemetry.update();

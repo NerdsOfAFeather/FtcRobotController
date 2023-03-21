@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name = "PowerPlayTeleOp", group = "Linear Opmode")
-public class PowerPlayTeleOp extends NewPowerPlayConfig {
+public class PowerPlayTeleOp extends PowerPlayConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -59,7 +59,6 @@ public class PowerPlayTeleOp extends NewPowerPlayConfig {
     @Override
     public void start() {
         runtime.reset();
-
     }
 
     @Override
@@ -124,16 +123,6 @@ public class PowerPlayTeleOp extends NewPowerPlayConfig {
             leftBackPower /= max;
             rightBackPower /= max;
         }
-
-        // This is test code:
-        //
-        // Uncomment the following code to test your motor directions.
-        // Each button should make the corresponding motor run FORWARD.
-        //   1) First get all the motors to take to correct positions on the robot
-        //      by adjusting your Robot Configuration if necessary.
-        //   2) Then make sure they run in the correct direction by modifying the
-        //      the setDirection() calls above.
-        // Once the correct motors move in the correct direction re-comment this code.
 
             /*
             leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
