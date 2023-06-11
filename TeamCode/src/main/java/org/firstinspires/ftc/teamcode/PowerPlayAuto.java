@@ -94,7 +94,7 @@ public class PowerPlayAuto extends PowerPlayConfig {
     @Override
     public void start() {
         if (run_code.equals("blue_left")){
-            blueLeft();
+            //blueLeft();
         } else if (run_code.equals("blue_right")) {
             //blueRight();
         } else if (run_code.equals("red_left")) {
@@ -103,7 +103,7 @@ public class PowerPlayAuto extends PowerPlayConfig {
             //redRight();
         }
     }
-
+/*
     public void blueLeft(){
         clampClose();
         goToStage(1);

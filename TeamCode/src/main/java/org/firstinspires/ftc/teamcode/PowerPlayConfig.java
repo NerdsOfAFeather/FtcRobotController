@@ -68,12 +68,13 @@ public class PowerPlayConfig extends PowerPlayObjectDetection {
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         liftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
     public void initLift(){
         liftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void initAuto() {

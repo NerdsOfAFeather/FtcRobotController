@@ -40,7 +40,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by Gavin for Team 6347
  */
 @TeleOp(name = "PowerPlayTeleOp1P", group = "Linear Opmode")
-@Disabled
 public class PowerPlayTeleOp1P extends PowerPlayConfig {
 
     // Declare OpMode members for each of the 4 motors.
@@ -176,11 +175,11 @@ public class PowerPlayTeleOp1P extends PowerPlayConfig {
             liftLiftPower = 0.0;
         }
 
-        if (gamepad2.left_trigger >= 0.4) {
+        if (gamepad1.left_trigger >= 0.4) {
             leftClawServo.setPosition(1.0);
             rightClawServo.setPosition(0.0);
         }
-        if (gamepad2.right_trigger >= 0.4) {
+        if (gamepad1.right_trigger >= 0.4) {
             leftClawServo.setPosition(0.0);
             rightClawServo.setPosition(1.0);
         }

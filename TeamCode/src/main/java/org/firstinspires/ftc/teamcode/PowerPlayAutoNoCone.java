@@ -61,11 +61,11 @@ public class PowerPlayAutoNoCone extends PowerPlayConfig {
     }
 
     @Override
-    public void loop() {
+    public void start() {
         clampClose();
         goToStage(1);
         int desiredLocation = getDesiredLocation();
-        driveForward(2.25);
+        driveForward(2);
         if (desiredLocation == 1) { // Position 1?
             telemetry.addData("Detected", "One");
             telemetry.update();
@@ -83,5 +83,15 @@ public class PowerPlayAutoNoCone extends PowerPlayConfig {
             driveRight(2.75);
             goToStage(0);
         }
+    }
+
+    @Override
+    public void loop() {
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

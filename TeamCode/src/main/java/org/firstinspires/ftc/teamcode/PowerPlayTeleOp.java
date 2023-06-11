@@ -150,7 +150,7 @@ public class PowerPlayTeleOp extends PowerPlayConfig {
             }
         }
 
-        if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
+        if (Math.abs(gamepad2.left_stick_y) >= 0.5) {
             desiredLiftPosition = -2;
             liftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftLiftPower = gamepad2.left_stick_y;
