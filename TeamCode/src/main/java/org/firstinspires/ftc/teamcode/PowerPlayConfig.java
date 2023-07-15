@@ -192,7 +192,7 @@ public class PowerPlayConfig extends PowerPlayObjectDetection {
 
     public void turnLeftDegrees(double degrees) {
         imu.resetYaw();
-        while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees) {
+        while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) >= degrees) {
             leftFrontDrive.setPower(-AUTO_SPEED);
             leftBackDrive.setPower(-AUTO_SPEED);
             rightFrontDrive.setPower(AUTO_SPEED);
