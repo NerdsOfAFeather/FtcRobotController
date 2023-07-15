@@ -162,12 +162,42 @@ public class PowerPlayConfig extends PowerPlayObjectDetection {
         ftcwait(250);
     }
 
+    public void turnRightDegrees(double degrees) {
+        imu.resetYaw();
+        while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees) {
+            leftFrontDrive.setPower(AUTO_SPEED);
+            leftBackDrive.setPower(AUTO_SPEED);
+            rightFrontDrive.setPower(-AUTO_SPEED);
+            rightBackDrive.setPower(-AUTO_SPEED);
+        }
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        ftcwait(250);
+    }
+
     public void turnLeft(double seconds) {
         leftFrontDrive.setPower(-AUTO_SPEED);
         leftBackDrive.setPower(-AUTO_SPEED);
         rightFrontDrive.setPower(AUTO_SPEED);
         rightBackDrive.setPower(AUTO_SPEED);
         ftcwait((long) (seconds * 1000));
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        ftcwait(250);
+    }
+
+    public void turnLeftDegrees(double degrees) {
+        imu.resetYaw();
+        while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees) {
+            leftFrontDrive.setPower(-AUTO_SPEED);
+            leftBackDrive.setPower(-AUTO_SPEED);
+            rightFrontDrive.setPower(AUTO_SPEED);
+            rightBackDrive.setPower(AUTO_SPEED);
+        }
         leftFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightFrontDrive.setPower(0);
