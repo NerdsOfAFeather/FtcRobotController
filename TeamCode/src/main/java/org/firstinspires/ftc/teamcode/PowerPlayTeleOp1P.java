@@ -86,7 +86,7 @@ public class PowerPlayTeleOp1P extends PowerPlayConfig {
                 axial = 0;
             }
             if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
-                lateral = gamepad1.left_stick_x / 2;
+                lateral = -gamepad1.left_stick_x / 2;
             } else {
                 lateral = 0;
             }
@@ -103,7 +103,7 @@ public class PowerPlayTeleOp1P extends PowerPlayConfig {
                 axial = 0;
             }
             if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
-                lateral = gamepad1.left_stick_x;
+                lateral = -gamepad1.left_stick_x;
             } else {
                 lateral = 0;
             }

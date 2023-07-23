@@ -8,7 +8,8 @@ public class CampDemoAuto extends PowerPlayConfig {
 
     @Override
     public void init() {
-        initAuto();
+        initDriveHardware();
+        initLift();
 
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
@@ -18,15 +19,18 @@ public class CampDemoAuto extends PowerPlayConfig {
     public void start() {
         telemetry.addData("Status", "Running...");
         telemetry.update();
-        goToStage(1);
         driveForward(.5);
-        turnLeftDegrees(90);
-        driveForward(4);
-        goToStage(0);
+        turnLeft(1.5);
+        driveForward(3);
         clampClose();
         goToStage(1);
-        turnRightDegrees(180);
+        turnRight(3);
         driveForward(7);
         clampOpen();
+    }
+
+    @Override
+    public void stop() {
+
     }
 }
