@@ -6,7 +6,6 @@ import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -14,15 +13,13 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
-import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-// Created by Gavin for FTC team 6347
+/** Created by Gavin for Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
-
 public class CenterStageObjectDetection extends OpMode {
 
     /**
@@ -78,10 +75,24 @@ public class CenterStageObjectDetection extends OpMode {
         closeVisionPortal();
     }
 
+    protected void startAndEnableRobotVision() {
+        initAprilTag();
+        initTfod();
+        initVisionPortal();
+        enableAprilTagProcessor();
+        enableTFODProcessor();
+    }
+
+    protected void closeAndDisableRobotVision() {
+        disableAprilTagProcessor();
+        disableTFODProcessor();
+        closeVisionPortal();
+    }
+
     /**
      * Initialize the AprilTag processor.
      */
-    public void initAprilTag() {
+    protected void initAprilTag() {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -103,7 +114,7 @@ public class CenterStageObjectDetection extends OpMode {
 
     }
 
-    public void initVisionPortal() {
+    protected void initVisionPortal() {
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
@@ -132,23 +143,23 @@ public class CenterStageObjectDetection extends OpMode {
         visionPortal = builder.build();
     }
 
-    public void enableAprilTagProcessor() {
+    protected void enableAprilTagProcessor() {
         visionPortal.setProcessorEnabled(aprilTag, true);
     }
 
-    public void disableAprilTagProcessor() {
+    protected void disableAprilTagProcessor() {
         visionPortal.setProcessorEnabled(aprilTag, false);
     }
 
-    public void enableTFODProcessor() {
+    protected void enableTFODProcessor() {
         visionPortal.setProcessorEnabled(tfod, true);
     }
 
-    public void disableTFODProcessor() {
+    protected void disableTFODProcessor() {
         visionPortal.setProcessorEnabled(tfod, false);
     }
 
-    public void closeVisionPortal() {
+    protected void closeVisionPortal() {
         visionPortal.close();
     }
 
@@ -157,7 +168,7 @@ public class CenterStageObjectDetection extends OpMode {
      * Add telemetry about AprilTag detections.
      */
     @SuppressLint("DefaultLocale")
-    private void telemetryAprilTag() {
+    protected void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
@@ -180,7 +191,7 @@ public class CenterStageObjectDetection extends OpMode {
 
     }
 
-    private void initTfod() {
+    protected void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
