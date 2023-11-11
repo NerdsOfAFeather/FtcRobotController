@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="PowerPlayTeleOp1P", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class CenterStageTeleOp1p extends CenterStageConfig {
 
     // Declare OpMode members for each of the 4 motors.
