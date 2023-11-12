@@ -9,10 +9,10 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    public double axial;
-    public double lateral;
-    public double yaw;
-    public boolean slowMode;
+    double axial;
+    double lateral;
+    double yaw;
+    boolean slowMode;
 
     @Override
     public void init() {
@@ -121,7 +121,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        intakeMotor.setPower(intakePower);
+        //intakeMotor.setPower(intakePower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);

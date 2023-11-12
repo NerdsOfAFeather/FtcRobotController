@@ -24,14 +24,14 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         leftBackDrive = hardwareMap.get(DcMotorEx.class, "BackLeftDrive");
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
-        flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
+        //intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
+        //flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.FORWARD);
         rightBackDrive.setDirection(Direction.FORWARD);
-        intakeMotor.setDirection(Direction.FORWARD);
+        //intakeMotor.setDirection(Direction.FORWARD);
 
     }
 

@@ -11,19 +11,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageTeleOp1p extends CenterStageConfig {
 
     // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
-    public DcMotor leftFrontDrive = null;
-    public DcMotor leftBackDrive = null;
-    public DcMotor rightFrontDrive = null;
-    public DcMotor rightBackDrive = null;
-    public DcMotor liftLiftMotor = null;
-    public Servo rightClawServo = null;
-    public Servo leftClawServo = null;
+    ElapsedTime runtime = new ElapsedTime();
 
-    public double axial;
-    public double lateral;
-    public double yaw;
-    public boolean slowMode;
+    double axial;
+    double lateral;
+    double yaw;
+    boolean slowMode;
 
     @Override
     public void init() {
@@ -47,7 +40,6 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             double rightFrontPower;
             double leftBackPower;
             double rightBackPower;
-            double liftLiftPower;
             if (gamepad1.left_bumper && !slowMode){
                 slowMode = true;
             } else if (gamepad1.left_bumper && slowMode){
@@ -120,40 +112,18 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
 
-            if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
-                liftLiftPower = (gamepad2.left_stick_y/1.25);
-            } else {
-                liftLiftPower = 0;
-            }
 
-            if (gamepad2.left_trigger >= 0.4){
-                leftClawServo.setPosition(1.0);
-                rightClawServo.setPosition(0.0);
-            }
-            if (gamepad2.right_trigger >= 0.4){
-                leftClawServo.setPosition(0.0);
-                rightClawServo.setPosition(1.0);
-            }
-            /*
-            if (gamepad2.dpad_down){
-                goingDown = true;
-            }
-
-             */
 
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-            liftLiftMotor.setPower(liftLiftPower);
-            //liftGoDown();
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Left Trigger", gamepad1.left_trigger);
             telemetry.addData("Right Trigger", gamepad1.right_trigger);
-            telemetry.addData("Left Claw Position", leftClawServo.getPosition());
-            telemetry.addData("Right Claw Position", rightClawServo.getPosition());
             telemetry.addData("Run Time: ", runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
