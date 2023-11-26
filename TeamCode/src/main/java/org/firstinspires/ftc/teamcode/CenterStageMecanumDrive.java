@@ -75,7 +75,6 @@ public class CenterStageMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFrontDrive, leftBackDrive, rightBackDrive, rightFrontDrive;
     private List<DcMotorEx> motors;
 
-    private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -128,7 +127,7 @@ public class CenterStageMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new CenterStageWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,

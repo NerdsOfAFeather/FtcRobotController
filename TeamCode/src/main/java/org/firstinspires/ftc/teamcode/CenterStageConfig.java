@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,8 +16,9 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
-    public DcMotorEx intakeMotor = null;
     public Servo flipperServo = null;
+    public Servo clawServoL = null;
+    public Servo clawServoR = null;
 
     public void initDriveHardware() {
 
@@ -24,14 +26,14 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         leftBackDrive = hardwareMap.get(DcMotorEx.class, "BackLeftDrive");
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
-        //intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
-        //flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
+        flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
+        clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
+        clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.FORWARD);
         rightBackDrive.setDirection(Direction.FORWARD);
-        //intakeMotor.setDirection(Direction.FORWARD);
 
     }
 
