@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /** Created by Gavin for Team 6347 */
@@ -13,6 +14,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
     double lateral;
     double yaw;
     boolean slowMode;
+    double flipperPos = 0;
 
     @Override
     public void init() {
@@ -33,7 +35,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        double intakePower;
 
         if (gamepad1.left_bumper && !slowMode){
             slowMode = true;
@@ -41,41 +42,27 @@ public class CenterStageTeleOp extends CenterStageConfig {
             slowMode = false;
         }
 
-        if (slowMode) {
-
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            if (Math.abs(gamepad1.left_stick_y) >= 0.3) {
-                axial = -gamepad1.left_stick_y/2;  // Note: pushing stick forward gives negative value
-            } else {
-                axial = 0;
-            }
-            if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
-                lateral = gamepad1.left_stick_x/2;
-            } else {
-                lateral = 0;
-            }
-            if (Math.abs(gamepad1.right_stick_x) >= 0.3) {
-                yaw = gamepad1.right_stick_x/2;
-            } else {
-                yaw = 0;
-            }
+        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+        if (Math.abs(gamepad1.left_stick_y) >= 0.3) {
+            axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
         } else {
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            if (Math.abs(gamepad1.left_stick_y) >= 0.3) {
-                axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            } else {
-                axial = 0;
-            }
-            if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
-                lateral = gamepad1.left_stick_x;
-            } else {
-                lateral = 0;
-            }
-            if (Math.abs(gamepad1.right_stick_x) >= 0.3) {
-                yaw = gamepad1.right_stick_x;
-            } else {
-                yaw = 0;
-            }
+            axial = 0;
+        }
+        if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
+            lateral = gamepad1.left_stick_x;
+        } else {
+            lateral = 0;
+        }
+        if (Math.abs(gamepad1.right_stick_x) >= 0.3) {
+            yaw = gamepad1.right_stick_x;
+        } else {
+            yaw = 0;
+        }
+
+        if (slowMode) {
+            axial /= 2;
+            lateral /= 2;
+            yaw /= 2;
         }
 
         leftFrontPower = axial + lateral + yaw;
@@ -92,12 +79,11 @@ public class CenterStageTeleOp extends CenterStageConfig {
             rightBackPower /= max;
         }
 
-        if (gamepad1.dpad_up) {
-            intakePower = 1.0;
-        } else if (gamepad1.dpad_down) {
-            intakePower = -1.0;
-        } else {
-            intakePower = 0.0;
+        // NOTE: -1.0 is UP towards the backdrop; 1.0 is DOWN towards the robot
+        if (gamepad2.a) {
+            flipperPos = -1;
+        } else if (gamepad2.y) {
+            flipperPos = 1;
         }
 
         // This is test code:
@@ -121,7 +107,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        //intakeMotor.setPower(intakePower);
+        flipperServo.setPosition(flipperPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -129,6 +115,10 @@ public class CenterStageTeleOp extends CenterStageConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+        telemetry.addData("Flipper Servo", flipperPos);
+        telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
+        telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
+        telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad2.left_stick_x)

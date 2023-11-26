@@ -16,7 +16,7 @@ public class CenterStageAuto extends CenterStageConfig {
 
         CenterStageMecanumDrive drive = new CenterStageMecanumDrive(hardwareMap);
 
-        startAndEnableRobotVision();
+        //startAndEnableRobotVision();
 
         telemetry.addData("Status", "Ready to Run");
         telemetry.update();
@@ -30,7 +30,12 @@ public class CenterStageAuto extends CenterStageConfig {
     }
 
     @Override
+    public void loop() {
+
+    }
+
+    @Override
     public void stop() {
-        closeAndDisableRobotVision();
+        //closeAndDisableRobotVision();
     }
 }
