@@ -17,6 +17,8 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
     double yaw;
     boolean slowMode;
     double flipperPos = 0;
+    double clawLPos = 0;
+    double clawRPos = 0.5;
 
     @Override
     public void init() {
@@ -38,6 +40,7 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
+        double intakePower;
 
         if (gamepad1.left_bumper && !slowMode) {
             slowMode = true;
@@ -89,6 +92,20 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             flipperPos = 1;
         }
 
+        if (gamepad1.right_trigger >= 0.3) {
+            clawLPos = 0.5;
+            clawRPos = 0.0;
+        } else if (gamepad1.left_trigger >= 0.3) {
+            clawLPos = 0.0;
+            clawRPos = 0.5;
+        }
+
+        if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
+            intakePower = gamepad2.left_stick_y;
+        } else {
+            intakePower = 0;
+        }
+
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -112,6 +129,9 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+        intakeMotor.setPower(intakePower);
+        clawServoL.setPosition(clawLPos);
+        clawServoR.setPosition(clawRPos);
         flipperServo.setPosition(flipperPos);
 
 
