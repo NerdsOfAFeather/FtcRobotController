@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,6 +21,8 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public Servo flipperServo = null;
     public Servo clawServoL = null;
     public Servo clawServoR = null;
+    public CRServo extensionServo = null;
+    public CRServo retractionServo = null;
 
     public void initDriveHardware() {
 
@@ -31,12 +34,16 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
+        extensionServo = hardwareMap.get(CRServo.class, "extensionServo");
+        retractionServo = hardwareMap.get(CRServo.class, "retractionServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.FORWARD);
         rightBackDrive.setDirection(Direction.FORWARD);
         intakeMotor.setDirection(Direction.FORWARD);
+        extensionServo.setDirection(Direction.FORWARD);
+        retractionServo.setDirection(Direction.FORWARD);
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
