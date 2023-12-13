@@ -31,7 +31,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         runtime.reset();
         clawLPos = 0.5;
         clawRPos = 0.5;
-        flipperPos = 0.9;
+        flipperPos = 0.85;
     }
 
     @Override
@@ -97,10 +97,11 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
         // NOTE: -1.0 is UP towards the backdrop; 1.0 is DOWN towards the robot
         if (gamepad2.a) {
-            flipperPos = 0.9
-            ;
+            flipperPos += 0.01;
+            //flipperPos = 0.85;
         } else if (gamepad2.y) {
-            flipperPos = 0.0;
+            //flipperPos = 0.0;
+            flipperPos -= 0.01;
         }
 
         if (gamepad2.right_trigger >= 0.3) {
