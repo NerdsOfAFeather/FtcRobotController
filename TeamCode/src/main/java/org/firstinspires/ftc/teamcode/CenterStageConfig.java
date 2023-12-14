@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -23,6 +25,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public Servo clawServoR = null;
     public CRServo extensionServo = null;
     public CRServo retractionServo = null;
+    public CenterStageMecanumDrive drive;
 
     public void initDriveHardware() {
 
@@ -51,6 +54,30 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+    }
+
+    public void initAuto() {
+        drive = new CenterStageMecanumDrive(hardwareMap);
+    }
+
+    public void traj(Trajectory trajectory) {
+        drive.followTrajectory(trajectory);
+    }
+
+    public Trajectory left(double distance) {
+        return drive.trajectoryBuilder(new Pose2d()).strafeLeft(distance).build();
+    }
+
+    public Trajectory right(double distance) {
+        return drive.trajectoryBuilder(new Pose2d()).strafeRight(distance).build();
+    }
+
+    public Trajectory forward(double distance) {
+        return drive.trajectoryBuilder(new Pose2d()).forward(distance).build();
+    }
+
+    public Trajectory back(double distance) {
+        return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
     }
 
 }

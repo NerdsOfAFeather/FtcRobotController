@@ -14,7 +14,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    boolean servoIndependence = false;
+    boolean servoIndependence;
     double flipperPos;
     double clawLPos = 0;
     double clawRPos = 0.5;
@@ -46,15 +46,15 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double liftPowerL;
         double liftPowerR;
 
-        if (gamepad1.left_bumper && !slowMode){
+        if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
         } else if (gamepad1.left_bumper && slowMode){
             slowMode = false;
         }
 
-        if (gamepad2.start) {
+        if (gamepad2.right_bumper) {
             servoIndependence = true;
-        } else if (gamepad2.back) {
+        } else if (gamepad2.left_bumper) {
             servoIndependence = false;
         }
 
@@ -190,11 +190,11 @@ public class CenterStageTeleOp extends CenterStageConfig {
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
-                .addData("x", gamepad2.left_stick_x)
-                .addData("y", gamepad2.left_stick_y);
+                .addData("x", gamepad1.left_stick_x)
+                .addData("y", gamepad1.left_stick_y);
         telemetry.addLine("Right joystick | ")
-                .addData("x", gamepad2.right_stick_x)
-                .addData("y", gamepad2.right_stick_y);
+                .addData("x", gamepad1.right_stick_x)
+                .addData("y", gamepad1.right_stick_y);
         telemetry.addData("Slow mode", slowMode);
         telemetry.update();
     }
