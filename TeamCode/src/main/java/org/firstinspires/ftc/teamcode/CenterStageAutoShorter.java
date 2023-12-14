@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /** Created by Gavin for Team 6347 */
-@Autonomous(name = "CenterStageAutoShort", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class CenterStageAutoShort extends CenterStageConfig {
+@Autonomous(name = "CenterStageAutoShorter", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
+public class CenterStageAutoShorter extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
     TeamColor team = UNSET;
@@ -24,9 +24,6 @@ public class CenterStageAutoShort extends CenterStageConfig {
         initAuto();
 
         //startAndEnableRobotVision();
-
-        telemetry.addData("Status", "Ready to Run");
-        telemetry.update();
     }
 
     @Override
@@ -45,15 +42,12 @@ public class CenterStageAutoShort extends CenterStageConfig {
         runtime.reset();
 
         //Auto stuff here
+
         traj(forward(5));
         if (team.equals(BLUE)) {
-            traj(right(32.5));
-            traj(forward(30));
-            traj(right(100));
+            traj(right(80));
         } else if (team.equals(RED)) {
-            traj(left(32.5));
-            traj(forward(30));
-            traj(left(100));
+            traj(left(80));
         }
 
         this.stop();
@@ -61,9 +55,7 @@ public class CenterStageAutoShort extends CenterStageConfig {
     }
 
     @Override
-    public void loop() {
-
-    }
+    public void loop() {}
 
     @Override
     public void stop() {
