@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/** Created by Gavin for Team 6347 */
+/**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageTeleOp", group="OpMode")
 public class CenterStageTeleOp extends CenterStageConfig {
 
@@ -97,11 +97,11 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
         // NOTE: -1.0 is UP towards the backdrop; 1.0 is DOWN towards the robot
         if (gamepad2.a) {
-            flipperPos += 0.01;
+            flipperPos += 0.005;
             //flipperPos = 0.85;
         } else if (gamepad2.y) {
             //flipperPos = 0.0;
-            flipperPos -= 0.01;
+            flipperPos -= 0.005;
         }
 
         if (gamepad2.right_trigger >= 0.3) {
@@ -146,6 +146,12 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
             intakePower = 0;
 
+        }
+
+        if (flipperPos > 1) {
+            flipperPos = 1;
+        } else if (flipperPos < 0) {
+            flipperPos = 0;
         }
 
 

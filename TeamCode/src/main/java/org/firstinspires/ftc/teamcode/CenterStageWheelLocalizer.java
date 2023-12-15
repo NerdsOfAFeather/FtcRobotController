@@ -26,6 +26,7 @@ import java.util.List;
  *    \--------------/
  *
  */
+/**Created by Gavin for FTC Team 6347 */
 @Config
 public class CenterStageWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
