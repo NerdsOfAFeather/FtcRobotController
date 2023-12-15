@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * These are not the only parameters; some are located in the localizer classes, drive base classes,
  * and op modes themselves.
  */
+/**Created by Gavin for FTC Team 6347 */
 @Config
 public class CenterStageDriveConstants {
 

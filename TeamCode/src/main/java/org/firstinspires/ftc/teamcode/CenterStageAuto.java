@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/** Created by Gavin for Team 6347 */
+/**Created by Gavin for FTC Team 6347 */
 @Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
 public class CenterStageAuto extends CenterStageConfig {
 
@@ -57,9 +57,7 @@ public class CenterStageAuto extends CenterStageConfig {
     }
 
     @Override
-    public void loop() {
-
-    }
+    public void loop() {}
 
     @Override
     public void stop() {

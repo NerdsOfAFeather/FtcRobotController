@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+/**Created by Gavin for FTC Team 6347*/
 public enum TeamColor {
 
     RED, BLUE, UNSET;

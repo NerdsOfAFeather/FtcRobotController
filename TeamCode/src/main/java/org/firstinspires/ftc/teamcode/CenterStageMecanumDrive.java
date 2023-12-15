@@ -54,6 +54,7 @@ import java.util.List;
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
+/**Created by Gavin for FTC Team 6347 */
 @Config
 public class CenterStageMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);

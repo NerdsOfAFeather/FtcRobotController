@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-/** Created by Gavin for Team 6347 */
+/** Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageConfig", group="Linear Opmode")
 @Disabled
 public class CenterStageConfig extends CenterStageObjectDetection {

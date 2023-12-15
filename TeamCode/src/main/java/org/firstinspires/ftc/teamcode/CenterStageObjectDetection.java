@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-/** Created by Gavin for Team 6347 */
+/**Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
 public class CenterStageObjectDetection extends OpMode {
 
