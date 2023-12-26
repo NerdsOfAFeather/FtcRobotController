@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "CenterStageTeleOp1P", group = "Linear Opmode")
-//@Disabled
+@Disabled
 public class CenterStageTeleOp1p extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -17,11 +15,9 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    boolean servoIndependence;
     double flipperPos;
     double clawLPos = 0;
     double clawRPos = 0.5;
-    double toggleTime = 0;
 
     @Override
     public void init() {
@@ -46,46 +42,27 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         double leftBackPower;
         double rightBackPower;
         double intakePower;
-        double liftPower;
-        double liftPowerL;
-        double liftPowerR;
+        double intakePower2;
 
-        if (gamepad1.left_bumper && !slowMode){
-            if (runtime.milliseconds() - toggleTime >= 100) {
-                slowMode = true;
-                toggleTime = runtime.milliseconds();
-            }
+        if (gamepad1.right_bumper && !slowMode){
+            slowMode = true;
         } else if (gamepad1.left_bumper && slowMode){
-            if (runtime.milliseconds() - toggleTime >= 100) {
-                slowMode = false;
-                toggleTime = runtime.milliseconds();
-            }
+            slowMode = false;
         }
 
-        if (gamepad1.right_bumper && !servoIndependence) {
-            if (runtime.milliseconds() - toggleTime >= 100) {
-                servoIndependence = true;
-                toggleTime = runtime.milliseconds();
-            }
-        } else if (gamepad1.right_bumper && servoIndependence) {
-            if (runtime.milliseconds() - toggleTime >= 100) {
-                servoIndependence = false;
-                toggleTime = runtime.milliseconds();
-            }
-        }
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        if (Math.abs(gamepad1.left_stick_y) >= 0.3) {
+        if (Math.abs(gamepad1.left_stick_y) >= 0.2) {
             axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
         } else {
             axial = 0;
         }
-        if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
+        if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
             lateral = gamepad1.left_stick_x;
         } else {
             lateral = 0;
         }
-        if (Math.abs(gamepad1.right_stick_x) >= 0.3) {
+        if (Math.abs(gamepad1.right_stick_x) >= 0.2) {
             yaw = gamepad1.right_stick_x;
         } else {
             yaw = 0;
@@ -112,15 +89,6 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             rightBackPower /= 2;
         }
 
-        // NOTE: -1.0 is UP towards the backdrop; 1.0 is DOWN towards the robot
-        if (gamepad1.a) {
-            flipperPos += 0.01;
-            //flipperPos = 0.85;
-        } else if (gamepad1.y) {
-            //flipperPos = 0.0;
-            flipperPos -= 0.01;
-        }
-
         if (gamepad1.right_trigger >= 0.3) {
             clawLPos = 1.0;
             clawRPos = 0.0;
@@ -129,51 +97,21 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             clawRPos = 0.5;
         }
 
-        if (!servoIndependence) {
-
-            if (gamepad1.dpad_right) {
-                intakePower = 1;
-            } else if (gamepad1.dpad_left) {
-                intakePower = -1;
-            } else {
-                intakePower = 0;
-            }
-
-
-            if (gamepad1.dpad_up) {
-                liftPower = 1;
-            } else if (gamepad1.dpad_down) {
-                liftPower = -1;
-            } else {
-                liftPower = 0;
-            }
-
-            liftPowerL = liftPower;
-            liftPowerR = liftPower;
-
+        if (gamepad1.dpad_up) {
+            intakePower = 1;
+        } else if (gamepad1.dpad_down) {
+            intakePower = -1;
         } else {
-
-            if (gamepad1.dpad_right) {
-                liftPowerL = 1;
-            } else if (gamepad1.dpad_left) {
-                liftPowerL = -1;
-            } else {
-                liftPowerL = 0;
-            }
-
-
-            if (gamepad1.dpad_up) {
-                liftPowerR = 1;
-            } else if (gamepad1.dpad_down) {
-                liftPowerR = -1;
-            } else {
-                liftPowerR = 0;
-            }
-
             intakePower = 0;
-
         }
 
+        if (gamepad1.y) {
+            intakePower2 = 1;
+        } else if (gamepad1.a) {
+            intakePower2 = -1;
+        } else {
+            intakePower2 = 0;
+        }
 
         // This is test code:
         //
@@ -197,11 +135,9 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         intakeMotor.setPower(intakePower);
+        intakeMotor2.setPower(intakePower2);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
-        flipperServo.setPosition(flipperPos);
-        extensionServo.setPower(liftPowerL);
-        retractionServo.setPower(liftPowerR);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -210,7 +146,6 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         telemetry.addData("Intake Power", intakePower);
-        telemetry.addData("Flipper Servo", flipperPos);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
@@ -222,7 +157,9 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
                 .addData("x", gamepad1.right_stick_x)
                 .addData("y", gamepad1.right_stick_y);
         telemetry.addData("Slow mode", slowMode);
-        telemetry.addData("Servo Independence", servoIndependence);
         telemetry.update();
     }
+
+    @Override
+    public void stop() {}
 }

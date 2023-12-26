@@ -2,10 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
-import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -52,8 +48,7 @@ public class CenterStageAuto extends CenterStageConfig {
             traj(left(150));
         }
 
-        this.stop();
-        terminateOpModeNow();
+        requestOpModeStop();
     }
 
     @Override
