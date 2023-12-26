@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageAutoShort extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-    TeamColor team = UNSET;
 
     @Override
     public void init() {
