@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -15,7 +14,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
     double yaw;
     boolean slowMode;
     double clawLPos = 0;
-    double clawRPos = 0.5;
+    double clawRPos = 0;
 
     @Override
     public void init() {
@@ -27,7 +26,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
     @Override
     public void start() {
         runtime.reset();
-        clawLPos = 0.5;
+        clawLPos = 0;
         clawRPos = 0.5;
     }
 
@@ -40,7 +39,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double rightBackPower;
         double intakePower;
         double intakePower2;
-        double liftPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -66,12 +64,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
             yaw = 0;
         }
 
-        if (slowMode) {
-            axial /= 2;
-            lateral /= 2;
-            yaw /= 2;
-        }
-
         leftFrontPower = axial + lateral + yaw;
         rightFrontPower = axial - lateral - yaw;
         leftBackPower = axial - lateral + yaw;
@@ -86,6 +78,13 @@ public class CenterStageTeleOp extends CenterStageConfig {
             rightBackPower /= max;
         }
 
+        if (slowMode) {
+            leftFrontPower /= 2;
+            rightFrontPower /= 2;
+            leftBackPower /= 2;
+            rightBackPower /= 2;
+        }
+
         if (gamepad2.right_trigger >= 0.3) {
             clawLPos = 1.0;
             clawRPos = 0.0;
@@ -94,8 +93,17 @@ public class CenterStageTeleOp extends CenterStageConfig {
             clawRPos = 0.5;
         }
 
+        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
+            intakePower = gamepad2.left_stick_y;
+        } else {
+            intakePower = 0;
+        }
 
-
+        if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
+            intakePower2 = gamepad2.right_stick_y;
+        } else {
+            intakePower2 = 0;
+        }
 
         // This is test code:
         //
@@ -143,4 +151,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         telemetry.addData("Slow mode", slowMode);
         telemetry.update();
     }
+
+    @Override
+    public void stop() {}
 }
