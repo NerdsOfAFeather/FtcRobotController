@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageAutoShorter extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-    TeamColor team = UNSET;
 
     @Override
     public void init() {
@@ -33,6 +32,7 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         } else if (gamepad1.b) {
             team = RED;
         }
+        telemetry.addData("Position", getPosition());
         telemetry.addData("Team", team.toString());
         telemetry.update();
     }
@@ -60,5 +60,6 @@ public class CenterStageAutoShorter extends CenterStageConfig {
     @Override
     public void stop() {
         //closeAndDisableRobotVision();
+        stopEOCV();
     }
 }

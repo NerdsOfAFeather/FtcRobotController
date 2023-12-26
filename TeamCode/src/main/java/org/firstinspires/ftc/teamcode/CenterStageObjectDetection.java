@@ -5,6 +5,7 @@ import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -15,6 +16,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
 
@@ -36,14 +48,14 @@ public class CenterStageObjectDetection extends OpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
+    private OpenCvWebcam webcam;
+    public static TeamColor team = TeamColor.UNSET;
+    static int position;
+
 
     @Override
     public void init() {
-        initAprilTag();
-        initTfod();
-        initVisionPortal();
-        enableAprilTagProcessor();
-        enableTFODProcessor();
+        startAndEnableRobotVision();
 
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
@@ -70,9 +82,7 @@ public class CenterStageObjectDetection extends OpMode {
 
     @Override
     public void stop() {
-        disableAprilTagProcessor();
-        disableTFODProcessor();
-        closeVisionPortal();
+        closeAndDisableRobotVision();
     }
 
     protected void startAndEnableRobotVision() {
@@ -87,6 +97,26 @@ public class CenterStageObjectDetection extends OpMode {
         disableAprilTagProcessor();
         disableTFODProcessor();
         closeVisionPortal();
+    }
+
+    /**
+     * Initialize the webcam for use with EOC
+     */
+    public void initEOCV(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        // OR...  Do Not Activate the Camera Monitor View
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        webcam.setPipeline(new CenterStagePipeline());
+
+        webcam.setMillisecondsPermissionTimeout(5000);
+        webcam.openCameraDeviceAsync(new CenterStageCameraOpener());
+    }
+
+    public void stopEOCV() {
+        webcam.stopStreaming();
+        webcam.closeCameraDevice();
     }
 
     /**
@@ -240,6 +270,86 @@ public class CenterStageObjectDetection extends OpMode {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    public static int getPosition() {
+        return position;
+    }
+
+    class CenterStagePipeline extends OpenCvPipeline {
+
+
+
+        boolean viewportPaused;
+
+        @Override
+        public Mat processFrame(Mat input) {
+            Rect lRect = new Rect(point(0,0), point(input.cols()/3f, input.rows()));
+            Rect rRect = new Rect(point(input.cols()*(2f/3f),0), point(input.cols(), input.rows()));
+
+            Mat left = input.submat(lRect);
+            Mat right = input.submat(rRect);
+
+            Mat filteredL = new Mat();
+            Mat filteredR = new Mat();
+            int totalPixels = input.rows() * input.cols();
+
+            if (team.equals(TeamColor.RED)) {
+                Core.inRange(left, new Scalar(128, 0, 0), new Scalar(255, 69, 65), filteredL);
+                Core.inRange(right, new Scalar(128, 0, 0), new Scalar(255, 69, 65), filteredR);
+            } else {
+                Core.inRange(left, new Scalar(0, 0, 128), new Scalar(65, 69, 255), filteredL);
+                Core.inRange(right, new Scalar(0, 0, 128), new Scalar(65, 69, 255), filteredR);
+            }
+
+            int lPer = Core.countNonZero(filteredL);
+            int rPer = Core.countNonZero(filteredR);
+            lPer = lPer / totalPixels;
+            rPer = rPer / totalPixels;
+            if (lPer >= 0.5f) {
+                position = 1;
+            } else if (rPer >= 0.5f) {
+                position = 3;
+            } else {
+                position = 2;
+            }
+
+            return input;
+        }
+
+
+
+        @Override
+        public void onViewportTapped() {
+
+            viewportPaused = !viewportPaused;
+
+            if(viewportPaused)
+            {
+                webcam.pauseViewport();
+            }
+            else
+            {
+                webcam.resumeViewport();
+            }
+        }
+
+        private Point point(double x, double y) {
+            return new Point(x, y);
+        }
+    }
+
+    class CenterStageCameraOpener implements OpenCvCamera.AsyncCameraOpenListener {
+
+        @Override
+        public void onOpened() {
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        }
+
+        @Override
+        public void onError(int errorCode) {
+            RobotLog.setGlobalErrorMsg("Error in OpenCV Camera Opening. Error Code: " + errorCode);
         }
     }
 

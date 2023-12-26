@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageAuto extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-    TeamColor team = UNSET;
 
     @Override
     public void init() {
@@ -22,6 +21,7 @@ public class CenterStageAuto extends CenterStageConfig {
         telemetry.update();
 
         initAuto();
+        initEOCV();
 
         //startAndEnableRobotVision();
 
