@@ -14,8 +14,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    boolean servoIndependence;
-    double flipperPos;
     double clawLPos = 0;
     double clawRPos = 0.5;
 
@@ -31,7 +29,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         runtime.reset();
         clawLPos = 0.5;
         clawRPos = 0.5;
-        flipperPos = 0.85;
     }
 
     @Override
@@ -42,9 +39,8 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double leftBackPower;
         double rightBackPower;
         double intakePower;
+        double intakePower2;
         double liftPower;
-        double liftPowerL;
-        double liftPowerR;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -52,24 +48,19 @@ public class CenterStageTeleOp extends CenterStageConfig {
             slowMode = false;
         }
 
-        if (gamepad2.right_bumper) {
-            servoIndependence = true;
-        } else if (gamepad2.left_bumper) {
-            servoIndependence = false;
-        }
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        if (Math.abs(gamepad1.left_stick_y) >= 0.3) {
+        if (Math.abs(gamepad1.left_stick_y) >= 0.2) {
             axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
         } else {
             axial = 0;
         }
-        if (Math.abs(gamepad1.left_stick_x) >= 0.3) {
+        if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
             lateral = gamepad1.left_stick_x;
         } else {
             lateral = 0;
         }
-        if (Math.abs(gamepad1.right_stick_x) >= 0.3) {
+        if (Math.abs(gamepad1.right_stick_x) >= 0.2) {
             yaw = gamepad1.right_stick_x;
         } else {
             yaw = 0;
@@ -95,15 +86,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
             rightBackPower /= max;
         }
 
-        // NOTE: -1.0 is UP towards the backdrop; 1.0 is DOWN towards the robot
-        if (gamepad2.a) {
-            flipperPos += 0.005;
-            //flipperPos = 0.85;
-        } else if (gamepad2.y) {
-            //flipperPos = 0.0;
-            flipperPos -= 0.005;
-        }
-
         if (gamepad2.right_trigger >= 0.3) {
             clawLPos = 1.0;
             clawRPos = 0.0;
@@ -112,47 +94,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
             clawRPos = 0.5;
         }
 
-        if (!servoIndependence) {
 
-            if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
-                intakePower = (-gamepad2.left_stick_y)/2;
-            } else {
-                intakePower = 0;
-            }
-
-
-            if (Math.abs(gamepad2.right_stick_y) >= 0.3) {
-                liftPower = -gamepad2.right_stick_y;
-            } else {
-                liftPower = 0;
-            }
-
-            liftPowerL = liftPower;
-            liftPowerR = liftPower;
-
-        } else {
-
-            if (Math.abs(gamepad2.left_stick_y) >= 0.3) {
-                liftPowerL = (-gamepad2.left_stick_y)/2;
-            } else {
-                liftPowerL = 0;
-            }
-
-            if (Math.abs(gamepad2.right_stick_y) >= 0.3) {
-                liftPowerR = -gamepad2.right_stick_y;
-            } else {
-                liftPowerR = 0;
-            }
-
-            intakePower = 0;
-
-        }
-
-        if (flipperPos > 1) {
-            flipperPos = 1;
-        } else if (flipperPos < 0) {
-            flipperPos = 0;
-        }
 
 
         // This is test code:
@@ -177,11 +119,9 @@ public class CenterStageTeleOp extends CenterStageConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         intakeMotor.setPower(intakePower);
+        intakeMotor2.setPower(intakePower2);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
-        flipperServo.setPosition(flipperPos);
-        extensionServo.setPower(liftPowerL);
-        retractionServo.setPower(liftPowerR);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -190,7 +130,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         telemetry.addData("Intake Power", intakePower);
-        telemetry.addData("Flipper Servo", flipperPos);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
