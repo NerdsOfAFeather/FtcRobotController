@@ -4,8 +4,6 @@ import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
 import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,13 +20,17 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         telemetry.update();
 
         initAuto();
+        initDriveHardware();
+
+        clawServoL.setPosition(1.0);
+        clawServoR.setPosition(0.0);
 
         //startAndEnableRobotVision();
     }
 
     @Override
     public void init_loop() {
-        if (gamepad1.a) {
+        if (gamepad1.x) {
             team = BLUE;
         } else if (gamepad1.b) {
             team = RED;
@@ -43,12 +45,22 @@ public class CenterStageAutoShorter extends CenterStageConfig {
 
         //Auto stuff here
 
-        traj(forward(5));
-        if (team.equals(BLUE)) {
+        if (team.equals(RED)) {
+            traj(forward(5));
             traj(right(80));
-        } else if (team.equals(RED)) {
+        } else if (team.equals(BLUE)) {
+            traj(forward(5));
             traj(left(80));
         }
+
+        sleep(750);
+        intakeMotor.setPower(-.25);
+        sleep(2000);
+        intakeMotor.setPower(0);
+        clawServoR.setPosition(1.0);
+        clawServoL.setPosition(0.0);
+
+
 
         this.stop();
         terminateOpModeNow();
