@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
-import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageAutoShorter extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-    TeamColor team = UNSET;
 
     @Override
     public void init() {
@@ -20,21 +17,18 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         telemetry.update();
 
         initAuto();
-        initDriveHardware();
-
-        clawServoL.setPosition(1.0);
-        clawServoR.setPosition(0.0);
 
         //startAndEnableRobotVision();
     }
 
     @Override
     public void init_loop() {
-        if (gamepad1.x) {
+        if (gamepad1.a) {
             team = BLUE;
         } else if (gamepad1.b) {
             team = RED;
         }
+        telemetry.addData("Position", getPosition());
         telemetry.addData("Team", team.toString());
         telemetry.update();
     }
@@ -45,25 +39,14 @@ public class CenterStageAutoShorter extends CenterStageConfig {
 
         //Auto stuff here
 
-        if (team.equals(RED)) {
-            traj(forward(5));
+        traj(forward(5));
+        if (team.equals(BLUE)) {
             traj(right(80));
-        } else if (team.equals(BLUE)) {
-            traj(forward(5));
+        } else if (team.equals(RED)) {
             traj(left(80));
         }
 
-        sleep(750);
-        intakeMotor.setPower(-.25);
-        sleep(2000);
-        intakeMotor.setPower(0);
-        clawServoR.setPosition(1.0);
-        clawServoL.setPosition(0.0);
-
-
-
-        this.stop();
-        terminateOpModeNow();
+        requestOpModeStop();
     }
 
     @Override
@@ -72,5 +55,6 @@ public class CenterStageAutoShorter extends CenterStageConfig {
     @Override
     public void stop() {
         //closeAndDisableRobotVision();
+        stopEOCV();
     }
 }

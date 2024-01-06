@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
-import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageAutoShort extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-    TeamColor team = UNSET;
 
     @Override
     public void init() {
@@ -29,7 +26,7 @@ public class CenterStageAutoShort extends CenterStageConfig {
 
     @Override
     public void init_loop() {
-        if (gamepad1.x) {
+        if (gamepad1.a) {
             team = BLUE;
         } else if (gamepad1.b) {
             team = RED;
@@ -43,19 +40,18 @@ public class CenterStageAutoShort extends CenterStageConfig {
         runtime.reset();
 
         //Auto stuff here
-        traj(forward(10));
-        if (team.equals(RED)) {
-            traj(right(45));
+        traj(forward(5));
+        if (team.equals(BLUE)) {
+            traj(right(32.5));
             traj(forward(30));
             traj(right(100));
-        } else if (team.equals(BLUE)) {
+        } else if (team.equals(RED)) {
             traj(left(32.5));
             traj(forward(30));
             traj(left(100));
         }
 
-        this.stop();
-        terminateOpModeNow();
+        requestOpModeStop();
     }
 
     @Override

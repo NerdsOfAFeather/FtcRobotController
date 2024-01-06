@@ -2,17 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /** Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageConfig", group="Linear Opmode")
-@Disabled
 public class CenterStageConfig extends CenterStageObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
@@ -20,11 +15,9 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
     public DcMotor intakeMotor = null;
-    public Servo flipperServo = null;
+    public DcMotor intakeMotor2 = null;
     public Servo clawServoL = null;
     public Servo clawServoR = null;
-    public CRServo extensionServo = null;
-    public CRServo retractionServo = null;
     public CenterStageMecanumDrive drive;
 
     public void initDriveHardware() {
@@ -34,21 +27,19 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "IntakeMotor");
-        flipperServo = hardwareMap.get(Servo.class, "FlipperServo");
+        intakeMotor2 = hardwareMap.get(DcMotorEx.class, "IntakeMotor2");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
-        extensionServo = hardwareMap.get(CRServo.class, "extensionServo");
-        retractionServo = hardwareMap.get(CRServo.class, "retractionServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.FORWARD);
         rightBackDrive.setDirection(Direction.FORWARD);
         intakeMotor.setDirection(Direction.FORWARD);
-        extensionServo.setDirection(Direction.FORWARD);
-        retractionServo.setDirection(Direction.FORWARD);
+        intakeMotor2.setDirection(Direction.FORWARD);
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
