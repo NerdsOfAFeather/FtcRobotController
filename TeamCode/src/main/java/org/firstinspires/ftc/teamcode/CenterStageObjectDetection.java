@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.annotation.SuppressLint;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
+@Disabled
 public class CenterStageObjectDetection extends OpMode {
 
     /**

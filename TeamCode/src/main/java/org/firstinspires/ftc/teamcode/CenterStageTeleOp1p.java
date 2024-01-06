@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "CenterStageTeleOp1P", group = "Linear Opmode")
-//@Disabled
+@Disabled
 public class CenterStageTeleOp1p extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
