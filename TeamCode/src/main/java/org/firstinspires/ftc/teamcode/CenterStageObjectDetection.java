@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+
 import android.annotation.SuppressLint;
 import android.util.Size;
 
@@ -32,7 +35,7 @@ import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
-@Disabled
+//@Disabled
 public class CenterStageObjectDetection extends OpMode {
 
     /**
@@ -56,8 +59,19 @@ public class CenterStageObjectDetection extends OpMode {
 
     @Override
     public void init() {
-        startAndEnableRobotVision();
+        //startAndEnableRobotVision();
+        initEOCV();
 
+    }
+
+    @Override
+    public void init_loop() {
+        if (gamepad1.x) {
+            team = BLUE;
+        } else if (gamepad1.b) {
+            team = RED;
+        }
+        telemetry.addData("Team", team.toString());
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
@@ -65,9 +79,10 @@ public class CenterStageObjectDetection extends OpMode {
 
     @Override
     public void loop() {
-        telemetryAprilTag();
-        telemetryTfod();
-
+        //telemetryAprilTag();
+        //telemetryTfod();
+        //telemetryEOCV();
+        telemetry.addData("Position", position);
         telemetry.update();
 
         // Save CPU resources; can resume streaming when needed.
@@ -105,10 +120,10 @@ public class CenterStageObjectDetection extends OpMode {
      */
     public void initEOCV(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
 
         // OR...  Do Not Activate the Camera Monitor View
-        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"));
         webcam.setPipeline(new CenterStagePipeline());
 
         webcam.setMillisecondsPermissionTimeout(5000);
@@ -345,7 +360,7 @@ public class CenterStageObjectDetection extends OpMode {
 
         @Override
         public void onOpened() {
-            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
         }
 
         @Override

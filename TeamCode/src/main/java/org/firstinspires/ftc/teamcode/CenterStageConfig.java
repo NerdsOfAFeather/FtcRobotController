@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,6 +19,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public DcMotor intakeMotor2 = null;
     public Servo clawServoL = null;
     public Servo clawServoR = null;
+    public CRServo wristServo = null;
     public CenterStageMecanumDrive drive;
 
     public void initDriveHardware() {
@@ -30,6 +32,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         intakeMotor2 = hardwareMap.get(DcMotorEx.class, "IntakeMotor2");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
+        wristServo = hardwareMap.get(CRServo.class, "WristServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);

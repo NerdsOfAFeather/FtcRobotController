@@ -39,6 +39,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double rightBackPower;
         double intakePower;
         double intakePower2;
+        double wristPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -86,21 +87,29 @@ public class CenterStageTeleOp extends CenterStageConfig {
         }
 
         if (gamepad2.right_trigger >= 0.3) {
-            clawLPos = 1.0;
-            clawRPos = 0.0;
+            clawLPos = 0.0;
+            clawRPos = 1.0;
         } else if (gamepad2.left_trigger >= 0.3) {
             clawLPos = 0.5;
             clawRPos = 0.5;
         }
 
+        if (gamepad2.dpad_up) {
+            wristPower = 1;
+        } else if (gamepad2.dpad_down) {
+            wristPower = -1;
+        } else {
+            wristPower = 0;
+        }
+
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
-            intakePower = gamepad2.left_stick_y;
+            intakePower = -gamepad2.left_stick_y/2;
         } else {
             intakePower = 0;
         }
 
         if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            intakePower2 = gamepad2.right_stick_y;
+            intakePower2 = -gamepad2.right_stick_y;
         } else {
             intakePower2 = 0;
         }
@@ -130,6 +139,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         intakeMotor2.setPower(intakePower2);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
+        wristServo.setPower(wristPower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
