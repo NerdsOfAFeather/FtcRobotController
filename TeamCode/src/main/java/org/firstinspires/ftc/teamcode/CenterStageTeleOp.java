@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageTeleOp extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-
     double axial;
     double lateral;
     double yaw;
@@ -26,8 +25,8 @@ public class CenterStageTeleOp extends CenterStageConfig {
     @Override
     public void start() {
         runtime.reset();
-        clawLPos = 0;
-        clawRPos = 0.5;
+        clawLPos = 0.0;
+        clawRPos = 1.0;
     }
 
     @Override
@@ -39,6 +38,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double rightBackPower;
         double intakePower;
         double intakePower2;
+        double liftPower;
         double wristPower;
 
         if (gamepad1.right_bumper && !slowMode){
@@ -114,6 +114,14 @@ public class CenterStageTeleOp extends CenterStageConfig {
             intakePower2 = 0;
         }
 
+        if (gamepad2.right_bumper) {
+            liftPower = 1;
+        } else if (gamepad2.left_bumper) {
+            liftPower = -1;
+        } else {
+            liftPower = 0;
+        }
+
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -137,6 +145,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
         rightBackDrive.setPower(rightBackPower);
         intakeMotor.setPower(intakePower);
         intakeMotor2.setPower(intakePower2);
+        liftMotor.setPower(liftPower);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
         wristServo.setPower(wristPower);
