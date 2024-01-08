@@ -17,6 +17,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     public DcMotorEx rightBackDrive = null;
     public DcMotor intakeMotor = null;
     public DcMotor intakeMotor2 = null;
+    public DcMotor liftMotor = null;
     public Servo clawServoL = null;
     public Servo clawServoR = null;
     public CRServo wristServo = null;
@@ -30,6 +31,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "IntakeMotor");
         intakeMotor2 = hardwareMap.get(DcMotorEx.class, "IntakeMotor2");
+        liftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
         wristServo = hardwareMap.get(CRServo.class, "WristServo");
