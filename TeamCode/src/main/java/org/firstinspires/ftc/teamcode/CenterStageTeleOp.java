@@ -14,6 +14,9 @@ public class CenterStageTeleOp extends CenterStageConfig {
     boolean slowMode;
     double clawLPos = 0;
     double clawRPos = 0;
+    double clawtime = 0;
+    boolean servoLOpen = false;
+    boolean servoROpen = false;
 
     @Override
     public void init() {
@@ -86,12 +89,24 @@ public class CenterStageTeleOp extends CenterStageConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.right_trigger >= 0.3) {
-            clawLPos = 0.0;
-            clawRPos = 1.0;
-        } else if (gamepad1.left_trigger >= 0.3) {
-            clawLPos = 0.5;
-            clawRPos = 0.5;
+        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawtime > 500) {
+            if (servoLOpen) {
+                clawLPos = 0.0; // Close
+                servoLOpen = false;
+            } else {
+                clawLPos = 0.5;
+                servoLOpen = true;
+            }
+            clawtime = runtime.milliseconds();
+        } else if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawtime > 500) {
+            if (servoROpen) {
+                clawRPos = 1.0; // Close
+                servoROpen = false;
+            } else {
+                clawLPos = 0.5;
+                servoROpen = true;
+            }
+            clawtime = runtime.milliseconds();
         }
 
         if (gamepad2.dpad_up) {
@@ -103,13 +118,13 @@ public class CenterStageTeleOp extends CenterStageConfig {
         }
 
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
-            intakePower = -gamepad2.left_stick_y/2;
+            intakePower = Math.pow(-gamepad2.left_stick_y, 2);
         } else {
             intakePower = 0;
         }
 
         if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            intakePower2 = -gamepad2.right_stick_y;
+            intakePower2 = Math.pow(gamepad2.right_stick_y/2, 2);
         } else {
             intakePower2 = 0;
         }
