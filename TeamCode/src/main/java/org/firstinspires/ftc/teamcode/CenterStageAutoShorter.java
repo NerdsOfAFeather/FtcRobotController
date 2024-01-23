@@ -16,14 +16,14 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-        initAuto();
+        //initAuto();
 
         //startAndEnableRobotVision();
     }
 
     @Override
     public void init_loop() {
-        if (gamepad1.a) {
+        if (gamepad1.x) {
             team = BLUE;
         } else if (gamepad1.b) {
             team = RED;
@@ -55,6 +55,6 @@ public class CenterStageAutoShorter extends CenterStageConfig {
     @Override
     public void stop() {
         //closeAndDisableRobotVision();
-        stopEOCV();
+        //stopEOCV();
     }
 }

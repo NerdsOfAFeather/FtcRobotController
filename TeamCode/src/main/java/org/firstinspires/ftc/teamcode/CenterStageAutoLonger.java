@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class CenterStageAuto extends CenterStageConfig {
+@Autonomous(name = "CenterStageAutoLonger", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
+//@Disabled
+public class CenterStageAutoLonger extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -23,6 +26,8 @@ public class CenterStageAuto extends CenterStageConfig {
 
         telemetry.addData("Status", "Ready to Run");
         telemetry.update();
+        clawServoL.setPosition(0.0);
+        clawServoR.setPosition(1.0);
     }
 
     @Override
@@ -41,13 +46,36 @@ public class CenterStageAuto extends CenterStageConfig {
         runtime.reset();
 
         //Auto stuff here
-        traj(forward(65));
+        clawServoL.setPosition(0.0);
+        clawServoR.setPosition(1.0);
+        traj(forward(5));
         if (team.equals(BLUE)) {
-            traj(left(150));
+            traj(left(50));
+            turnLeft(.5);
+            traj(right(10));
+            intakeMotor2.setPower(0.5);
+            try {
+                wait(1);
+            } catch (InterruptedException e) {
+                terminateOpModeNow();
+            }
+            intakeMotor2.setPower(0);
+            clawServoL.setPosition(0.5);
+            clawServoR.setPosition(0.5);
         } else if (team.equals(RED)) {
-            traj(right(150));
+            traj(right(50));
+
+            traj(left(10));
+            intakeMotor2.setPower(0.5);
+            try {
+                wait(1);
+            } catch (InterruptedException e) {
+                terminateOpModeNow();
+            }
+            intakeMotor2.setPower(0);
+            clawServoL.setPosition(0.5);
+            clawServoR.setPosition(0.5);
         }
-        traj(back(10));
 
         requestOpModeStop();
     }

@@ -14,7 +14,8 @@ public class CenterStageTeleOp extends CenterStageConfig {
     boolean slowMode;
     double clawLPos = 0;
     double clawRPos = 0;
-    double clawtime = 0;
+    double clawLtime = 0;
+    double clawRtime = 0;
     boolean servoLOpen = false;
     boolean servoROpen = false;
 
@@ -89,7 +90,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawtime > 500) {
+        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawLtime > 500) {
             if (servoLOpen) {
                 clawLPos = 0.0; // Close
                 servoLOpen = false;
@@ -97,16 +98,17 @@ public class CenterStageTeleOp extends CenterStageConfig {
                 clawLPos = 0.5;
                 servoLOpen = true;
             }
-            clawtime = runtime.milliseconds();
-        } else if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawtime > 500) {
+            clawLtime = runtime.milliseconds();
+        }
+        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawRtime > 500) {
             if (servoROpen) {
                 clawRPos = 1.0; // Close
                 servoROpen = false;
             } else {
-                clawLPos = 0.5;
+                clawRPos = 0.5;
                 servoROpen = true;
             }
-            clawtime = runtime.milliseconds();
+            clawRtime = runtime.milliseconds();
         }
 
         if (gamepad2.dpad_up) {
@@ -119,12 +121,18 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
             intakePower = Math.pow(-gamepad2.left_stick_y, 2);
+            if (gamepad2.left_stick_y < 0) {
+                intakePower = -intakePower;
+            }
         } else {
             intakePower = 0;
         }
 
         if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            intakePower2 = Math.pow(gamepad2.right_stick_y/2, 2);
+            intakePower2 = Math.pow(gamepad2.right_stick_y*.6, 2);
+            if (gamepad2.right_stick_y < 0) {
+                intakePower2 = -intakePower2;
+            }
         } else {
             intakePower2 = 0;
         }
