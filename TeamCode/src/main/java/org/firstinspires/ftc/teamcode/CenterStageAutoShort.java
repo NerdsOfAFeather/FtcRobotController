@@ -26,7 +26,7 @@ public class CenterStageAutoShort extends CenterStageConfig {
 
     @Override
     public void init_loop() {
-        if (gamepad1.a) {
+        if (gamepad1.x) {
             team = BLUE;
         } else if (gamepad1.b) {
             team = RED;
@@ -41,13 +41,13 @@ public class CenterStageAutoShort extends CenterStageConfig {
 
         //Auto stuff here
         traj(forward(5));
-        if (team.equals(BLUE)) {
+        if (team.equals(RED)) {
             traj(right(32.5));
-            traj(forward(30));
+            traj(forward(45));
             traj(right(100));
-        } else if (team.equals(RED)) {
+        } else if (team.equals(BLUE)) {
             traj(left(32.5));
-            traj(forward(30));
+            traj(forward(45));
             traj(left(100));
         }
 

@@ -54,6 +54,7 @@ public class CenterStageConfig extends CenterStageObjectDetection {
     }
 
     public void initAuto() {
+        initDriveHardware();
         drive = new CenterStageMecanumDrive(hardwareMap);
     }
 
@@ -75,6 +76,18 @@ public class CenterStageConfig extends CenterStageObjectDetection {
 
     public Trajectory back(double distance) {
         return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
+    }
+
+    public void turnLeft(double seconds) {
+        leftFrontDrive.setPower(-1);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(-1);
+        rightBackDrive.setPower(0);
+        sleep((long) (seconds * 1000L));
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
     }
 
 }

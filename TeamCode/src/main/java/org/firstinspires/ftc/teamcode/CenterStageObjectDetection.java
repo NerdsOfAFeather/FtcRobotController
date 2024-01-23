@@ -35,7 +35,7 @@ import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
-//@Disabled
+@Disabled
 public class CenterStageObjectDetection extends OpMode {
 
     /**
@@ -60,7 +60,7 @@ public class CenterStageObjectDetection extends OpMode {
     @Override
     public void init() {
         //startAndEnableRobotVision();
-        initEOCV();
+        //initEOCV();
 
     }
 
@@ -98,7 +98,7 @@ public class CenterStageObjectDetection extends OpMode {
 
     @Override
     public void stop() {
-        closeAndDisableRobotVision();
+        //closeAndDisableRobotVision();
     }
 
     protected void startAndEnableRobotVision() {
