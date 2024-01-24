@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.old;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
@@ -7,10 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.CenterStageConfig;
+
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "CenterStageAutoLonger", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-//@Disabled
-public class CenterStageAutoLonger extends CenterStageConfig {
+@Autonomous(name = "OldCenterStageAutoLonger", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
+@Disabled
+public class OldCenterStageAutoLonger extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 

@@ -1,13 +1,17 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.old;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.CenterStageConfig;
+
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "CenterStageAutoShorter", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class CenterStageAutoShorter extends CenterStageConfig {
+@Autonomous(name = "OldCenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
+@Disabled
+public class OldCenterStageAuto extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -16,9 +20,13 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-        //initAuto();
+        initAuto();
+        //initEOCV();
 
         //startAndEnableRobotVision();
+
+        telemetry.addData("Status", "Ready to Run");
+        telemetry.update();
     }
 
     @Override
@@ -28,7 +36,6 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         } else if (gamepad1.b) {
             team = RED;
         }
-        telemetry.addData("Position", getPosition());
         telemetry.addData("Team", team.toString());
         telemetry.update();
     }
@@ -38,13 +45,13 @@ public class CenterStageAutoShorter extends CenterStageConfig {
         runtime.reset();
 
         //Auto stuff here
-
-        traj(forward(5));
+        traj(forward(65));
         if (team.equals(BLUE)) {
-            traj(right(80));
+            traj(left(150));
         } else if (team.equals(RED)) {
-            traj(left(80));
+            traj(right(150));
         }
+        traj(back(10));
 
         requestOpModeStop();
     }
@@ -55,6 +62,5 @@ public class CenterStageAutoShorter extends CenterStageConfig {
     @Override
     public void stop() {
         //closeAndDisableRobotVision();
-        //stopEOCV();
     }
 }
