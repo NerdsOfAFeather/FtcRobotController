@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /** Created by Gavin for FTC Team 6347 */
-public class CenterStageConfig extends CenterStageObjectDetection {
+public abstract class CenterStageConfig extends CenterStageObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
     public DcMotorEx leftBackDrive = null;

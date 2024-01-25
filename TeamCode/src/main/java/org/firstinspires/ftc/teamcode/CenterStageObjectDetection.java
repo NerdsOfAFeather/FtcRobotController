@@ -25,6 +25,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -36,7 +38,7 @@ import java.util.List;
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "CenterStageObjectDetection", group = "Concept")
 @Disabled
-public class CenterStageObjectDetection extends OpMode {
+public abstract class CenterStageObjectDetection extends OpMode {
 
     /**
      * The variable to store our instance of the AprilTag processor.
@@ -56,50 +58,7 @@ public class CenterStageObjectDetection extends OpMode {
     public static TeamColor team = TeamColor.UNSET;
     static int position;
 
-
-    @Override
-    public void init() {
-        //startAndEnableRobotVision();
-        //initEOCV();
-
-    }
-
-    @Override
-    public void init_loop() {
-        if (gamepad1.x) {
-            team = BLUE;
-        } else if (gamepad1.b) {
-            team = RED;
-        }
-        telemetry.addData("Team", team.toString());
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
-        telemetry.update();
-    }
-
-    @Override
-    public void loop() {
-        //telemetryAprilTag();
-        //telemetryTfod();
-        //telemetryEOCV();
-        telemetry.addData("Position", position);
-        telemetry.update();
-
-        // Save CPU resources; can resume streaming when needed.
-        if (gamepad1.dpad_down) {
-            visionPortal.stopStreaming();
-        } else if (gamepad1.dpad_up) {
-            visionPortal.resumeStreaming();
-        }
-
-        // Share the CPU.
-        sleep(20);
-    }
-
-    @Override
-    public void stop() {
-        //closeAndDisableRobotVision();
-    }
+    static CenterStagePipelineStage stage = CenterStagePipelineStage.FULL;
 
     protected void startAndEnableRobotVision() {
         initAprilTag();
@@ -116,7 +75,7 @@ public class CenterStageObjectDetection extends OpMode {
     }
 
     /**
-     * Initialize the webcam for use with EOC
+     * Initialize the webcam for use with EOCV
      */
     public void initEOCV(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -293,6 +252,10 @@ public class CenterStageObjectDetection extends OpMode {
         return position;
     }
 
+    public void setStage(CenterStagePipelineStage newStage){
+        stage = newStage;
+    }
+
     class CenterStagePipeline extends OpenCvPipeline {
 
 
@@ -319,6 +282,9 @@ public class CenterStageObjectDetection extends OpMode {
                 Core.inRange(right, new Scalar(0, 0, 128), new Scalar(65, 69, 255), filteredR);
             }
 
+            Imgproc.rectangle(input, lRect, new Scalar(255,0,0));
+            Imgproc.rectangle(input, rRect, new Scalar(0,0,255));
+
             int lPer = Core.countNonZero(filteredL);
             int rPer = Core.countNonZero(filteredR);
             lPer = lPer / totalPixels;
@@ -331,10 +297,21 @@ public class CenterStageObjectDetection extends OpMode {
                 position = 2;
             }
 
-            return input;
+            switch (stage){
+                case LEFT:
+                    return left;
+                case RIGHT:
+                    return right;
+                case FILTERED_LEFT:
+                    return filteredL;
+                case FILTERED_RIGHT:
+                    return filteredR;
+                case CENTER:
+                    return input.submat(0, input.rows(), input.cols()/3, (int) (input.cols()*(2f/3f)));
+                default:
+                    return input;
+            }
         }
-
-
 
         @Override
         public void onViewportTapped() {
@@ -360,13 +337,18 @@ public class CenterStageObjectDetection extends OpMode {
 
         @Override
         public void onOpened() {
-            webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
         }
 
         @Override
         public void onError(int errorCode) {
             RobotLog.setGlobalErrorMsg("Error in OpenCV Camera Opening. Error Code: " + errorCode);
         }
+    }
+
+    public enum CenterStagePipelineStage {
+
+        FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_RIGHT;
     }
 
 }
