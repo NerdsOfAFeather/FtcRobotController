@@ -56,6 +56,11 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RIGHT, UP)));
 

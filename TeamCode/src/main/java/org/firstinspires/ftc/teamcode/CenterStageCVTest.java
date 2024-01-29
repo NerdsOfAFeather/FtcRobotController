@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,9 +20,9 @@ public class CenterStageCVTest extends CenterStageConfig {
 
     @Override
     public void init_loop() {
-        telemetry.addData("Position", getPosition());
-        telemetry.addData("Bingus", "Bongus");
-        telemetry.update();
+        //telemetry.addData("Position", getPosition());
+        //telemetry.addData("Bingus", "Bongus");
+        //telemetry.update();
         if (gamepad1.dpad_left) {
             setStage(CenterStagePipelineStage.LEFT);
         } else if (gamepad1.dpad_right) {
@@ -28,10 +31,15 @@ public class CenterStageCVTest extends CenterStageConfig {
             setStage(CenterStagePipelineStage.CENTER);
         } else if (gamepad1.dpad_down) {
             setStage(CenterStagePipelineStage.FULL);
-        } else if (gamepad1.b) {
+        } else if (gamepad1.right_bumper) {
             setStage(CenterStagePipelineStage.FILTERED_RIGHT);
-        } else if (gamepad1.x) {
+        } else if (gamepad1.left_bumper) {
             setStage(CenterStagePipelineStage.FILTERED_LEFT);
+        }
+        if (gamepad1.x) {
+            team = BLUE;
+        } else if (gamepad1.b) {
+            team = RED;
         }
         
     }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**Created by Gavin for FTC Team 6347 */
 @Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
 public class CenterStageAuto extends CenterStageConfig {
-
+    static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -34,8 +35,23 @@ public class CenterStageAuto extends CenterStageConfig {
         } else if (gamepad1.b) {
             team = RED;
         }
+        if(team != UNSET){
+            if (gamepad1.y) {
+                delay++;
+                if (delay>30){
+                    delay=30;
+                }
+            } else if (gamepad1.a){
+                delay--;
+                if (delay<0){
+                    delay=0;
+                }
+            }
+        }
         telemetry.addData("Team", team.toString());
+        telemetry.addData("delay", delay);
         telemetry.update();
+
     }
 
     @Override

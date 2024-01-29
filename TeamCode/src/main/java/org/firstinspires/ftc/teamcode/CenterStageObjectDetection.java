@@ -36,8 +36,6 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name = "CenterStageObjectDetection", group = "Concept")
-@Disabled
 public abstract class CenterStageObjectDetection extends OpMode {
 
     /**
@@ -267,23 +265,32 @@ public abstract class CenterStageObjectDetection extends OpMode {
             Rect lRect = new Rect(point(0,0), point(input.cols()/3f, input.rows()));
             Rect rRect = new Rect(point(input.cols()*(2f/3f),0), point(input.cols(), input.rows()));
 
-            Mat left = input.submat(lRect);
-            Mat right = input.submat(rRect);
+            Mat converted = input.clone();
+            Imgproc.cvtColor(input, converted, Imgproc.COLOR_BGR2HSV);
+            Mat left = converted.submat(lRect);
+            Mat right = converted.submat(rRect);
+
+            double[] bgr = input.get(input.rows()/2, input.cols()/2);
+            double[] hsv = converted.get(converted.rows()/2, converted.cols()/2);
+            telemetry.addData("BGR", bgr[0] +", " + bgr[1] + ", " + bgr[2]);
+            telemetry.addData("HSV", hsv[0] + ", " + hsv[1] + ", " + hsv[2]);
+            telemetry.addData("Position", getPosition());
+            telemetry.update();
 
             Mat filteredL = new Mat();
             Mat filteredR = new Mat();
-            int totalPixels = input.rows() * input.cols();
+            int totalPixels = converted.rows() * converted.cols();
 
             if (team.equals(TeamColor.RED)) {
-                Core.inRange(left, new Scalar(128, 0, 0), new Scalar(255, 69, 65), filteredL);
-                Core.inRange(right, new Scalar(128, 0, 0), new Scalar(255, 69, 65), filteredR);
+                Core.inRange(left, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
+                Core.inRange(right, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredR);
             } else {
-                Core.inRange(left, new Scalar(0, 0, 128), new Scalar(65, 69, 255), filteredL);
-                Core.inRange(right, new Scalar(0, 0, 128), new Scalar(65, 69, 255), filteredR);
+                Core.inRange(left, new Scalar(0, 0, 0), new Scalar(30, 255, 255), filteredL);
+                Core.inRange(right, new Scalar(0, 0, 0), new Scalar(30, 255, 255), filteredR);
             }
 
-            Imgproc.rectangle(input, lRect, new Scalar(255,0,0));
-            Imgproc.rectangle(input, rRect, new Scalar(0,0,255));
+            Imgproc.rectangle(converted, lRect, new Scalar(255,0,0));
+            Imgproc.rectangle(converted, rRect, new Scalar(0,0,255));
 
             int lPer = Core.countNonZero(filteredL);
             int rPer = Core.countNonZero(filteredR);
@@ -307,9 +314,9 @@ public abstract class CenterStageObjectDetection extends OpMode {
                 case FILTERED_RIGHT:
                     return filteredR;
                 case CENTER:
-                    return input.submat(0, input.rows(), input.cols()/3, (int) (input.cols()*(2f/3f)));
+                    return converted.submat(0, converted.rows(), converted.cols()/3, (int) (converted.cols()*(2f/3f)));
                 default:
-                    return input;
+                    return converted;
             }
         }
 
