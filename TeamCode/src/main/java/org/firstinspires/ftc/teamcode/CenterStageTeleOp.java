@@ -12,8 +12,8 @@ public class CenterStageTeleOp extends CenterStageConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    double clawLPos = 0;
-    double clawRPos = 0;
+    double clawLPos = 0.5;
+    double clawRPos = 0.5;
     double clawLtime = 0;
     double clawRtime = 0;
     boolean servoLOpen = false;
@@ -29,8 +29,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
     @Override
     public void start() {
         runtime.reset();
-        clawLPos = 0.0;
-        clawRPos = 1.0;
     }
 
     @Override
@@ -92,20 +90,20 @@ public class CenterStageTeleOp extends CenterStageConfig {
 
         if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawLtime > 500) {
             if (servoLOpen) {
-                clawLPos = 0.0; // Close
+                clawLPos = 0.5; // Close
                 servoLOpen = false;
             } else {
-                clawLPos = 0.5;
+                clawLPos = 1.0;
                 servoLOpen = true;
             }
             clawLtime = runtime.milliseconds();
         }
         if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawRtime > 500) {
             if (servoROpen) {
-                clawRPos = 1.0; // Close
+                clawRPos = 0.5; // Close
                 servoROpen = false;
             } else {
-                clawRPos = 0.5;
+                clawRPos = 0.0;
                 servoROpen = true;
             }
             clawRtime = runtime.milliseconds();
@@ -119,7 +117,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
             wristPower = 0;
         }
 
-        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
+        if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
             intakePower = Math.pow(-gamepad2.left_stick_y, 2);
             if (gamepad2.left_stick_y < 0) {
                 intakePower = -intakePower;
@@ -128,7 +126,7 @@ public class CenterStageTeleOp extends CenterStageConfig {
             intakePower = 0;
         }
 
-        if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
+        if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
             intakePower2 = Math.pow(gamepad2.right_stick_y*.6, 2);
             if (gamepad2.right_stick_y < 0) {
                 intakePower2 = -intakePower2;
@@ -183,6 +181,8 @@ public class CenterStageTeleOp extends CenterStageConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
+        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
         telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
