@@ -1,14 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED;
-
 import android.annotation.SuppressLint;
 import android.util.Size;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -25,7 +20,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -263,60 +257,64 @@ public abstract class CenterStageObjectDetection extends OpMode {
         @Override
         public Mat processFrame(Mat input) {
             Rect lRect = new Rect(point(0,0), point(input.cols()/3f, input.rows()));
-            Rect rRect = new Rect(point(input.cols()*(2f/3f),0), point(input.cols(), input.rows()));
+            Rect cRect = new Rect(point(input.cols()*(3f/6f),0), point(input.cols()*(5f/6f), input.rows()));
 
             Mat converted = input.clone();
             Imgproc.cvtColor(input, converted, Imgproc.COLOR_BGR2HSV);
             Mat left = converted.submat(lRect);
-            Mat right = converted.submat(rRect);
+            Mat center = converted.submat(cRect);
 
             double[] bgr = input.get(input.rows()/2, input.cols()/2);
             double[] hsv = converted.get(converted.rows()/2, converted.cols()/2);
-            telemetry.addData("BGR", bgr[0] +", " + bgr[1] + ", " + bgr[2]);
-            telemetry.addData("HSV", hsv[0] + ", " + hsv[1] + ", " + hsv[2]);
-            telemetry.addData("Position", getPosition());
-            telemetry.update();
+
 
             Mat filteredL = new Mat();
-            Mat filteredR = new Mat();
-            int totalPixels = converted.rows() * converted.cols();
+            Mat filteredC = new Mat();
 
             if (team.equals(TeamColor.RED)) {
                 Core.inRange(left, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
-                Core.inRange(right, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredR);
+                Core.inRange(center, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
             } else {
-                Core.inRange(left, new Scalar(0, 0, 0), new Scalar(30, 255, 255), filteredL);
-                Core.inRange(right, new Scalar(0, 0, 0), new Scalar(30, 255, 255), filteredR);
+                Core.inRange(left, new Scalar(10, 0, 0), new Scalar(30, 255, 255), filteredL);
+                Core.inRange(center, new Scalar(10, 0, 0), new Scalar(30, 255, 255), filteredC);
             }
+
+            int cThreshold = team == TeamColor.BLUE ? 5000 : 4000;
 
             Imgproc.rectangle(converted, lRect, new Scalar(255,0,0));
-            Imgproc.rectangle(converted, rRect, new Scalar(0,0,255));
+            Imgproc.rectangle(converted, cRect, new Scalar(0,0,255));
 
             int lPer = Core.countNonZero(filteredL);
-            int rPer = Core.countNonZero(filteredR);
-            lPer = lPer / totalPixels;
-            rPer = rPer / totalPixels;
-            if (lPer >= 0.5f) {
+            int cPer = Core.countNonZero(filteredC);
+            if (lPer >= 3000) {
                 position = 1;
-            } else if (rPer >= 0.5f) {
-                position = 3;
-            } else {
+            } else if (cPer >= cThreshold) {
                 position = 2;
+            } else {
+                position = 3;
             }
+
+            telemetry.addData("lPer", Core.countNonZero(filteredL));
+            telemetry.addData("cPer", Core.countNonZero(filteredC));
+            telemetry.addData("BGR", bgr[0] +", " + bgr[1] + ", " + bgr[2]);
+            telemetry.addData("HSV", hsv[0] + ", " + hsv[1] + ", " + hsv[2]);
+            telemetry.addData("Position", getPosition());
+            telemetry.addData("Stage", stage);
+            telemetry.update();
 
             switch (stage){
                 case LEFT:
                     return left;
                 case RIGHT:
-                    return right;
+                    return center;
                 case FILTERED_LEFT:
                     return filteredL;
-                case FILTERED_RIGHT:
-                    return filteredR;
+                case FILTERED_CENTER:
+                    return filteredC;
                 case CENTER:
-                    return converted.submat(0, converted.rows(), converted.cols()/3, (int) (converted.cols()*(2f/3f)));
+                    return input.submat(0, input.rows(), input.cols()/3, (int) (input.cols()*(2f/3f)));
                 default:
-                    return converted;
+                    return input;
             }
         }
 
@@ -355,7 +353,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
     public enum CenterStagePipelineStage {
 
-        FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_RIGHT;
+        FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_CENTER;
     }
 
 }
