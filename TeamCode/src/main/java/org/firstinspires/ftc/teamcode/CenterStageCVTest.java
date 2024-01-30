@@ -32,7 +32,7 @@ public class CenterStageCVTest extends CenterStageConfig {
         } else if (gamepad1.dpad_down) {
             setStage(CenterStagePipelineStage.FULL);
         } else if (gamepad1.right_bumper) {
-            setStage(CenterStagePipelineStage.FILTERED_RIGHT);
+            setStage(CenterStagePipelineStage.FILTERED_CENTER);
         } else if (gamepad1.left_bumper) {
             setStage(CenterStagePipelineStage.FILTERED_LEFT);
         }

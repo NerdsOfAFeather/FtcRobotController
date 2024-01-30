@@ -58,6 +58,8 @@ public class CenterStageAuto extends CenterStageConfig {
     public void start() {
         runtime.reset();
 
+        int pos = getPosition();
+
         //Auto stuff here
         if (team.equals(BLUE)) {
 
