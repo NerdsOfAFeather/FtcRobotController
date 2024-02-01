@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
 /** Created by Gavin for FTC Team 6347 */
 public abstract class CenterStageConfig extends CenterStageObjectDetection {
 
@@ -26,7 +29,12 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     public Servo clawServoR = null;
     public CRServo wristServo = null;
     public CenterStageMecanumDrive drive;
-    public IMU imu;
+    IMU imu;
+
+    private static final double TURN_SPEED = 0.5;
+    private static final int ARM_GROUND = 560;
+    private static final int ARM_BACKDROP = 240;
+
 
     public void initDriveHardware() {
 
@@ -61,13 +69,57 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+    }
+
+    public void initIMU() {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RIGHT, UP)));
+    }
 
+    public void resetYaw() {
+        imu.resetYaw();
+    }
+
+    public void turnTo(double angle) {
+        double rawYawAngle = getRawAngles().getYaw(AngleUnit.DEGREES);
+        double difference = angle - rawYawAngle;
+
+        if (difference > 0) {
+            leftFrontDrive.setPower(TURN_SPEED);
+            leftBackDrive.setPower(TURN_SPEED);
+            rightFrontDrive.setPower(-TURN_SPEED);
+            rightBackDrive.setPower(-TURN_SPEED);
+            while (getRawAngles().getYaw(AngleUnit.DEGREES) < angle) {
+                sleep(10);
+            }
+            leftFrontDrive.setPower(0);
+            leftBackDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            rightBackDrive.setPower(0);
+        } else if (difference < 0) {
+            leftFrontDrive.setPower(-TURN_SPEED);
+            leftBackDrive.setPower(-TURN_SPEED);
+            rightFrontDrive.setPower(TURN_SPEED);
+            rightBackDrive.setPower(TURN_SPEED);
+            while (getRawAngles().getYaw(AngleUnit.DEGREES) > angle) {
+                sleep(10);
+            }
+            leftFrontDrive.setPower(0);
+            leftBackDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            rightBackDrive.setPower(0);
+        }
+        sleep(250);
+    }
+
+    public YawPitchRollAngles getRawAngles() {
+        return imu.getRobotYawPitchRollAngles();
     }
 
     public void initAuto() {
         initDriveHardware();
+        initIMU();
         drive = new CenterStageMecanumDrive(hardwareMap);
     }
 
@@ -102,5 +154,45 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+
+    public void moveArmToGround() {
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor2.setPower(0.5);
+        intakeMotor2.setTargetPosition(ARM_GROUND);
+        while (intakeMotor2.isBusy()) {
+            sleep(10);
+        }
+        intakeMotor2.setPower(0.0);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void moveArmToClosed() {
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor2.setPower(0.5);
+        intakeMotor2.setTargetPosition(0);
+        while (intakeMotor2.isBusy()) {
+            sleep(10);
+        }
+        intakeMotor2.setPower(0.0);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void closeClawL() {
+        clawServoL.setPosition(0.5);
+    }
+
+    public void closeClawR() {
+        clawServoR.setPosition(0.5);
+    }
+
+    public void openClawL() {
+        clawServoL.setPosition(1.0);
+    }
+
+    public void openClawR() {
+        clawServoL.setPosition(0.0);
+    }
+
+
 
 }

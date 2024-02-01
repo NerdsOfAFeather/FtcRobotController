@@ -35,6 +35,7 @@ public class CenterStageAuto extends CenterStageConfig {
         } else if (gamepad1.b) {
             team = RED;
         }
+        telemetry.addData("Team", team.toString());
         if(team != UNSET){
             if (gamepad1.y) {
                 delay++;
@@ -47,9 +48,8 @@ public class CenterStageAuto extends CenterStageConfig {
                     delay=0;
                 }
             }
+            telemetry.addData("Delay", delay);
         }
-        telemetry.addData("Team", team.toString());
-        telemetry.addData("delay", delay);
         telemetry.update();
 
     }
@@ -60,13 +60,95 @@ public class CenterStageAuto extends CenterStageConfig {
 
         int pos = getPosition();
 
+        traj(forward(10));
         //Auto stuff here
         if (team.equals(BLUE)) {
-
+            if (pos == 1) {
+                turnTo(-40);
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                turnTo(0);
+                traj(back(5));
+                traj(left(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(left(100));
+            } else if (pos == 2) {
+                traj(forward(10));
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                traj(back(15));
+                traj(left(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(left(100));
+            } else if (pos == 3) {
+                turnTo(40);
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                turnTo(0);
+                traj(back(5));
+                traj(left(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(left(100));
+            }
         } else if (team.equals(RED)) {
-
+            if (pos == 1) {
+                turnTo(-40);
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                turnTo(0);
+                traj(back(5));
+                traj(right(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(right(100));
+            } else if (pos == 2) {
+                traj(forward(10));
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                traj(back(15));
+                traj(right(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(right(100));
+            } else if (pos == 3) {
+                turnTo(40);
+                moveArmToGround();
+                openClawL();
+                sleep(250);
+                closeClawL();
+                moveArmToClosed();
+                turnTo(0);
+                traj(back(5));
+                traj(right(32.5));
+                traj(forward(20));
+                sleep(delay*1000L);
+                traj(forward(25));
+                traj(right(100));
+            }
         }
-
         requestOpModeStop();
     }
 
