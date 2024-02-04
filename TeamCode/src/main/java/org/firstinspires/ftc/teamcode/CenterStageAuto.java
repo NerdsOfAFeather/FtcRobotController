@@ -14,6 +14,8 @@ public class CenterStageAuto extends CenterStageConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 
+    double delayTime = 0;
+
     @Override
     public void init() {
         telemetry.addData("Status", "Initializing...");
@@ -21,6 +23,8 @@ public class CenterStageAuto extends CenterStageConfig {
 
         initAuto();
         initEOCV();
+        closeClawL();
+        closeClawR();
 
         //startAndEnableRobotVision();
 
@@ -37,19 +41,22 @@ public class CenterStageAuto extends CenterStageConfig {
         }
         telemetry.addData("Team", team.toString());
         if(team != UNSET){
-            if (gamepad1.y) {
+            if (gamepad1.y && runtime.milliseconds() - delayTime > 500) {
                 delay++;
+                delayTime = runtime.milliseconds();
                 if (delay>30){
                     delay=30;
                 }
-            } else if (gamepad1.a){
+            } else if (gamepad1.a && runtime.milliseconds() - delayTime > 500){
                 delay--;
+                delayTime = runtime.milliseconds();
                 if (delay<0){
                     delay=0;
                 }
             }
             telemetry.addData("Delay", delay);
         }
+        telemetry.addData("Position", getPosition());
         telemetry.update();
 
     }
@@ -57,95 +64,120 @@ public class CenterStageAuto extends CenterStageConfig {
     @Override
     public void start() {
         runtime.reset();
+        resetYaw();
 
         int pos = getPosition();
+        stopEOCV();
 
         traj(forward(10));
         //Auto stuff here
         if (team.equals(BLUE)) {
             if (pos == 1) {
-                turnTo(-40);
                 moveArmToGround();
+                traj(forward(5));
+                drive.turn(0.75);
                 openClawL();
-                sleep(250);
+                sleep(1000);
+                traj(back(10));
+                drive.turn(-0.75);
                 closeClawL();
                 moveArmToClosed();
-                turnTo(0);
-                traj(back(5));
-                traj(left(32.5));
-                traj(forward(20));
+                traj(left(42.5));
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(0.1);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.35);
                 traj(left(100));
             } else if (pos == 2) {
-                traj(forward(10));
                 moveArmToGround();
+                traj(forward(15));
                 openClawL();
                 sleep(250);
-                closeClawL();
                 moveArmToClosed();
+                closeClawL();
                 traj(back(15));
-                traj(left(32.5));
-                traj(forward(20));
+                traj(left(42.5));
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(0.1);
+                traj(forward(35));
+                moveIntakeMotorUp(0.5);
                 traj(left(100));
             } else if (pos == 3) {
-                turnTo(40);
+                drive.turn(-0.5);
                 moveArmToGround();
                 openClawL();
-                sleep(250);
-                closeClawL();
+                traj(forward(5));
+                sleep(500);
                 moveArmToClosed();
-                turnTo(0);
+                closeClawL();
+                drive.turn(0.5);
                 traj(back(5));
-                traj(left(32.5));
-                traj(forward(20));
+                traj(left(42.5));
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(-0.25);
+                traj(forward(35));
+                moveIntakeMotorUp(0.5);
+                drive.turn(-0.15);
                 traj(left(100));
             }
         } else if (team.equals(RED)) {
             if (pos == 1) {
-                turnTo(-40);
+                drive.turn(0.5);
                 moveArmToGround();
                 openClawL();
-                sleep(250);
-                closeClawL();
+                traj(forward(5));
+                sleep(500);
                 moveArmToClosed();
-                turnTo(0);
+                closeClawL();
+                drive.turn(-0.5);
                 traj(back(5));
-                traj(right(32.5));
-                traj(forward(20));
+                traj(right(42.5));
+                drive.turn(0.25);
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(0.25);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.15);
                 traj(right(100));
             } else if (pos == 2) {
-                traj(forward(10));
                 moveArmToGround();
+                traj(forward(15));
                 openClawL();
                 sleep(250);
-                closeClawL();
                 moveArmToClosed();
+                closeClawL();
                 traj(back(15));
-                traj(right(32.5));
-                traj(forward(20));
+                traj(right(42.5));
+                drive.turn(0.25);
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(0.25);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
                 traj(right(100));
             } else if (pos == 3) {
-                turnTo(40);
                 moveArmToGround();
+                traj(forward(5));
+                drive.turn(-0.75);
                 openClawL();
-                sleep(250);
+                sleep(1000);
+                traj(back(5));
+                drive.turn(0.75);
                 closeClawL();
                 moveArmToClosed();
-                turnTo(0);
-                traj(back(5));
-                traj(right(32.5));
-                traj(forward(20));
+                traj(right(42.5));
+                drive.turn(0.25);
+                traj(forward(30));
                 sleep(delay*1000L);
-                traj(forward(25));
+                drive.turn(0.1);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.35);
                 traj(right(100));
             }
         }
@@ -158,5 +190,7 @@ public class CenterStageAuto extends CenterStageConfig {
     @Override
     public void stop() {
         //closeAndDisableRobotVision();
+        Thread.currentThread().interrupt();
+        super.stop();
     }
 }

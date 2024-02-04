@@ -53,7 +53,7 @@ public class OldCenterStageAutoLonger extends CenterStageConfig {
         traj(forward(5));
         if (team.equals(BLUE)) {
             traj(left(50));
-            turnLeft(.5);
+            //turnLeft(.5);
             traj(right(10));
             intakeMotor2.setPower(0.5);
             try {
