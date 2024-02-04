@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -41,7 +42,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         double intakePower;
         double intakePower2;
         double liftPower;
-        double wristPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -109,14 +109,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
             clawRtime = runtime.milliseconds();
         }
 
-        if (gamepad2.dpad_up) {
-            wristPower = 1;
-        } else if (gamepad2.dpad_down) {
-            wristPower = -1;
-        } else {
-            wristPower = 0;
-        }
-
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
             intakePower = Math.pow(-gamepad2.left_stick_y, 2);
             if (gamepad2.left_stick_y < 0) {
@@ -127,12 +119,41 @@ public class CenterStageTeleOp extends CenterStageConfig {
         }
 
         if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             intakePower2 = Math.pow(gamepad2.right_stick_y*.6, 2);
             if (gamepad2.right_stick_y < 0) {
                 intakePower2 = -intakePower2;
             }
-        } else {
+        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
             intakePower2 = 0;
+        } else {
+            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
+                intakePower2 = 0.25;
+                if (intakeMotor2.getCurrentPosition() > 20) {
+                    intakePower2 = 0.1;
+                }
+            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
+                intakePower2 = 0.25;
+                if (intakeMotor2.getCurrentPosition() > 10) {
+                    intakePower2 = 0.1;
+                }
+            } else {
+                intakePower2 = 0.25;
+            }
+        }
+
+        if (gamepad2.dpad_up) {
+            intakeMotor2.setTargetPosition(0);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else if (gamepad2.dpad_down) {
+            intakeMotor2.setTargetPosition(ARM_GROUND);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else if (gamepad2.dpad_left) {
+            intakeMotor2.setTargetPosition(ARM_BACKDROP);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         if (gamepad2.right_bumper) {
@@ -169,7 +190,6 @@ public class CenterStageTeleOp extends CenterStageConfig {
         liftMotor.setPower(liftPower);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
-        wristServo.setPower(wristPower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);

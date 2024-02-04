@@ -256,8 +256,8 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
         @Override
         public Mat processFrame(Mat input) {
-            Rect lRect = new Rect(point(0,0), point(input.cols()/3f, input.rows()));
-            Rect cRect = new Rect(point(input.cols()*(3f/6f),0), point(input.cols()*(5f/6f), input.rows()));
+            Rect lRect = new Rect(point(0,input.rows()/2f), point(input.cols()/3f, input.rows()));
+            Rect cRect = new Rect(point(input.cols()*(3f/6f),input.rows()/2f), point(input.cols()*(5f/6f), input.rows()));
 
             Mat converted = input.clone();
             Imgproc.cvtColor(input, converted, Imgproc.COLOR_BGR2HSV);
@@ -275,27 +275,29 @@ public abstract class CenterStageObjectDetection extends OpMode {
                 Core.inRange(left, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
                 Core.inRange(center, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
             } else {
-                Core.inRange(left, new Scalar(10, 0, 0), new Scalar(30, 255, 255), filteredL);
-                Core.inRange(center, new Scalar(10, 0, 0), new Scalar(30, 255, 255), filteredC);
+                Core.inRange(left, new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredL);
+                Core.inRange(center, new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredC);
             }
-
-            int cThreshold = team == TeamColor.BLUE ? 5000 : 4000;
 
             Imgproc.rectangle(converted, lRect, new Scalar(255,0,0));
             Imgproc.rectangle(converted, cRect, new Scalar(0,0,255));
 
-            int lPer = Core.countNonZero(filteredL);
-            int cPer = Core.countNonZero(filteredC);
-            if (lPer >= 3000) {
-                position = 1;
-            } else if (cPer >= cThreshold) {
+            float totalPixels = (input.cols()/3f) * (input.rows()/2f);
+            float lPer = Core.countNonZero(filteredL);
+            float cPer = Core.countNonZero(filteredC);
+            lPer = lPer/totalPixels;
+            cPer = cPer/totalPixels;
+            if (cPer >= 0.1) {
                 position = 2;
+            } else if (lPer >= 0.1) {
+                position = 1;
             } else {
                 position = 3;
             }
 
-            telemetry.addData("lPer", Core.countNonZero(filteredL));
-            telemetry.addData("cPer", Core.countNonZero(filteredC));
+            telemetry.addData("lPer", lPer);
+            telemetry.addData("cPer", cPer);
+            telemetry.addData("totalPixels", totalPixels);
             telemetry.addData("BGR", bgr[0] +", " + bgr[1] + ", " + bgr[2]);
             telemetry.addData("HSV", hsv[0] + ", " + hsv[1] + ", " + hsv[2]);
             telemetry.addData("Position", getPosition());

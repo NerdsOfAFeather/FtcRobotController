@@ -32,8 +32,8 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
-    private static final int ARM_GROUND = 560;
-    private static final int ARM_BACKDROP = 240;
+    protected static final int ARM_GROUND = 560;
+    protected static final int ARM_BACKDROP = 245;
 
 
     public void initDriveHardware() {
@@ -47,7 +47,6 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         liftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
-        wristServo = hardwareMap.get(CRServo.class, "WristServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
@@ -81,36 +80,84 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         imu.resetYaw();
     }
 
+    public void turnLeft(double degrees){
+        resetYaw();
+        leftFrontDrive.setPower(-TURN_SPEED);
+        leftBackDrive.setPower(-TURN_SPEED);
+        rightFrontDrive.setPower(TURN_SPEED);
+        rightBackDrive.setPower(TURN_SPEED);
+        while (Math.abs(getRawAngles().getYaw(AngleUnit.DEGREES)) < degrees){
+            sleep(10);
+            telemetry.addData("Running To", degrees);
+            telemetry.addData("Current Angle", getRawAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.update();
+        }
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void turnRight(double degrees){
+        resetYaw();
+        leftFrontDrive.setPower(TURN_SPEED);
+        leftBackDrive.setPower(TURN_SPEED);
+        rightFrontDrive.setPower(-TURN_SPEED);
+        rightBackDrive.setPower(-TURN_SPEED);
+        while (Math.abs(getRawAngles().getYaw(AngleUnit.DEGREES)) < degrees){
+            sleep(10);
+            telemetry.addData("Running To", degrees);
+            telemetry.addData("Current Angle", getRawAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.update();
+        }
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
     public void turnTo(double angle) {
         double rawYawAngle = getRawAngles().getYaw(AngleUnit.DEGREES);
         double difference = angle - rawYawAngle;
 
-        if (difference > 0) {
+        if (difference < 0) {
             leftFrontDrive.setPower(TURN_SPEED);
             leftBackDrive.setPower(TURN_SPEED);
             rightFrontDrive.setPower(-TURN_SPEED);
             rightBackDrive.setPower(-TURN_SPEED);
             while (getRawAngles().getYaw(AngleUnit.DEGREES) < angle) {
                 sleep(10);
+                telemetry.addData("Running To", angle);
+                telemetry.addData("Current Angle", getRawAngles().getYaw(AngleUnit.DEGREES));
+                telemetry.update();
             }
             leftFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
             rightFrontDrive.setPower(0);
             rightBackDrive.setPower(0);
-        } else if (difference < 0) {
+        } else if (difference > 0) {
             leftFrontDrive.setPower(-TURN_SPEED);
             leftBackDrive.setPower(-TURN_SPEED);
             rightFrontDrive.setPower(TURN_SPEED);
             rightBackDrive.setPower(TURN_SPEED);
             while (getRawAngles().getYaw(AngleUnit.DEGREES) > angle) {
                 sleep(10);
-            }
+                telemetry.addData("Running To", angle);
+                telemetry.addData("Current Angle", getRawAngles().getYaw(AngleUnit.DEGREES));
+                telemetry.update();
+             }
             leftFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
             rightFrontDrive.setPower(0);
             rightBackDrive.setPower(0);
         }
         sleep(250);
+    }
+
+    public void moveIntakeMotorUp(double seconds) {
+        intakeMotor.setPower(-0.5);
+        sleep((long) (seconds * 1000L));
+        intakeMotor.setPower(0);
     }
 
     public YawPitchRollAngles getRawAngles() {
@@ -143,22 +190,10 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
     }
 
-    public void turnLeft(double seconds) {
-        leftFrontDrive.setPower(-1);
-        rightFrontDrive.setPower(0);
-        leftBackDrive.setPower(-1);
-        rightBackDrive.setPower(0);
-        sleep((long) (seconds * 1000L));
-        leftFrontDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        leftBackDrive.setPower(0);
-        rightBackDrive.setPower(0);
-    }
-
     public void moveArmToGround() {
-        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeMotor2.setPower(0.5);
         intakeMotor2.setTargetPosition(ARM_GROUND);
+        intakeMotor2.setPower(0.25);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (intakeMotor2.isBusy()) {
             sleep(10);
         }
@@ -167,9 +202,9 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     }
 
     public void moveArmToClosed() {
-        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeMotor2.setPower(0.5);
         intakeMotor2.setTargetPosition(0);
+        intakeMotor2.setPower(0.25);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (intakeMotor2.isBusy()) {
             sleep(10);
         }
