@@ -27,13 +27,12 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     public DcMotor liftMotor = null;
     public Servo clawServoL = null;
     public Servo clawServoR = null;
-    public CRServo wristServo = null;
     public CenterStageMecanumDrive drive;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
-    private static final int ARM_GROUND = 560;
-    private static final int ARM_BACKDROP = 245;
+    protected static final int ARM_GROUND = 560;
+    protected static final int ARM_BACKDROP = 260;
 
 
     public void initDriveHardware() {
@@ -47,7 +46,6 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         liftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
         clawServoL = hardwareMap.get(Servo.class, "ClawServoL");
         clawServoR = hardwareMap.get(Servo.class, "ClawServoR");
-        wristServo = hardwareMap.get(CRServo.class, "WristServo");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
