@@ -191,6 +191,11 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
         clawServoL.setPosition(0.0);
     }
 
+    public void moveIntakeMotorUp(double seconds) {
+        intakeMotor.setPower(-0.5);
+        sleep((long) (seconds * 1000L));
+        intakeMotor.setPower(0);
+    }
 
 
 }

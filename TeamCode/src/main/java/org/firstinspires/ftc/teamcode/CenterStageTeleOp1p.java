@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
@@ -10,14 +11,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CenterStageTeleOp1p extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
-
     double axial;
     double lateral;
     double yaw;
     boolean slowMode;
-    double flipperPos;
-    double clawLPos = 0;
+    double clawLPos = 0.5;
     double clawRPos = 0.5;
+    double clawLtime = 0;
+    double clawRtime = 0;
+    boolean servoLOpen = false;
+    boolean servoROpen = false;
 
     @Override
     public void init() {
@@ -29,9 +32,6 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
     @Override
     public void start() {
         runtime.reset();
-        clawLPos = 0.5;
-        clawRPos = 0.5;
-        flipperPos = 0.85;
     }
 
     @Override
@@ -43,6 +43,7 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         double rightBackPower;
         double intakePower;
         double intakePower2;
+        double liftPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -89,28 +90,79 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.right_trigger >= 0.3) {
-            clawLPos = 1.0;
-            clawRPos = 0.0;
-        } else if (gamepad1.left_trigger >= 0.3) {
-            clawLPos = 0.5;
-            clawRPos = 0.5;
+        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawLtime > 500) {
+            if (servoLOpen) {
+                clawLPos = 0.5; // Close
+                servoLOpen = false;
+            } else {
+                clawLPos = 1.0;
+                servoLOpen = true;
+            }
+            clawLtime = runtime.milliseconds();
         }
-
-        if (gamepad1.dpad_up) {
-            intakePower = 1;
-        } else if (gamepad1.dpad_down) {
-            intakePower = -1;
-        } else {
-            intakePower = 0;
+        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawRtime > 500) {
+            if (servoROpen) {
+                clawRPos = 0.5; // Close
+                servoROpen = false;
+            } else {
+                clawRPos = 0.0;
+                servoROpen = true;
+            }
+            clawRtime = runtime.milliseconds();
         }
 
         if (gamepad1.y) {
-            intakePower2 = 1;
+            intakePower = 0.25;
         } else if (gamepad1.a) {
-            intakePower2 = -1;
+            intakePower = -0.25;
         } else {
+            intakePower = 0.0;
+        }
+
+        if (gamepad1.b) {
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            intakePower2 = 0.25;
+        } else if (gamepad1.x) {
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            intakePower2 = -0.25;
+        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
             intakePower2 = 0;
+        } else {
+            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
+                intakePower2 = 0.25;
+                if (intakeMotor2.getCurrentPosition() > 20) {
+                    intakePower2 = 0.1;
+                }
+            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
+                intakePower2 = 0.25;
+                if (intakeMotor2.getCurrentPosition() > 10) {
+                    intakePower2 = 0.1;
+                }
+            } else {
+                intakePower2 = 0.25;
+            }
+        }
+
+        if (gamepad1.dpad_up) {
+            intakeMotor2.setTargetPosition(0);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else if (gamepad1.dpad_down) {
+            intakeMotor2.setTargetPosition(ARM_GROUND);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else if (gamepad1.dpad_left) {
+            intakeMotor2.setTargetPosition(ARM_BACKDROP);
+            intakePower2 = 0.25;
+            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+        if (gamepad1.dpad_right) {
+            liftPower = 1;
+        } else if (gamepad1.back) {
+            liftPower = -1;
+        } else {
+            liftPower = 0;
         }
 
         // This is test code:
@@ -136,6 +188,7 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         rightBackDrive.setPower(rightBackPower);
         intakeMotor.setPower(intakePower);
         intakeMotor2.setPower(intakePower2);
+        liftMotor.setPower(liftPower);
         clawServoL.setPosition(clawLPos);
         clawServoR.setPosition(clawRPos);
 
@@ -149,6 +202,9 @@ public class CenterStageTeleOp1p extends CenterStageConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
+        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
+        telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
