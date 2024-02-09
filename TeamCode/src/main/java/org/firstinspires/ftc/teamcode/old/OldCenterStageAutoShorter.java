@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.old;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,9 +28,9 @@ public class OldCenterStageAutoShorter extends CenterStageConfig {
     @Override
     public void init_loop() {
         if (gamepad1.x) {
-            team = BLUE;
+            team = BLUE_LONG;
         } else if (gamepad1.b) {
-            team = RED;
+            team = RED_LONG;
         }
         telemetry.addData("Position", getPosition());
         telemetry.addData("Team", team.toString());
@@ -44,9 +44,9 @@ public class OldCenterStageAutoShorter extends CenterStageConfig {
         //Auto stuff here
 
         traj(forward(5));
-        if (team.equals(BLUE)) {
+        if (team.equals(BLUE_LONG)) {
             traj(right(80));
-        } else if (team.equals(RED)) {
+        } else if (team.equals(RED_LONG)) {
             traj(left(80));
         }
 

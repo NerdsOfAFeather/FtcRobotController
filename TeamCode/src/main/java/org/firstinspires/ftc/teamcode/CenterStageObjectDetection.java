@@ -79,6 +79,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
         webcam.setMillisecondsPermissionTimeout(5000);
         webcam.openCameraDeviceAsync(new CenterStageCameraOpener());
+        position = 0;
     }
 
     public void stopEOCV() {
@@ -256,40 +257,46 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
         @Override
         public Mat processFrame(Mat input) {
-            Rect lRect = new Rect(point(0,input.rows()/2f), point(input.cols()/3f, input.rows()));
-            Rect cRect = new Rect(point(input.cols()*(3f/6f),input.rows()/2f), point(input.cols()*(5f/6f), input.rows()));
+            Rect lrlRect = new Rect(point(input.cols()/6f,input.rows()*(2f/3f)), point(input.cols()/2f, input.rows()));
+            Rect lrcRect = new Rect(point(input.cols()*(2f/3f),input.rows()*(2f/3f)), point(input.cols(), input.rows()));
+            Rect lblRect = new Rect(point(0, input.rows()*(2f/3f)), point(input.cols()/4f, input.rows()));
+            Rect lbcRect = new Rect(point(input.cols()/3f, input.rows()*(2f/3f)), point(input.cols()*(2f/3f), input.rows()));
+            Rect srlRect = new Rect(point(0, input.rows()*(2f/3f)), point(input.cols()/4f, input.rows()));
+            Rect srcRect = new Rect(point(input.cols()/3f, input.rows()*(2f/3f)), point(input.cols()*(2f/3f), input.rows()));
+            Rect sblRect = new Rect(point(input.cols()/6f,input.rows()*(2f/3f)), point(input.cols()/2f, input.rows()));
+            Rect sbcRect = new Rect(point(input.cols()*(2f/3f),input.rows()*(2f/3f)), point(input.cols(), input.rows()));
 
-            Mat converted = input.clone();
-            Imgproc.cvtColor(input, converted, Imgproc.COLOR_BGR2HSV);
-            Mat left = converted.submat(lRect);
-            Mat center = converted.submat(cRect);
+            Imgproc.cvtColor(input, input, Imgproc.COLOR_BGR2HSV);
 
             double[] bgr = input.get(input.rows()/2, input.cols()/2);
-            double[] hsv = converted.get(converted.rows()/2, converted.cols()/2);
-
+            double[] hsv = input.get(input.rows()/2, input.cols()/2);
 
             Mat filteredL = new Mat();
             Mat filteredC = new Mat();
 
-            if (team.equals(TeamColor.RED)) {
-                Core.inRange(left, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
-                Core.inRange(center, new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
+            if (team.equals(TeamColor.RED_LONG)) {
+                Core.inRange(input.submat(lrlRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
+                Core.inRange(input.submat(lrcRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
+            } else if (team.equals(TeamColor.BLUE_LONG)) {
+                Core.inRange(input.submat(lblRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredL);
+                Core.inRange(input.submat(lbcRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredC);
+            } else if (team.equals(TeamColor.RED_SHORT)) {
+                Core.inRange(input.submat(srlRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL);
+                Core.inRange(input.submat(srcRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
             } else {
-                Core.inRange(left, new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredL);
-                Core.inRange(center, new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredC);
+                Core.inRange(input.submat(sblRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredL);
+                Core.inRange(input.submat(sbcRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredC);
             }
 
-            Imgproc.rectangle(converted, lRect, new Scalar(255,0,0));
-            Imgproc.rectangle(converted, cRect, new Scalar(0,0,255));
-
-            float totalPixels = (input.cols()/3f) * (input.rows()/2f);
+            float totalPixels = (input.cols()/3f) * (input.rows()/3f);
             float lPer = Core.countNonZero(filteredL);
             float cPer = Core.countNonZero(filteredC);
+            double lLimit = team == TeamColor.BLUE_LONG ? 0.36 : 0.22;
             lPer = lPer/totalPixels;
             cPer = cPer/totalPixels;
             if (cPer >= 0.1) {
                 position = 2;
-            } else if (lPer >= 0.1) {
+            } else if (lPer >= lLimit) {
                 position = 1;
             } else {
                 position = 3;
@@ -306,9 +313,9 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
             switch (stage){
                 case LEFT:
-                    return left;
+                    return team == TeamColor.BLUE_LONG ? input.submat(lblRect) : input.submat(lrlRect);
                 case RIGHT:
-                    return center;
+                    return team == TeamColor.BLUE_LONG ? input.submat(lbcRect) : input.submat(lrcRect);
                 case FILTERED_LEFT:
                     return filteredL;
                 case FILTERED_CENTER:
@@ -355,7 +362,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
     public enum CenterStagePipelineStage {
 
-        FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_CENTER;
+        FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_CENTER
     }
 
 }

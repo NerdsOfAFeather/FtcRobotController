@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.old;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -35,9 +35,9 @@ public class OldCenterStageAutoLonger extends CenterStageConfig {
     @Override
     public void init_loop() {
         if (gamepad1.x) {
-            team = BLUE;
+            team = BLUE_LONG;
         } else if (gamepad1.b) {
-            team = RED;
+            team = RED_LONG;
         }
         telemetry.addData("Team", team.toString());
         telemetry.update();
@@ -51,7 +51,7 @@ public class OldCenterStageAutoLonger extends CenterStageConfig {
         clawServoL.setPosition(0.0);
         clawServoR.setPosition(1.0);
         traj(forward(5));
-        if (team.equals(BLUE)) {
+        if (team.equals(BLUE_LONG)) {
             traj(left(50));
             //turnLeft(.5);
             traj(right(10));
@@ -64,7 +64,7 @@ public class OldCenterStageAutoLonger extends CenterStageConfig {
             intakeMotor2.setPower(0);
             clawServoL.setPosition(0.5);
             clawServoR.setPosition(0.5);
-        } else if (team.equals(RED)) {
+        } else if (team.equals(RED_LONG)) {
             traj(right(50));
 
             traj(left(10));
