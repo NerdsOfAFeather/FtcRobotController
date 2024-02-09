@@ -32,7 +32,7 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
 
     private static final double TURN_SPEED = 0.5;
     protected static final int ARM_GROUND = 560;
-    protected static final int ARM_BACKDROP = 260;
+    protected static final int ARM_BACKDROP = 360;
 
 
     public void initDriveHardware() {
@@ -154,10 +154,13 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     }
 
     public void moveArmToGround() {
-        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeMotor2.setPower(0.5);
         intakeMotor2.setTargetPosition(ARM_GROUND);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor2.setPower(0.25);
         while (intakeMotor2.isBusy()) {
+            if (intakeMotor2.getCurrentPosition() > 20) {
+                intakeMotor2.setPower(0.1);
+            }
             sleep(10);
         }
         intakeMotor2.setPower(0.0);
@@ -165,10 +168,13 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
     }
 
     public void moveArmToClosed() {
-        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeMotor2.setPower(0.5);
         intakeMotor2.setTargetPosition(0);
+        intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor2.setPower(0.25);
         while (intakeMotor2.isBusy()) {
+            if (intakeMotor2.getCurrentPosition() < 20) {
+                intakeMotor2.setPower(0.1);
+            }
             sleep(10);
         }
         intakeMotor2.setPower(0.0);
@@ -193,6 +199,12 @@ public abstract class CenterStageConfig extends CenterStageObjectDetection {
 
     public void moveIntakeMotorUp(double seconds) {
         intakeMotor.setPower(-0.5);
+        sleep((long) (seconds * 1000L));
+        intakeMotor.setPower(0);
+    }
+
+    public void moveIntakeMotorDown(double seconds) {
+        intakeMotor.setPower(0.5);
         sleep((long) (seconds * 1000L));
         intakeMotor.setPower(0);
     }

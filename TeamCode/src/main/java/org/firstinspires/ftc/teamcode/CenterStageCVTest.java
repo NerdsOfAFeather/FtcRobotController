@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED;
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageCVTest", group="OpMode")
-@Disabled
+//@Disabled
 public class CenterStageCVTest extends CenterStageConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -39,9 +38,9 @@ public class CenterStageCVTest extends CenterStageConfig {
             setStage(CenterStagePipelineStage.FILTERED_LEFT);
         }
         if (gamepad1.x) {
-            team = BLUE;
+            team = BLUE_LONG;
         } else if (gamepad1.b) {
-            team = RED;
+            team = RED_LONG;
         }
         
     }
