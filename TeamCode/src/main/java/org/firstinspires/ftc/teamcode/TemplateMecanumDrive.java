@@ -1,20 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.BL_MOTOR;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.BR_MOTOR;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.FL_MOTOR;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.FR_MOTOR;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.CenterStageDriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.BL_MOTOR;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.BR_MOTOR;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.FL_MOTOR;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.FR_MOTOR;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.TemplateDriveConstants.kV;
 
 import androidx.annotation.NonNull;
 
@@ -55,7 +55,7 @@ import java.util.List;
  */
 /**Created by Gavin for FTC Team 6347 */
 @Config
-public class CenterStageMecanumDrive extends MecanumDrive {
+public class TemplateMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -80,7 +80,7 @@ public class CenterStageMecanumDrive extends MecanumDrive {
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
 
-    public CenterStageMecanumDrive(HardwareMap hardwareMap) {
+    public TemplateMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -127,7 +127,7 @@ public class CenterStageMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new CenterStageWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new TemplateWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,

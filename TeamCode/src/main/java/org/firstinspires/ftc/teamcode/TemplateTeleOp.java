@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageTeleOp", group="OpMode")
-public class CenterStageTeleOp extends CenterStageConfig {
+public class TemplateTeleOp extends TemplateConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
     double axial;
