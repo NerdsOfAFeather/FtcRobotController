@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageCVTest", group="OpMode")
 //@Disabled
-public class CenterStageCVTest extends CenterStageConfig {
+public class TemplateCVTest extends TemplateConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -25,17 +25,17 @@ public class CenterStageCVTest extends CenterStageConfig {
         //telemetry.addData("Bingus", "Bongus");
         //telemetry.update();
         if (gamepad1.dpad_left) {
-            setStage(CenterStagePipelineStage.LEFT);
+            setStage(TemplatePipelineStage.LEFT);
         } else if (gamepad1.dpad_right) {
-            setStage(CenterStagePipelineStage.RIGHT);
+            setStage(TemplatePipelineStage.RIGHT);
         } else if (gamepad1.dpad_up) {
-            setStage(CenterStagePipelineStage.CENTER);
+            setStage(TemplatePipelineStage.CENTER);
         } else if (gamepad1.dpad_down) {
-            setStage(CenterStagePipelineStage.FULL);
+            setStage(TemplatePipelineStage.FULL);
         } else if (gamepad1.right_bumper) {
-            setStage(CenterStagePipelineStage.FILTERED_CENTER);
+            setStage(TemplatePipelineStage.FILTERED_CENTER);
         } else if (gamepad1.left_bumper) {
-            setStage(CenterStagePipelineStage.FILTERED_LEFT);
+            setStage(TemplatePipelineStage.FILTERED_LEFT);
         }
         if (gamepad1.x) {
             team = BLUE_LONG;

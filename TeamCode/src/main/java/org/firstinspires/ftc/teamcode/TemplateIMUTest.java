@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp(name = "IMU Test")
 @Disabled
-public class CenterStageIMUTest extends CenterStageConfig {
+public class TemplateIMUTest extends TemplateConfig {
 
     @Override
     public void init() {

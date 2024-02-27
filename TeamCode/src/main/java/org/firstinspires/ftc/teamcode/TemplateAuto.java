@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_SHORT;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED_SHORT;
 import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "CenterStageAutoShort", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class CenterStageAutoShort extends CenterStageConfig {
+@Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
+public class TemplateAuto extends TemplateConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -24,8 +22,6 @@ public class CenterStageAutoShort extends CenterStageConfig {
 
         initAuto();
         initEOCV();
-        closeClawL();
-        closeClawR();
 
         //startAndEnableRobotVision();
 
@@ -36,9 +32,9 @@ public class CenterStageAutoShort extends CenterStageConfig {
     @Override
     public void init_loop() {
         if (gamepad1.x) {
-            team = BLUE_SHORT;
+            team = BLUE_LONG;
         } else if (gamepad1.b) {
-            team = RED_SHORT;
+            team = RED_LONG;
         }
         telemetry.addData("Team", team.toString());
         if(team != UNSET){
@@ -75,18 +71,24 @@ public class CenterStageAutoShort extends CenterStageConfig {
 
         traj(forward(10));
         //Auto stuff here
-        if (team.equals(RED_SHORT)) {
+        if (team.equals(BLUE_LONG)) {
             if (pos == 1) {
                 moveArmToGround();
-                traj(forward(10));
-                drive.turn(0.9); // LEFT
+                traj(forward(5));
+                drive.turn(0.8);
                 openClawL();
                 sleep(1000);
-                traj(back(12.5));
-                drive.turn(-0.9);
+                traj(back(10));
+                drive.turn(-0.8);
                 closeClawL();
                 moveArmToClosed();
-                traj(right(75));
+                traj(left(47.5));
+                traj(forward(30));
+                sleep(delay*1000L);
+                drive.turn(0.1);
+                traj(forward(30));
+                moveIntakeMotorUp(0.5);
+                traj(left(100));
             } else if (pos == 2) {
                 moveArmToGround();
                 traj(forward(14));
@@ -95,19 +97,31 @@ public class CenterStageAutoShort extends CenterStageConfig {
                 moveArmToClosed();
                 closeClawL();
                 traj(back(15));
-                traj(right(75));
+                traj(left(42.5));
+                traj(forward(30));
+                sleep(delay*1000L);
+                drive.turn(0.1);
+                traj(forward(30));
+                moveIntakeMotorUp(0.5);
+                traj(left(100));
             } else if (pos == 3) {
-                drive.turn(-0.5);
+                drive.turn(-0.4);
                 moveArmToGround();
                 openClawL();
                 sleep(250);
                 moveArmToClosed();
                 closeClawL();
                 traj(back(5));
-                drive.turn(0.5);
-                traj(right(75));
+                drive.turn(0.4);
+                traj(left(42.5));
+                traj(forward(30));
+                sleep(delay*1000L);
+                traj(forward(32.5));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.15);
+                traj(left(100));
             }
-        } else if (team.equals(BLUE_SHORT)) {
+        } else if (team.equals(RED_LONG)) {
             if (pos == 1) {
                 drive.turn(0.4);
                 moveArmToGround();
@@ -116,7 +130,15 @@ public class CenterStageAutoShort extends CenterStageConfig {
                 moveArmToClosed();
                 closeClawL();
                 drive.turn(-0.4);
-                traj(left(75));
+                traj(right(40));
+                drive.turn(0.25);
+                traj(forward(30));
+                sleep(delay*1000L);
+                drive.turn(0.25);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.15);
+                traj(right(95));
             } else if (pos == 2) {
                 moveArmToGround();
                 traj(forward(14));
@@ -125,20 +147,36 @@ public class CenterStageAutoShort extends CenterStageConfig {
                 moveArmToClosed();
                 closeClawL();
                 traj(back(15));
-                traj(left(75));
+                traj(right(40));
+                drive.turn(0.25);
+                traj(forward(30));
+                sleep(delay*1000L);
+                drive.turn(0.25);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                traj(right(95));
             } else if (pos == 3) {
                 moveArmToGround();
                 traj(forward(5));
-                drive.turn(-0.9);
+                drive.turn(-0.8);
                 openClawL();
                 sleep(1000);
                 traj(back(5));
-                drive.turn(0.9);
+                drive.turn(0.8);
                 closeClawL();
                 moveArmToClosed();
-                traj(left(75));
+                traj(right(42.5));
+                drive.turn(0.25);
+                traj(forward(30));
+                sleep(delay*1000L);
+                drive.turn(0.1);
+                traj(forward(40));
+                moveIntakeMotorUp(0.5);
+                drive.turn(0.35);
+                traj(right(100));
             }
         }
+        moveIntakeMotorDown(0.5);
         requestOpModeStop();
     }
 

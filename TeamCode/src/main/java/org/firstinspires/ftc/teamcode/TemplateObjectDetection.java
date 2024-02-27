@@ -27,10 +27,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
-public abstract class CenterStageObjectDetection extends OpMode {
+public abstract class TemplateObjectDetection extends OpMode {
 
     /**
      * The variable to store our instance of the AprilTag processor.
@@ -49,8 +50,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
     private OpenCvWebcam webcam;
     public static TeamColor team = TeamColor.UNSET;
     static int position;
-
-    static CenterStagePipelineStage stage = CenterStagePipelineStage.FULL;
+    static TemplatePipelineStage stage = TemplatePipelineStage.FULL;
 
     protected void startAndEnableRobotVision() {
         initAprilTag();
@@ -78,7 +78,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
         webcam.setPipeline(new CenterStagePipeline());
 
         webcam.setMillisecondsPermissionTimeout(5000);
-        webcam.openCameraDeviceAsync(new CenterStageCameraOpener());
+        webcam.openCameraDeviceAsync(new TemplateCameraOpener());
         position = 0;
     }
 
@@ -99,7 +99,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
@@ -245,18 +245,21 @@ public abstract class CenterStageObjectDetection extends OpMode {
         return position;
     }
 
-    public void setStage(CenterStagePipelineStage newStage){
+    public void setStage(TemplatePipelineStage newStage){
         stage = newStage;
     }
 
     class CenterStagePipeline extends OpenCvPipeline {
 
-
-
         boolean viewportPaused;
 
         @Override
         public Mat processFrame(Mat input) {
+            /* Rectangle Naming Scheme:
+             * Character 1: l - long (side of the field nearest to the audience) s - short (the other side)
+             * Character 2: r - blue alliance; b - blue alliance
+             * Character 3: l - left portion of the camera (position 1) c - center (position 2)
+            */
             Rect lrlRect = new Rect(point(input.cols()/6f,input.rows()*(2f/3f)), point(input.cols()/2f, input.rows()));
             Rect lrcRect = new Rect(point(input.cols()*(2f/3f),input.rows()*(2f/3f)), point(input.cols(), input.rows()));
             Rect lblRect = new Rect(point(0, input.rows()*(2f/3f)), point(input.cols()/4f, input.rows()));
@@ -332,12 +335,10 @@ public abstract class CenterStageObjectDetection extends OpMode {
 
             viewportPaused = !viewportPaused;
 
-            if(viewportPaused)
-            {
+            if(viewportPaused) {
                 webcam.pauseViewport();
             }
-            else
-            {
+            else {
                 webcam.resumeViewport();
             }
         }
@@ -347,7 +348,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
         }
     }
 
-    class CenterStageCameraOpener implements OpenCvCamera.AsyncCameraOpenListener {
+    class TemplateCameraOpener implements OpenCvCamera.AsyncCameraOpenListener {
 
         @Override
         public void onOpened() {
@@ -360,7 +361,7 @@ public abstract class CenterStageObjectDetection extends OpMode {
         }
     }
 
-    public enum CenterStagePipelineStage {
+    public enum TemplatePipelineStage {
 
         FULL, LEFT, RIGHT, CENTER, FILTERED_LEFT, FILTERED_CENTER
     }

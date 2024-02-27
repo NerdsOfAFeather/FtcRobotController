@@ -11,13 +11,13 @@ public enum TeamColor {
     @Override
     public String toString() {
         if (this == RED_LONG) {
-            return "RED";
+            return "RED LONG";
         } else if (this == BLUE_LONG) {
-            return "BLUE";
+            return "BLUE LONG";
         } else if (this == BLUE_SHORT) {
-            return "BLUE";
+            return "BLUE SHORT";
         } else if (this == RED_SHORT) {
-            return "RED";
+            return "RED SHORT";
         } else if (this == UNSET) {
             return "UNSET | X - BLUE | B - RED";
         } else {
