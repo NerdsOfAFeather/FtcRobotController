@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageCVTest", group="OpMode")
+@TeleOp(name="IntoTheDeepCVTest", group="OpMode")
 //@Disabled
-public class TemplateCVTest extends TemplateConfig {
+public class IntoTheDeepCVTest extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 

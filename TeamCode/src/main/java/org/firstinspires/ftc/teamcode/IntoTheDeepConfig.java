@@ -7,21 +7,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
+
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /** Created by Gavin for FTC Team 6347 */
-public abstract class TemplateConfig extends TemplateObjectDetection {
+public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
-    public TemplateMecanumDrive drive;
+    public IntoTheDeepMecanumDrive drive;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
@@ -61,7 +60,7 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
     public void initAuto() {
         initDriveHardware();
         initIMU();
-        drive = new TemplateMecanumDrive(hardwareMap);
+        drive = new IntoTheDeepMecanumDrive(hardwareMap);
     }
 
     public void traj(Trajectory trajectory) {

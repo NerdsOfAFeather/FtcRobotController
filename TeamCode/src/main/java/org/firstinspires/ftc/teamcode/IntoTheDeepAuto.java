@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class TemplateAuto extends TemplateConfig {
+@Autonomous(name = "IntoTheDeepAutoLong", group = "Autonomous", preselectTeleOp = "IntoTheDeepTeleOp")
+public class IntoTheDeepAuto extends IntoTheDeepConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 
