@@ -27,11 +27,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
-public abstract class TemplateObjectDetection extends OpMode {
+public abstract class IntoTheDeepObjectDetection extends OpMode {
 
     /**
      * The variable to store our instance of the AprilTag processor.
@@ -75,7 +74,7 @@ public abstract class TemplateObjectDetection extends OpMode {
 
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"));
-        webcam.setPipeline(new CenterStagePipeline());
+        webcam.setPipeline(new IntoTheDeepPipeline());
 
         webcam.setMillisecondsPermissionTimeout(5000);
         webcam.openCameraDeviceAsync(new TemplateCameraOpener());
@@ -98,7 +97,7 @@ public abstract class TemplateObjectDetection extends OpMode {
                 .setDrawCubeProjection(false)
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
@@ -249,7 +248,7 @@ public abstract class TemplateObjectDetection extends OpMode {
         stage = newStage;
     }
 
-    class CenterStagePipeline extends OpenCvPipeline {
+    class IntoTheDeepPipeline extends OpenCvPipeline {
 
         boolean viewportPaused;
 

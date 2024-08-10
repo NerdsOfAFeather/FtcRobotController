@@ -28,7 +28,7 @@ import java.util.List;
  */
 /**Created by Gavin for FTC Team 6347 */
 @Config
-public class TemplateWheelLocalizer extends ThreeTrackingWheelLocalizer {
+public class IntoTheDeepWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 0.6889; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
@@ -43,7 +43,7 @@ public class TemplateWheelLocalizer extends ThreeTrackingWheelLocalizer {
 
     private List<Integer> lastEncPositions, lastEncVels;
 
-    public TemplateWheelLocalizer(HardwareMap hardwareMap, List<Integer> lastTrackingEncPositions, List<Integer> lastTrackingEncVels) {
+    public IntoTheDeepWheelLocalizer(HardwareMap hardwareMap, List<Integer> lastTrackingEncPositions, List<Integer> lastTrackingEncVels) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, 0), // right
