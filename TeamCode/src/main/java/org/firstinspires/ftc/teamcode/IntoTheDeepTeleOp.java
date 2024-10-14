@@ -16,6 +16,12 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     boolean overrideNoLift;
     int switchTimeout = 0;
     boolean switching = false;
+    double clawLPos = 0.5;
+    double clawRPos = 0.5;
+    double clawLtime = 0;
+    double clawRtime = 0;
+    boolean servoLOpen = false;
+    boolean servoROpen = false;
 
     @Override
     public void init() {
