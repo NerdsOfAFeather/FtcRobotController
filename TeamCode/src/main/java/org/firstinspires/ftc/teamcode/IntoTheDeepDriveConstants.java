@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  */
 /**Created by Gavin for FTC Team 6347 */
 @Config
-public class TemplateDriveConstants {
+public class IntoTheDeepDriveConstants {
 
     /*
      * These are motor constants that should be listed online for your motors.

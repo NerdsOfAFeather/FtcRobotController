@@ -9,12 +9,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -27,12 +25,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
-public abstract class TemplateObjectDetection extends OpMode {
-
+public abstract class IntoTheDeepObjectDetection extends OpMode {
+    //TODO: Fix CV
     /**
      * The variable to store our instance of the AprilTag processor.
      */
@@ -41,7 +38,7 @@ public abstract class TemplateObjectDetection extends OpMode {
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
-    private TfodProcessor tfod;
+    //private TfodProcessor tfod;
 
     /**
      * The variable to store our instance of the vision portal.
@@ -51,7 +48,7 @@ public abstract class TemplateObjectDetection extends OpMode {
     public static TeamColor team = TeamColor.UNSET;
     static int position;
     static TemplatePipelineStage stage = TemplatePipelineStage.FULL;
-
+/*
     protected void startAndEnableRobotVision() {
         initAprilTag();
         initTfod();
@@ -64,7 +61,7 @@ public abstract class TemplateObjectDetection extends OpMode {
         disableAprilTagProcessor();
         disableTFODProcessor();
         closeVisionPortal();
-    }
+    }*/
 
     /**
      * Initialize the webcam for use with EOCV
@@ -75,7 +72,7 @@ public abstract class TemplateObjectDetection extends OpMode {
 
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"));
-        webcam.setPipeline(new CenterStagePipeline());
+        webcam.setPipeline(new IntoTheDeepPipeline());
 
         webcam.setMillisecondsPermissionTimeout(5000);
         webcam.openCameraDeviceAsync(new TemplateCameraOpener());
@@ -98,7 +95,7 @@ public abstract class TemplateObjectDetection extends OpMode {
                 .setDrawCubeProjection(false)
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
@@ -111,7 +108,7 @@ public abstract class TemplateObjectDetection extends OpMode {
                 .build();
 
     }
-
+/*
     protected void initVisionPortal() {
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -161,6 +158,8 @@ public abstract class TemplateObjectDetection extends OpMode {
         visionPortal.close();
     }
 
+ */
+
 
     /**
      * Add telemetry about AprilTag detections.
@@ -189,6 +188,7 @@ public abstract class TemplateObjectDetection extends OpMode {
 
     }
 
+    /*
     protected void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
@@ -212,9 +212,12 @@ public abstract class TemplateObjectDetection extends OpMode {
 
     }
 
+     */
+
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
+    /*
     private void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -247,9 +250,9 @@ public abstract class TemplateObjectDetection extends OpMode {
 
     public void setStage(TemplatePipelineStage newStage){
         stage = newStage;
-    }
+    }*/
 
-    class CenterStagePipeline extends OpenCvPipeline {
+    class IntoTheDeepPipeline extends OpenCvPipeline {
 
         boolean viewportPaused;
 
@@ -310,7 +313,7 @@ public abstract class TemplateObjectDetection extends OpMode {
             telemetry.addData("totalPixels", totalPixels);
             telemetry.addData("BGR", bgr[0] +", " + bgr[1] + ", " + bgr[2]);
             telemetry.addData("HSV", hsv[0] + ", " + hsv[1] + ", " + hsv[2]);
-            telemetry.addData("Position", getPosition());
+            //telemetry.addData("Position", getPosition());
             telemetry.addData("Stage", stage);
             telemetry.update();
 

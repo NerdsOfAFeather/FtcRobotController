@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp(name = "IMU Test")
 @Disabled
-public class TemplateIMUTest extends TemplateConfig {
+public class IntoTheDeepIMUTest extends IntoTheDeepConfig {
 
     @Override
     public void init() {
@@ -23,7 +23,6 @@ public class TemplateIMUTest extends TemplateConfig {
         telemetry.addData("Pitch (X)", "%.2f Deg.", angles.getPitch(AngleUnit.DEGREES));
         telemetry.addData("Roll (Y)", "%.2f Deg.\n", angles.getRoll(AngleUnit.DEGREES));
         telemetry.update();
-        sleep(10);
     }
 
     @Override
