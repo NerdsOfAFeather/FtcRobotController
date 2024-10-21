@@ -125,13 +125,13 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             }
         }
 
-        if (gamepad2.dpad_down) {
+        if (gamepad1.dpad_down) {
             rearLift = RearLift.IDLE;
             rtp(rearLiftMotor);
-        } else if (gamepad2.dpad_left) {
+        } else if (gamepad1.dpad_left) {
             rearLift = RearLift.LOW;
             rtp(rearLiftMotor);
-        } else if (gamepad2.dpad_up) {
+        } else if (gamepad1.dpad_up) {
             rearLift = RearLift.HIGH;
             rtp(rearLiftMotor);
         }
