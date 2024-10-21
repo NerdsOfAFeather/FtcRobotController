@@ -24,6 +24,7 @@ public class IntoTheDeepCVTest extends IntoTheDeepConfig {
         //telemetry.addData("Position", getPosition());
         //telemetry.addData("Bingus", "Bongus");
         //telemetry.update();
+        /*
         if (gamepad1.dpad_left) {
             setStage(TemplatePipelineStage.LEFT);
         } else if (gamepad1.dpad_right) {
@@ -36,7 +37,7 @@ public class IntoTheDeepCVTest extends IntoTheDeepConfig {
             setStage(TemplatePipelineStage.FILTERED_CENTER);
         } else if (gamepad1.left_bumper) {
             setStage(TemplatePipelineStage.FILTERED_LEFT);
-        }
+        } */
         if (gamepad1.x) {
             team = BLUE_LONG;
         } else if (gamepad1.b) {
