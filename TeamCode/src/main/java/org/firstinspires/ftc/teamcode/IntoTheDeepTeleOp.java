@@ -135,7 +135,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         }
 
         if (canMoveLift() || overrideNoLift) {
-            if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
+            if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
                 rearLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 liftPower = Math.pow(gamepad2.right_stick_y * .8, 2);
                 if (gamepad2.right_stick_y < 0) {
@@ -162,7 +162,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             rearArmExtended = true;
             rtp(rearArmMotor);
         } else if (gamepad2.left_trigger > 0.2) {
-            rearArmExtended = true;
+            rearArmExtended = false;
             rtp(rearArmMotor);
         }
 

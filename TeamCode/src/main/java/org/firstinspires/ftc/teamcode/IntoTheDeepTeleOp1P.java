@@ -15,9 +15,12 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
     double lateral;
     double yaw;
     boolean slowMode;
+    double slowModeTime = 0.0;
     boolean overrideNoLift;
+    double overrideNoLiftTime = 0.0;
     int switchTimeout = 0;
     boolean switching = false;
+    double rearArmTime = 0.0;
 
     @Override
     public void init() {
@@ -42,16 +45,14 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
         double rearArmPower;
         double liftPower;
 
-        if (gamepad1.right_bumper && !slowMode){
-            slowMode = true;
-        } else if (gamepad1.left_bumper && slowMode){
-            slowMode = false;
+        if (gamepad1.right_bumper && runtime.milliseconds() - slowModeTime > 500) {
+            slowModeTime = runtime.milliseconds();
+            slowMode = !slowMode;
         }
 
-        if (gamepad2.right_bumper && !overrideNoLift){
-            overrideNoLift = true;
-        } else if (gamepad2.left_bumper && overrideNoLift){
-            overrideNoLift = false;
+        if (gamepad1.left_bumper && runtime.milliseconds() - overrideNoLiftTime > 500) {
+            overrideNoLiftTime = runtime.milliseconds();
+            overrideNoLift = !overrideNoLift;
         }
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -96,21 +97,21 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             frontClaw = toggle(frontClaw);
             frontClawTime = runtime.milliseconds();
         }
-        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() -rearClawTime > 500) {
+        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - rearClawTime > 500) {
             rearClaw = toggle(rearClaw);
             rearClawTime = runtime.milliseconds();
         }
 
-        if (gamepad2.a) {
+        if (gamepad1.a) {
             frontArm = FrontArm.EXTENDED;
         }
-        if (gamepad2.b && frontArm == FrontArm.EXTENDED) {
+        if (gamepad1.b && frontArm == FrontArm.EXTENDED) {
             frontArm = FrontArm.WRIST_DOWN;
         }
-        if (gamepad2.x) {
+        if (gamepad1.x) {
             frontArm = FrontArm.RETRACTED;
         }
-        if (gamepad2.y && frontArm == FrontArm.RETRACTED) {
+        if (gamepad1.y && frontArm == FrontArm.RETRACTED) {
             // TODO: There needs to be a hasSample check somewhere here
             if (!switching) {
                 switching = true;
@@ -160,15 +161,12 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             liftPower = 0;
         }
 
-        if (gamepad2.right_trigger > 0.2) {
-            rearArmExtended = true;
-            rtp(rearArmMotor);
-        } else if (gamepad2.left_trigger > 0.2) {
-            rearArmExtended = true;
+        if (gamepad1.dpad_right && runtime.milliseconds() - rearArmTime > 500) {
+            rearArmExtended = !rearArmExtended;
             rtp(rearArmMotor);
         }
 
-        if (Math.abs(gamepad2.left_stick_x) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
+        if (Math.abs(gamepad2.left_stick_x) >= 0.2) {
             rearArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rearArmPower = Math.pow(gamepad2.left_stick_x * .8, 2);
             if (gamepad2.left_stick_x < 0) {
