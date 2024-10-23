@@ -61,7 +61,7 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             axial = 0;
         }
         if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
-            lateral = gamepad1.left_stick_x;
+            lateral = -gamepad1.left_stick_x;
         } else {
             lateral = 0;
         }
