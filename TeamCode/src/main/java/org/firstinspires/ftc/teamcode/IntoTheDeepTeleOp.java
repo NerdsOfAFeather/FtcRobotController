@@ -109,7 +109,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             frontArm = FrontArm.RETRACTED;
         }
         if (gamepad2.y && frontArm == FrontArm.RETRACTED) {
-            // TODO: There needs to be a hasSample check somewhere here
+            // TODO: There needs to be a hasSample check somewhere here and rear arm check
             if (!switching) {
                 switching = true;
                 switchTimeout = (int) runtime.milliseconds();
@@ -200,6 +200,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
                 } // TODO: There needs to be a hasSample check somewhere here
             }
             case EXTENDED: {
+                fWrist.setPosition(frontArm.wristPos);
                 if (frontClaw == ClawState.CLOSED) {
                     if (wristInPosition) {
                         fArmExtension.setPosition(frontArm.extensionPos);
