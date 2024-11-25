@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "IntoTheDeepTeleOp1P", group = "Linear Opmode")
-@Disabled
+//@Disabled
 public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -15,17 +15,12 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    double slowModeTime = 0.0;
     boolean overrideNoLift;
-    double overrideNoLiftTime = 0.0;
-    int switchTimeout = 0;
-    boolean switching = false;
-    double rearArmTime = 0.0;
 
     @Override
     public void init() {
         initDriveHardware();
-        initAttachmentHardware();
+        initFrontArm();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -42,17 +37,17 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        double rearArmPower;
-        double liftPower;
 
-        if (gamepad1.right_bumper && runtime.milliseconds() - slowModeTime > 500) {
-            slowModeTime = runtime.milliseconds();
-            slowMode = !slowMode;
+        if (gamepad1.right_bumper && !slowMode){
+            slowMode = true;
+        } else if (gamepad1.left_bumper && slowMode){
+            slowMode = false;
         }
 
-        if (gamepad1.left_bumper && runtime.milliseconds() - overrideNoLiftTime > 500) {
-            overrideNoLiftTime = runtime.milliseconds();
-            overrideNoLift = !overrideNoLift;
+        if (gamepad2.right_bumper && !overrideNoLift){
+            overrideNoLift = true;
+        } else if (gamepad2.left_bumper && overrideNoLift){
+            overrideNoLift = false;
         }
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -62,7 +57,7 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             axial = 0;
         }
         if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
-            lateral = -gamepad1.left_stick_x;
+            lateral = gamepad1.left_stick_x;
         } else {
             lateral = 0;
         }
@@ -93,125 +88,16 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - frontClawTime > 500) {
-            frontClaw = toggle(frontClaw);
-            frontClawTime = runtime.milliseconds();
-        }
-        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - rearClawTime > 500) {
-            rearClaw = toggle(rearClaw);
-            rearClawTime = runtime.milliseconds();
+        if (gamepad1.x) {
+            frontClaw = ClawState.CLOSED;
+        } else if (gamepad1.y) {
+            frontClaw = ClawState.OPEN;
         }
 
         if (gamepad1.a) {
-            frontArm = FrontArm.EXTENDED;
-        }
-        if (gamepad1.b && frontArm == FrontArm.EXTENDED) {
-            frontArm = FrontArm.WRIST_DOWN;
-        }
-        if (gamepad1.x) {
-            frontArm = FrontArm.RETRACTED;
-        }
-        if (gamepad1.y && frontArm == FrontArm.RETRACTED) {
-            // TODO: There needs to be a hasSample check somewhere here
-            if (!switching) {
-                switching = true;
-                switchTimeout = (int) runtime.milliseconds();
-                rearClaw = ClawState.CLOSED;
-            }
-            if (switching && runtime.milliseconds() - switchTimeout > 1000) {
-                frontClaw = ClawState.OPEN;
-            }
-            if (runtime.milliseconds() - switchTimeout > 1500) {
-                switching = false;
-            }
-        }
-
-        if (gamepad1.dpad_down) {
-            rearLift = RearLift.IDLE;
-            rtp(rearLiftMotor);
-        } else if (gamepad1.dpad_left) {
-            rearLift = RearLift.LOW;
-            rtp(rearLiftMotor);
-        } else if (gamepad1.dpad_up) {
-            rearLift = RearLift.HIGH;
-            rtp(rearLiftMotor);
-        }
-
-        if (canMoveLift() || overrideNoLift) {
-            if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
-                rearLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                liftPower = Math.pow(gamepad2.right_stick_y * .8, 2);
-                if (gamepad2.right_stick_y < 0) {
-                    liftPower = -liftPower;
-                }
-            } else if (rearLiftMotor.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
-                liftPower = 0;
-            } else {
-                rearLiftMotor.setTargetPosition(rearLift.motorPos);
-                int diff = rearLiftMotor.getCurrentPosition() - rearLiftMotor.getTargetPosition();
-                if (Math.abs(diff) > 20) {
-                    liftPower = 0.5;
-                } else if (Math.abs(diff) > 5) {
-                    liftPower = 0.25;
-                } else {
-                    liftPower = 0;
-                }
-            }
-        } else {
-            liftPower = 0;
-        }
-
-        if (gamepad1.dpad_right && runtime.milliseconds() - rearArmTime > 500) {
-            rearArmExtended = !rearArmExtended;
-            rtp(rearArmMotor);
-        }
-
-        if (Math.abs(gamepad2.left_stick_x) >= 0.2) {
-            rearArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rearArmPower = Math.pow(gamepad2.left_stick_x * .8, 2);
-            if (gamepad2.left_stick_x < 0) {
-                rearArmPower = -rearArmPower;
-            }
-        } else if (rearArmMotor.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
-            rearArmPower = 0;
-        } else {
-            int target = rearArmExtended ? R_ARM_EXTENDED : R_ARM_RETRACTED;
-            rearArmMotor.setTargetPosition(target);
-            int diff = rearArmMotor.getCurrentPosition() - rearArmMotor.getTargetPosition();
-            if (Math.abs(diff) > 20) {
-                rearArmPower = 0.5;
-            } else if (Math.abs(diff) > 5) {
-                rearArmPower = 0.25;
-            } else {
-                rearArmPower = 0;
-            }
-        }
-
-        switch (frontArm) {
-            case RETRACTED: {
-                if (frontClaw == ClawState.CLOSED) {
-                    if (wristInPosition) {
-                        fArmExtension.setPosition(frontArm.extensionPos);
-                    }
-                } else if (frontClaw == ClawState.OPEN) {
-                    if (rearClaw != ClawState.CLOSED) {
-                        frontClaw = ClawState.CLOSED;
-                    }
-                } // TODO: There needs to be a hasSample check somewhere here
-            }
-            case EXTENDED: {
-                if (frontClaw == ClawState.CLOSED) {
-                    if (wristInPosition) {
-                        fArmExtension.setPosition(frontArm.extensionPos);
-                    }
-                } else if (frontClaw == ClawState.OPEN) {
-                    frontClaw = ClawState.CLOSED;
-                }
-            }
-            case WRIST_DOWN: {
-                fArmExtension.setPosition(frontArm.extensionPos);
-                fWrist.setPosition(frontArm.wristPos);
-            }
+            fWrist.setPosition(0.1);
+        } else if (gamepad1.b) {
+            fWrist.setPosition(1.0);
         }
 
         // This is test code:
@@ -235,13 +121,8 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        rearLiftMotor.setPower(liftPower);
-        rearArmMotor.setPower(rearArmPower);
         fClawL.setPosition(frontClaw.lPos);
         fClawR.setPosition(frontClaw.rPos);
-
-        rClawL.setPosition(rearClaw.lPos);
-        rClawR.setPosition(rearClaw.rPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -249,10 +130,9 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        telemetry.addData("Lift Power", liftPower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
-        telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+        telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)

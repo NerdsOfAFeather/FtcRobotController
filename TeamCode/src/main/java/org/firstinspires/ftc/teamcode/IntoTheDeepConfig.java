@@ -54,9 +54,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public static final int R_ARM_EXTENDED = 500;
 
     public void initAttachmentHardware() {
-        fClawL = hardwareMap.get(Servo.class, "FrontClawLeft");
-        fClawR = hardwareMap.get(Servo.class, "FrontClawRight");
-        fWrist = hardwareMap.get(Servo.class, "FrontWrist");
         fArmExtension = hardwareMap.get(Servo.class, "FrontArmExtension");
         rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
         rClawR = hardwareMap.get(Servo.class, "RearClawRight");
@@ -68,6 +65,12 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rearArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void initFrontArm() {
+        fClawL = hardwareMap.get(Servo.class, "fClawL");
+        fClawR = hardwareMap.get(Servo.class, "fClawR");
+        fWrist = hardwareMap.get(Servo.class, "FrontWrist");
     }
 
     public void initDriveHardware() {
@@ -156,8 +159,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum ClawState {
-        OPEN(1.0, 0.0),
-        CLOSED(0.0, 1.0)
+        OPEN(0.6, 0.7),
+        CLOSED(1.0, 0.0)
         ;
 
         double lPos;

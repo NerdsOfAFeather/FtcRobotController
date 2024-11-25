@@ -53,7 +53,7 @@ public class IntoTheDeepWheelLocalizer extends ThreeTrackingWheelLocalizer {
         lastEncPositions = lastTrackingEncPositions;
         lastEncVels = lastTrackingEncVels;
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FrontRightDrive"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BackLeftDrive"));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BackRightDrive"));
         frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FrontLeftDrive"));
 

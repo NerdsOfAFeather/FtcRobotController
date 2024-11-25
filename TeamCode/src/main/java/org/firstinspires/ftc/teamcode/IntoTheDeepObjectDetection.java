@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
-import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -20,10 +21,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
 
@@ -44,7 +42,7 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
-    private OpenCvWebcam webcam;
+    private WebcamName webcam1, webcam2;
     public static TeamColor team = TeamColor.UNSET;
     static int position;
     static TemplatePipelineStage stage = TemplatePipelineStage.FULL;
@@ -67,21 +65,28 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
      * Initialize the webcam for use with EOCV
      */
     public void initEOCV(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
+        // Define each of our cameras
+        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
+
+        CameraName switchableCamera = ClassFactory.getInstance()
+                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"));
-        webcam.setPipeline(new IntoTheDeepPipeline());
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(switchableCamera)
+                .addProcessor(aprilTag)
+                .build();
 
-        webcam.setMillisecondsPermissionTimeout(5000);
-        webcam.openCameraDeviceAsync(new TemplateCameraOpener());
+        // visionPortal.openCameraDeviceAsync(new TemplateCameraOpener());
         position = 0;
     }
 
     public void stopEOCV() {
-        webcam.stopStreaming();
-        webcam.closeCameraDevice();
+        visionPortal.stopStreaming();
+        webcam1.close();
+        webcam2.close();
     }
 
     /**
@@ -339,10 +344,10 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
             viewportPaused = !viewportPaused;
 
             if(viewportPaused) {
-                webcam.pauseViewport();
+                visionPortal.stopLiveView();
             }
             else {
-                webcam.resumeViewport();
+                visionPortal.resumeLiveView();
             }
         }
 
@@ -355,7 +360,7 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
 
         @Override
         public void onOpened() {
-            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            // webcam1.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
         }
 
         @Override
