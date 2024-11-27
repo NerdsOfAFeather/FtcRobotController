@@ -13,7 +13,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 
-    double delayTime = 0;
+    double delayTime = 0;  // 24 forward, 16 side, 10 side
 
     @Override
     public void init() {

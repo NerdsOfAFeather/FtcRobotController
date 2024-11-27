@@ -40,6 +40,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     double rearClawTime = 0;
     double frontClawTime = 0;
+    double frontWristTime = 0;
 
     boolean wristInPosition = true;
     boolean rearArmExtended = false;

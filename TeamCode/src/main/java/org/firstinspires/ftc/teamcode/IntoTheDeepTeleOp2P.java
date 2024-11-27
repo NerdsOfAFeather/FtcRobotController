@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
-@TeleOp(name = "IntoTheDeepTeleOp1P", group = "Linear Opmode")
+@TeleOp(name = "IntoTheDeepTeleOp2P", group = "Linear Opmode")
 //@Disabled
-public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
+public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
     double axial;
@@ -88,12 +86,12 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.x && runtime.milliseconds() - frontClawTime >= 500) {
+        if (gamepad2.right_trigger >= 0.3 && runtime.milliseconds() - frontClawTime >= 500) {
             frontClaw = toggle(frontClaw);
             frontClawTime = runtime.milliseconds();
         }
 
-        if (gamepad1.a && runtime.milliseconds() - frontWristTime >= 500) {
+        if (gamepad2.left_trigger >= 0.3 && runtime.milliseconds() - frontWristTime >= 500) {
             if (fWrist.getPosition() == 1.0) {
                 fWrist.setPosition(0.1);
             } else {
