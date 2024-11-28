@@ -133,7 +133,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum FrontArm {
         EXTENDED(1, 0.0), //TODO: Add state for not extended but wrist down
-        WRIST_DOWN(1, 1.0),
+        EXTENDED_DOWN(1, 1.0),
+        WRIST_DOWN(0, 1.0),
         RETRACTED(0, 0.0)
         ;
 

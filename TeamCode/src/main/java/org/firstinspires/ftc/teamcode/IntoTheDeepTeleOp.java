@@ -102,8 +102,12 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         if (gamepad2.a) {
             frontArm = FrontArm.EXTENDED;
         }
-        if (gamepad2.b && frontArm == FrontArm.EXTENDED) {
-            frontArm = FrontArm.WRIST_DOWN;
+        if (gamepad2.b) {
+            if (frontArm == FrontArm.EXTENDED) {
+                frontArm = FrontArm.EXTENDED_DOWN;
+            } else if (frontArm == FrontArm.RETRACTED) {
+                frontArm = FrontArm.WRIST_DOWN;
+            }
         }
         if (gamepad2.x) {
             frontArm = FrontArm.RETRACTED;
