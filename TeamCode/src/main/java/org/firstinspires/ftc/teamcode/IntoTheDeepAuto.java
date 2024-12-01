@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.UNSET;
+import static org.firstinspires.ftc.teamcode.TeamColor.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,7 +19,6 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         telemetry.update();
 
         initAuto();
-        initEOCV();
 
         //startAndEnableRobotVision();
 
@@ -32,27 +29,15 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     @Override
     public void init_loop() {
         if (gamepad1.x) {
-            team = BLUE_LONG;
+            team = BLUE_RIGHT;
         } else if (gamepad1.b) {
-            team = RED_LONG;
+            team = RED_RIGHT;
+        } else if (gamepad1.a) {
+            team = RED_LEFT;
+        } else if (gamepad1.y) {
+            team = BLUE_LEFT;
         }
         telemetry.addData("Team", team.toString());
-        if(team != UNSET) {
-            if (gamepad1.y && runtime.milliseconds() - delayTime > 500) {
-                delay++;
-                delayTime = runtime.milliseconds();
-                if (delay > 30) {
-                    delay = 30;
-                }
-            } else if (gamepad1.a && runtime.milliseconds() - delayTime > 500) {
-                delay--;
-                delayTime = runtime.milliseconds();
-                if (delay < 0) {
-                    delay = 0;
-                }
-            }
-            telemetry.addData("Delay", delay);
-        }
         telemetry.update();
 
     }
@@ -62,10 +47,60 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         runtime.reset();
         resetYaw();
 
-        stopEOCV();
+        fWrist.setPosition(1.0);
+        fClawL.setPosition(ClawState.CLOSED.lPos);
+        fClawR.setPosition(ClawState.CLOSED.rPos);
 
         traj(forward(10));
         //Auto stuff here
+        if (team == BLUE_LEFT) {
+            traj(left(16));
+            turnLeft(135);
+            fWrist.setPosition(0.1);
+            fClawL.setPosition(ClawState.OPEN.lPos);
+            fClawR.setPosition(ClawState.OPEN.rPos);
+            sleep(500);
+            fWrist.setPosition(1.0);
+            turnRight(135);
+            traj(left(10));
+            fWrist.setPosition(0.1);
+            sleep(250);
+            fClawL.setPosition(ClawState.CLOSED.lPos);
+            fClawR.setPosition(ClawState.CLOSED.rPos);
+            sleep(500);
+            turnLeft(135);
+            fWrist.setPosition(0.1);
+            fClawL.setPosition(ClawState.OPEN.lPos);
+            fClawR.setPosition(ClawState.OPEN.rPos);
+            sleep(500);
+            fWrist.setPosition(1.0);
+            turnRight(135);
+            traj(back(20));
+        } else if (team == RED_RIGHT) {
+
+            traj(right(16));
+            turnRight(135);
+            fWrist.setPosition(0.1);
+            fClawL.setPosition(ClawState.OPEN.lPos);
+            fClawR.setPosition(ClawState.OPEN.rPos);
+            sleep(500);
+            fWrist.setPosition(1.0);
+            turnLeft(135);
+            traj(right(10));
+            fWrist.setPosition(0.1);
+            sleep(250);
+            fClawL.setPosition(ClawState.CLOSED.lPos);
+            fClawR.setPosition(ClawState.CLOSED.rPos);
+            sleep(500);
+            turnLeft(135);
+            fWrist.setPosition(0.1);
+            fClawL.setPosition(ClawState.OPEN.lPos);
+            fClawR.setPosition(ClawState.OPEN.rPos);
+            sleep(500);
+            fWrist.setPosition(1.0);
+            turnRight(135);
+            traj(back(20));
+        }
 
         requestOpModeStop();
     }

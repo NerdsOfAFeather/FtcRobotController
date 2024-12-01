@@ -218,10 +218,19 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
     }
 
      */
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
+    class IntoTheDeepPipeline extends OpenCvPipeline {
+
+        /**
+         * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
+         */
     /*
     private void telemetryTfod() {
 
@@ -241,14 +250,6 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
 
     }
 
-    public final void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
     public static int getPosition() {
         return position;
     }
@@ -257,7 +258,7 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
         stage = newStage;
     }*/
 
-    class IntoTheDeepPipeline extends OpenCvPipeline {
+
 
         boolean viewportPaused;
 
@@ -285,13 +286,13 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
             Mat filteredL = new Mat();
             Mat filteredC = new Mat();
 
-            if (team.equals(TeamColor.RED_LONG)) {
+            if (team.equals(TeamColor.RED_RIGHT)) {
                 Core.inRange(input.submat(lrlRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL); // RED 100-130 BLUE 0-30
                 Core.inRange(input.submat(lrcRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
-            } else if (team.equals(TeamColor.BLUE_LONG)) {
+            } else if (team.equals(TeamColor.BLUE_RIGHT)) {
                 Core.inRange(input.submat(lblRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredL);
                 Core.inRange(input.submat(lbcRect), new Scalar(0, 0, 0), new Scalar(20, 255, 255), filteredC);
-            } else if (team.equals(TeamColor.RED_SHORT)) {
+            } else if (team.equals(TeamColor.RED_LEFT)) {
                 Core.inRange(input.submat(srlRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredL);
                 Core.inRange(input.submat(srcRect), new Scalar(100, 0, 0), new Scalar(130, 255, 255), filteredC);
             } else {
@@ -302,7 +303,7 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
             float totalPixels = (input.cols()/3f) * (input.rows()/3f);
             float lPer = Core.countNonZero(filteredL);
             float cPer = Core.countNonZero(filteredC);
-            double lLimit = team == TeamColor.BLUE_LONG ? 0.36 : 0.22;
+            double lLimit = team == TeamColor.BLUE_RIGHT ? 0.36 : 0.22;
             lPer = lPer/totalPixels;
             cPer = cPer/totalPixels;
             if (cPer >= 0.1) {
@@ -324,9 +325,9 @@ public abstract class IntoTheDeepObjectDetection extends OpMode {
 
             switch (stage){
                 case LEFT:
-                    return team == TeamColor.BLUE_LONG ? input.submat(lblRect) : input.submat(lrlRect);
+                    return team == TeamColor.BLUE_RIGHT ? input.submat(lblRect) : input.submat(lrlRect);
                 case RIGHT:
-                    return team == TeamColor.BLUE_LONG ? input.submat(lbcRect) : input.submat(lrcRect);
+                    return team == TeamColor.BLUE_RIGHT ? input.submat(lbcRect) : input.submat(lrcRect);
                 case FILTERED_LEFT:
                     return filteredL;
                 case FILTERED_CENTER:

@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -94,7 +96,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public void initIMU() {
         imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RIGHT, UP)));
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(DOWN, LEFT)));
     }
 
     public void resetYaw() {
@@ -107,6 +109,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public void initAuto() {
         initDriveHardware();
+        initFrontArm();
         initIMU();
         drive = new IntoTheDeepMecanumDrive(hardwareMap);
     }
@@ -129,6 +132,14 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public Trajectory back(double distance) {
         return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
+    }
+
+    public void turnLeft(int deg) {
+        drive.turn(-deg);
+    }
+
+    public void turnRight(int deg) {
+        drive.turn(deg);
     }
 
     enum FrontArm {

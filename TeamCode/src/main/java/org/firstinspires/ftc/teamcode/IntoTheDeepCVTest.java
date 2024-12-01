@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_RIGHT;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,9 +39,9 @@ public class IntoTheDeepCVTest extends IntoTheDeepConfig {
             setStage(TemplatePipelineStage.FILTERED_LEFT);
         } */
         if (gamepad1.x) {
-            team = BLUE_LONG;
+            team = BLUE_RIGHT;
         } else if (gamepad1.b) {
-            team = RED_LONG;
+            team = RED_RIGHT;
         }
         
     }
