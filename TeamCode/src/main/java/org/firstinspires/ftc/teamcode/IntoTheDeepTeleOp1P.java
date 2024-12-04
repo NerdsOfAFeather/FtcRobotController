@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "IntoTheDeepTeleOp1P", group = "Linear Opmode")
-//@Disabled
+@Disabled
 public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -100,6 +100,14 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
                 fWrist.setPosition(1.0);
             }
             frontWristTime = runtime.milliseconds();
+        }
+
+        if (gamepad1.dpad_left) {
+            fArmExtension.setPower(1.0);
+        } else if (gamepad1.dpad_right) {
+            fArmExtension.setPower(-1.0);
+        } else {
+            fArmExtension.setPower(0.0);
         }
 
         // This is test code:

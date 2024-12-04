@@ -27,7 +27,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public Servo fClawL = null;
     public Servo fClawR = null;
     public Servo fWrist = null;
-    public Servo fArmExtension = null;
+    public CRServo fArmExtension = null;
     public Servo rClawL = null;
     public Servo rClawR = null;
     public DcMotorEx rearArmMotor = null;
@@ -57,7 +57,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public static final int R_ARM_EXTENDED = 500;
 
     public void initAttachmentHardware() {
-        fArmExtension = hardwareMap.get(Servo.class, "FrontArmExtension");
         rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
         rClawR = hardwareMap.get(Servo.class, "RearClawRight");
         rearArmMotor = hardwareMap.get(DcMotorEx.class, "RearArm");
@@ -71,6 +70,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     public void initFrontArm() {
+        fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
@@ -135,11 +135,11 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     public void turnLeft(int deg) {
-        drive.turn(-deg);
+        drive.turn(Math.toRadians(deg));
     }
 
     public void turnRight(int deg) {
-        drive.turn(deg);
+        drive.turn(-Math.toRadians(deg));
     }
 
     enum FrontArm {

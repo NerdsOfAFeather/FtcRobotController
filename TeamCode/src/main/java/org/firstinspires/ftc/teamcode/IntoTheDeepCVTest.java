@@ -3,12 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_RIGHT;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED_RIGHT;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="IntoTheDeepCVTest", group="OpMode")
-//@Disabled
+@Disabled
 public class IntoTheDeepCVTest extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();

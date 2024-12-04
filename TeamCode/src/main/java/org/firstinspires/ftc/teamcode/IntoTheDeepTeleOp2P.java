@@ -100,6 +100,8 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
             frontWristTime = runtime.milliseconds();
         }
 
+        fArmExtension.setPower(gamepad2.left_stick_x);
+
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.

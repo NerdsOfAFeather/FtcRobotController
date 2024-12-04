@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="IntoTheDeepTeleOp", group="OpMode")
+@Disabled
 public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -195,7 +197,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             case RETRACTED: {
                 if (frontClaw == ClawState.CLOSED) {
                     if (wristInPosition) {
-                        fArmExtension.setPosition(frontArm.extensionPos);
+                        //fArmExtension.setPosition(frontArm.extensionPos);
                     }
                 } else if (frontClaw == ClawState.OPEN) {
                     if (rearClaw != ClawState.CLOSED) {
@@ -207,14 +209,14 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
                 fWrist.setPosition(frontArm.wristPos);
                 if (frontClaw == ClawState.CLOSED) {
                     if (wristInPosition) {
-                        fArmExtension.setPosition(frontArm.extensionPos);
+                        //fArmExtension.setPosition(frontArm.extensionPos);
                     }
                 } else if (frontClaw == ClawState.OPEN) {
                     frontClaw = ClawState.CLOSED;
                 }
             }
             case WRIST_DOWN: {
-                fArmExtension.setPosition(frontArm.extensionPos);
+                //fArmExtension.setPosition(frontArm.extensionPos);
                 fWrist.setPosition(frontArm.wristPos);
             }
         }

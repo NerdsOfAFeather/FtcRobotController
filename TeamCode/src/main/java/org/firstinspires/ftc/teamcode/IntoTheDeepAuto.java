@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "IntoTheDeepAutoLong", group = "Autonomous", preselectTeleOp = "IntoTheDeepTeleOp")
+@Autonomous(name = "IntoTheDeepAuto", group = "Autonomous", preselectTeleOp = "IntoTheDeepTeleOp")
 public class IntoTheDeepAuto extends IntoTheDeepConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
@@ -54,28 +54,34 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         traj(forward(10));
         //Auto stuff here
         if (team == BLUE_LEFT) {
-            traj(left(16));
-            turnLeft(135);
+            turnLeft(95);
+            traj(forward(50));
+            turnLeft(45);
             fWrist.setPosition(0.1);
+            sleep(500);
             fClawL.setPosition(ClawState.OPEN.lPos);
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
-            turnRight(135);
-            traj(left(10));
+            turnRight(120);
+            traj(forward(20));
             fWrist.setPosition(0.1);
-            sleep(250);
+            sleep(1000);
             fClawL.setPosition(ClawState.CLOSED.lPos);
             fClawR.setPosition(ClawState.CLOSED.rPos);
             sleep(500);
-            turnLeft(135);
+            fWrist.setPosition(1.0);
+            sleep(500);
+            turnLeft(130);
+            traj(forward(20));
             fWrist.setPosition(0.1);
+            sleep(500);
             fClawL.setPosition(ClawState.OPEN.lPos);
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
             turnRight(135);
-            traj(back(20));
+            traj(back(5));
         } else if (team == RED_RIGHT) {
 
             traj(right(16));
