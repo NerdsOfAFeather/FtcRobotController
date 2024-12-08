@@ -20,6 +20,10 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
         initAuto();
 
+        fWrist.setPosition(1.0);
+        fClawL.setPosition(ClawState.CLOSED.lPos);
+        fClawR.setPosition(ClawState.CLOSED.rPos);
+
         //startAndEnableRobotVision();
 
         telemetry.addData("Status", "Ready to Run");
@@ -63,16 +67,16 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
-            turnRight(120);
-            traj(forward(20));
+            turnRight(125);
+            traj(forward(23));
             fWrist.setPosition(0.1);
             sleep(1000);
             fClawL.setPosition(ClawState.CLOSED.lPos);
             fClawR.setPosition(ClawState.CLOSED.rPos);
-            sleep(500);
+            sleep(1000);
             fWrist.setPosition(1.0);
             sleep(500);
-            turnLeft(130);
+            turnLeft(150);
             traj(forward(20));
             fWrist.setPosition(0.1);
             sleep(500);
@@ -80,32 +84,69 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
-            turnRight(135);
-            traj(back(5));
-        } else if (team == RED_RIGHT) {
-
-            traj(right(16));
-            turnRight(135);
+            turnRight(10);
+            traj(forward(5));
+        } else if (team == RED_LEFT) {
+            turnLeft(90);
+            traj(forward(50));
+            turnLeft(45);
             fWrist.setPosition(0.1);
+            sleep(500);
             fClawL.setPosition(ClawState.OPEN.lPos);
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
-            turnLeft(135);
-            traj(right(10));
+            turnRight(125);
+            traj(forward(23));
             fWrist.setPosition(0.1);
-            sleep(250);
+            sleep(1000);
             fClawL.setPosition(ClawState.CLOSED.lPos);
             fClawR.setPosition(ClawState.CLOSED.rPos);
+            sleep(1000);
+            fWrist.setPosition(1.0);
             sleep(500);
-            turnLeft(135);
+            turnLeft(150);
+            traj(forward(20));
             fWrist.setPosition(0.1);
+            sleep(500);
             fClawL.setPosition(ClawState.OPEN.lPos);
             fClawR.setPosition(ClawState.OPEN.rPos);
             sleep(500);
             fWrist.setPosition(1.0);
-            turnRight(135);
-            traj(back(20));
+            turnRight(10);
+            traj(forward(5));
+        } else if (team == BLUE_RIGHT) {
+            turnRight(90);
+            traj(forward(30));
+            sleep(1000);
+            fClawL.setPosition(ClawState.CLOSED.lPos);
+            fClawR.setPosition(ClawState.CLOSED.rPos);
+            sleep(1000);
+            fWrist.setPosition(1.0);
+            turnLeft(90);
+            traj(forward(15));
+            turnLeft(90);
+            traj(forward(60));
+            turnRight(90);
+            forward(15);
+            turnLeft(90);
+            traj(back(10));
+        } else if (team == RED_RIGHT) {
+            turnRight(90);
+            traj(forward(30));
+            sleep(1000);
+            fClawL.setPosition(ClawState.OPEN.lPos);
+            fClawR.setPosition(ClawState.OPEN.rPos);
+            sleep(1000);
+            fWrist.setPosition(1.0);
+            turnLeft(90);
+            traj(forward(15));
+            turnLeft(90);
+            traj(forward(60));
+            turnRight(90);
+            forward(15);
+            turnLeft(90);
+            traj(back(10));
         }
 
         requestOpModeStop();
@@ -113,11 +154,4 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
     @Override
     public void loop() {}
-
-    @Override
-    public void stop() {
-        //closeAndDisableRobotVision();
-        Thread.currentThread().interrupt();
-        super.stop();
-    }
 }
