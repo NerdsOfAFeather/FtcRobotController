@@ -93,7 +93,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
 
         if (gamepad2.left_trigger >= 0.3 && runtime.milliseconds() - frontWristTime >= 500) {
             if (fWrist.getPosition() == 1.0) {
-                fWrist.setPosition(0.1);
+                fWrist.setPosition(0.2);
             } else {
                 fWrist.setPosition(1.0);
             }
