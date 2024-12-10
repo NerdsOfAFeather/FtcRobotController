@@ -164,7 +164,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         HIGH(3000)
         ;
 
-        int motorPos;
+        final int motorPos;
 
         RearLift(int motorPos) {
             this.motorPos = motorPos;
@@ -176,8 +176,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         CLOSED(1.0, 0.0)
         ;
 
-        double lPos;
-        double rPos;
+        final double lPos;
+        final double rPos;
+
+        static final double ADAPT_OFFSET = 0.1;
 
         ClawState(double lPos, double rPos) {
             this.lPos = lPos;

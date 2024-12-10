@@ -123,8 +123,16 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        fClawL.setPosition(frontClaw.lPos);
-        fClawR.setPosition(frontClaw.rPos);
+        double fClawLPos = frontClaw.lPos;
+        double fClawRPos = frontClaw.rPos;
+        boolean shouldOffset = fWrist.getPosition() == 1.0 && runtime.milliseconds() - frontClawTime < 200;
+        if (frontClaw != ClawState.CLOSED) shouldOffset = false;
+        if (shouldOffset) {
+            fClawLPos -= ClawState.ADAPT_OFFSET;
+            fClawRPos += ClawState.ADAPT_OFFSET;
+        }
+        fClawL.setPosition(fClawLPos);
+        fClawR.setPosition(fClawRPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
