@@ -14,6 +14,9 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
     double yaw;
     boolean slowMode;
     boolean overrideNoLift;
+    double time;
+    boolean old;
+    double finalTime = 0;
 
     @Override
     public void init() {
@@ -100,7 +103,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
             frontWristTime = runtime.milliseconds();
         }
 
-        fArmExtension.setPower(gamepad2.left_stick_x);
+        // fArmExtension.setPower(gamepad2.left_stick_x);
 
         // This is test code:
         //
@@ -119,18 +122,43 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
 
+        if (gamepad2.dpad_left) {
+            if (!old) {
+                time = runtime.milliseconds();
+            }
+            fArmMotor.setPower(-1.0);
+            old = true;
+        } else if (gamepad2.dpad_right) {
+            if (!old) {
+                time = runtime.milliseconds();
+            }
+            fArmMotor.setPower(1.0);
+            old = true;
+        } else {
+            if (old) finalTime = runtime.milliseconds() - time;
+            fArmMotor.setPower(0.0);
+            old = false;
+        }
+
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         double fClawLPos = frontClaw.lPos;
         double fClawRPos = frontClaw.rPos;
-        boolean shouldOffset = fWrist.getPosition() == 1.0 && runtime.milliseconds() - frontClawTime < 200;
+        boolean shouldOffset = fWrist.getPosition() == 1.0 && runtime.milliseconds() - frontWristTime < 50;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
         if (shouldOffset) {
             fClawLPos -= ClawState.ADAPT_OFFSET;
             fClawRPos += ClawState.ADAPT_OFFSET;
         }
+        telemetry.addData("Wrist Position", fWrist.getPosition());
+        telemetry.addData("Time diff", runtime.milliseconds() - frontWristTime);
+        telemetry.addData("Should Offset", shouldOffset);
+        telemetry.addData("Claw Left Pos", fClawLPos);
+        telemetry.addData("Claw Right Pos", fClawRPos);
+        telemetry.addData("Time", runtime.milliseconds() - time);
+        telemetry.addData("Final Time", finalTime);
         fClawL.setPosition(fClawLPos);
         fClawR.setPosition(fClawRPos);
 

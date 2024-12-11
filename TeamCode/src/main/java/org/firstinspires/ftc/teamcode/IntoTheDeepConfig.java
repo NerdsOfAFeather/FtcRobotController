@@ -28,6 +28,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public Servo fClawR = null;
     public Servo fWrist = null;
     public CRServo fArmExtension = null;
+    public DcMotorEx fArmMotor = null;
     public Servo rClawL = null;
     public Servo rClawR = null;
     public DcMotorEx rearArmMotor = null;
@@ -71,6 +72,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public void initFrontArm() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
+        fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
@@ -179,7 +181,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         final double lPos;
         final double rPos;
 
-        static final double ADAPT_OFFSET = 0.1;
+        static final double ADAPT_OFFSET = 0.05;
 
         ClawState(double lPos, double rPos) {
             this.lPos = lPos;
