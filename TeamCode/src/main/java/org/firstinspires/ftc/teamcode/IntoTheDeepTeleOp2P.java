@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
@@ -39,15 +40,15 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         double leftBackPower;
         double rightBackPower;
 
-        if (gamepad1.right_bumper && !slowMode){
+        if (gamepad1.right_bumper && !slowMode) {
             slowMode = true;
-        } else if (gamepad1.left_bumper && slowMode){
+        } else if (gamepad1.left_bumper && slowMode) {
             slowMode = false;
         }
 
-        if (gamepad2.right_bumper && !overrideNoLift){
+        if (gamepad2.right_bumper && !overrideNoLift) {
             overrideNoLift = true;
-        } else if (gamepad2.left_bumper && overrideNoLift){
+        } else if (gamepad2.left_bumper && overrideNoLift) {
             overrideNoLift = false;
         }
 
@@ -123,20 +124,28 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
             */
 
         if (gamepad2.dpad_left) {
+            rue(fArmMotor);
             if (!old) {
                 time = runtime.milliseconds();
             }
             fArmMotor.setPower(-1.0);
             old = true;
         } else if (gamepad2.dpad_right) {
+            rue(fArmMotor);
             if (!old) {
                 time = runtime.milliseconds();
             }
             fArmMotor.setPower(1.0);
             old = true;
+        } else if (gamepad2.dpad_down) {
+            fArmMotor.setTargetPosition(0);
+            fArmMotor.setPower(1.0);
+            rtp(fArmMotor);
         } else {
             if (old) finalTime = runtime.milliseconds() - time;
-            fArmMotor.setPower(0.0);
+            if (fArmMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+                fArmMotor.setPower(0.0);
+            }
             old = false;
         }
 
@@ -171,6 +180,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
+        telemetry.addData("ArmExtension", fArmMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)

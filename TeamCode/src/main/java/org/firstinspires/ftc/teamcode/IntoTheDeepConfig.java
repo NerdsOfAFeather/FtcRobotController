@@ -73,6 +73,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public void initFrontArm() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
         fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
+        fArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
@@ -175,7 +176,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum ClawState {
         OPEN(0.6, 0.7),
-        CLOSED(1.0, 0.0)
+        CLOSED(1.0, 0.3)
         ;
 
         final double lPos;
@@ -200,6 +201,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     static void rtp(DcMotor motor) {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    static void rue(DcMotor motor) {
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
