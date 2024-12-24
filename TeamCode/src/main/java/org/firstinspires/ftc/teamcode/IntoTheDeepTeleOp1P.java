@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
@@ -131,8 +130,8 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        fClawL.setPosition(frontClaw.lPos);
-        fClawR.setPosition(frontClaw.rPos);
+        fClawL.setPosition(frontClaw.flPos);
+        fClawR.setPosition(frontClaw.frPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);

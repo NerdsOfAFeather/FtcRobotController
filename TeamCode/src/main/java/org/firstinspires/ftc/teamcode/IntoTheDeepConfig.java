@@ -11,9 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
-import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
-import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
@@ -31,6 +29,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public DcMotorEx fArmMotor = null;
     public Servo rClawL = null;
     public Servo rClawR = null;
+    public Servo rearArmServo = null;
+    public Servo rearWrist = null;
     public DcMotorEx rearArmMotor = null;
     public DcMotorEx rearLiftMotor = null;
     public IntoTheDeepMecanumDrive drive;
@@ -58,15 +58,26 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public static final int R_ARM_EXTENDED = 500;
 
     public void initAttachmentHardware() {
+        fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
+        fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
+        fArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fClawL = hardwareMap.get(Servo.class, "fClawL");
+        fClawR = hardwareMap.get(Servo.class, "fClawR");
+        fWrist = hardwareMap.get(Servo.class, "FrontWrist");
         rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
         rClawR = hardwareMap.get(Servo.class, "RearClawRight");
-        rearArmMotor = hardwareMap.get(DcMotorEx.class, "RearArm");
+        rearWrist = hardwareMap.get(Servo.class, "RearWrist");
+        rearArmServo = hardwareMap.get(Servo.class, "RearArm");
         rearLiftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
 
         rearLiftMotor.setDirection(Direction.FORWARD);
-        rearArmMotor.setDirection(Direction.FORWARD);
 
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void initRearArmMotor() {
+        rearArmMotor = hardwareMap.get(DcMotorEx.class, "RearArmMotor");
+        rearArmMotor.setDirection(Direction.FORWARD);
         rearArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -77,6 +88,13 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
+    }
+
+    public void initRearArm() {
+        rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
+        rClawR = hardwareMap.get(Servo.class, "RearClawRight");
+        rearArmServo = hardwareMap.get(Servo.class, "RearArm");
+        rearWrist = hardwareMap.get(Servo.class, "RearWrist");
     }
 
     public void initDriveHardware() {
@@ -146,7 +164,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum FrontArm {
-        EXTENDED(1, 0.0), //TODO: Add state for not extended but wrist down
+        EXTENDED(1, 0.0),
         EXTENDED_DOWN(1, 1.0),
         WRIST_DOWN(0, 1.0),
         RETRACTED(0, 0.0)
@@ -175,18 +193,23 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum ClawState {
-        OPEN(0.6, 0.7),
-        CLOSED(1.0, 0.3)
+        //      Front Left,Front Right,Back Left,Back Right
+        OPEN   (0.6, 0.7, 1.0, 0.4),
+        CLOSED (1.0, 0.3, 0.4, 1.0)
         ;
 
-        final double lPos;
-        final double rPos;
+        final double flPos;
+        final double frPos;
+        final double blPos;
+        final double brPos;
 
         static final double ADAPT_OFFSET = 0.05;
 
-        ClawState(double lPos, double rPos) {
-            this.lPos = lPos;
-            this.rPos = rPos;
+        ClawState(double flPos, double frPos, double blPos, double brPos) {
+            this.flPos = flPos;
+            this.frPos = frPos;
+            this.blPos = blPos;
+            this.brPos = brPos;
         }
     }
 

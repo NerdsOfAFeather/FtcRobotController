@@ -22,8 +22,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         initAuto();
 
         fWrist.setPosition(1.0);
-        fClawL.setPosition(ClawState.CLOSED.lPos);
-        fClawR.setPosition(ClawState.CLOSED.rPos);
+        fClawL.setPosition(ClawState.CLOSED.flPos);
+        fClawR.setPosition(ClawState.CLOSED.frPos);
 
         //startAndEnableRobotVision();
 
@@ -58,8 +58,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     @Override
     public void loop() {
         fWrist.setPosition(1.0);
-        fClawL.setPosition(ClawState.CLOSED.lPos);
-        fClawR.setPosition(ClawState.CLOSED.rPos);
+        fClawL.setPosition(ClawState.CLOSED.flPos);
+        fClawR.setPosition(ClawState.CLOSED.frPos);
 
         traj(forward(10));
         //Auto stuff here
@@ -68,16 +68,16 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             traj(forward(35));
             fWrist.setPosition(0.2);
             sleep(500);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(500);
             fWrist.setPosition(1.0);
             turnRight(90);
             traj(forward(23));
             fWrist.setPosition(0.2);
             sleep(1000);
-            fClawL.setPosition(ClawState.CLOSED.lPos);
-            fClawR.setPosition(ClawState.CLOSED.rPos);
+            fClawL.setPosition(ClawState.CLOSED.flPos);
+            fClawR.setPosition(ClawState.CLOSED.frPos);
             sleep(1000);
             fWrist.setPosition(1.0);
             sleep(500);
@@ -85,8 +85,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             traj(forward(24));
             fWrist.setPosition(0.2);
             sleep(500);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(500);
             fWrist.setPosition(1.0);
         } else if (team == RED_LEFT) {
@@ -95,16 +95,16 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             turnLeft(45);
             fWrist.setPosition(0.1);
             sleep(500);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(500);
             fWrist.setPosition(1.0);
             turnRight(125);
             traj(forward(23));
             fWrist.setPosition(0.1);
             sleep(1000);
-            fClawL.setPosition(ClawState.CLOSED.lPos);
-            fClawR.setPosition(ClawState.CLOSED.rPos);
+            fClawL.setPosition(ClawState.CLOSED.flPos);
+            fClawR.setPosition(ClawState.CLOSED.frPos);
             sleep(1000);
             fWrist.setPosition(1.0);
             sleep(500);
@@ -112,8 +112,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             traj(forward(24));
             fWrist.setPosition(0.1);
             sleep(500);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(500);
             fWrist.setPosition(1.0);
             turnRight(10);
@@ -123,8 +123,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             traj(forward(30));
             fWrist.setPosition(0.1);
             sleep(1000);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(1000);
             fWrist.setPosition(1.0);
             turnLeft(90);
@@ -140,8 +140,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             traj(forward(30));
             fWrist.setPosition(0.1);
             sleep(1000);
-            fClawL.setPosition(ClawState.OPEN.lPos);
-            fClawR.setPosition(ClawState.OPEN.rPos);
+            fClawL.setPosition(ClawState.OPEN.flPos);
+            fClawR.setPosition(ClawState.OPEN.frPos);
             sleep(1000);
             fWrist.setPosition(1.0);
             turnLeft(90);

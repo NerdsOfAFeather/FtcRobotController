@@ -23,6 +23,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     public void init() {
         initDriveHardware();
         initAttachmentHardware();
+        initRearArmMotor();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -244,11 +245,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rightBackDrive.setPower(rightBackPower);
         rearLiftMotor.setPower(liftPower);
         rearArmMotor.setPower(rearArmPower);
-        fClawL.setPosition(frontClaw.lPos);
-        fClawR.setPosition(frontClaw.rPos);
+        fClawL.setPosition(frontClaw.flPos);
+        fClawR.setPosition(frontClaw.frPos);
 
-        rClawL.setPosition(rearClaw.lPos);
-        rClawR.setPosition(rearClaw.rPos);
+        rClawL.setPosition(rearClaw.flPos);
+        rClawR.setPosition(rearClaw.frPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);

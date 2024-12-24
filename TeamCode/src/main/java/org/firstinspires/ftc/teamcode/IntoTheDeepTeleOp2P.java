@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //@Disabled
 public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     double axial;
     double lateral;
     double yaw;
@@ -23,6 +23,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
     public void init() {
         initDriveHardware();
         initFrontArm();
+        initRearArm();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -149,12 +150,25 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
             old = false;
         }
 
+        if (gamepad2.a) {
+            rearArmServo.setPosition(0.5);
+        } else if (gamepad2.b) {
+            rearArmServo.setPosition(0.55);
+        } else if (gamepad2.x) {
+            rearArmServo.setPosition(0.6);
+        }
+
+        if (gamepad2.y && runtime.milliseconds() - rearClawTime > 500) {
+            rearClaw = toggle(rearClaw);
+            rearClawTime = runtime.milliseconds();
+        }
+
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        double fClawLPos = frontClaw.lPos;
-        double fClawRPos = frontClaw.rPos;
+        double fClawLPos = frontClaw.flPos;
+        double fClawRPos = frontClaw.frPos;
         boolean shouldOffset = fWrist.getPosition() == 1.0 && runtime.milliseconds() - frontWristTime < 50;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
         if (shouldOffset) {
@@ -170,11 +184,15 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         telemetry.addData("Final Time", finalTime);
         fClawL.setPosition(fClawLPos);
         fClawR.setPosition(fClawRPos);
+        rClawL.setPosition(rearClaw.blPos);
+        rClawR.setPosition(rearClaw.brPos);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
         telemetry.addData("Right Trigger", gamepad1.right_trigger);
         telemetry.addData("Run Time", runtime.toString());
+        telemetry.addData("Back Claw", rearClaw);
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
