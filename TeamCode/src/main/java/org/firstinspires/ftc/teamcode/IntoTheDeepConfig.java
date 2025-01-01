@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -16,6 +17,7 @@ import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirect
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /** Created by Gavin for FTC Team 6347 */
+@Config
 public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
@@ -48,6 +50,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     boolean wristInPosition = true;
     boolean rearArmExtended = false;
 
+    double fWristPos = 0.0;
+    double rWristPos = 0.5;
+    double rearArmServoPos = 0.5;
+
     // Stores if the robot has a sample in its control
     // TODO: Need to add a distance sensor to the front arm that controls this
     boolean hasSample = false;
@@ -55,7 +61,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     private static final double TURN_SPEED = 0.5;
 
     public static final int R_ARM_RETRACTED = 0;
-    public static final int R_ARM_EXTENDED = 500;
+    public static final int R_ARM_MIDDLE = 500;
+    public static final int R_ARM_EXTENDED = 1000;
 
     public void initAttachmentHardware() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
@@ -75,6 +82,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    /**
+     * Do not use (not on actual robot)
+     */
+    @Deprecated
     public void initRearArmMotor() {
         rearArmMotor = hardwareMap.get(DcMotorEx.class, "RearArmMotor");
         rearArmMotor.setDirection(Direction.FORWARD);
@@ -82,7 +93,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     public void initFrontArm() {
-        fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
         fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
         fArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fClawL = hardwareMap.get(Servo.class, "fClawL");
@@ -95,6 +105,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         rClawR = hardwareMap.get(Servo.class, "RearClawRight");
         rearArmServo = hardwareMap.get(Servo.class, "RearArm");
         rearWrist = hardwareMap.get(Servo.class, "RearWrist");
+        rearLiftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
+
+        rearLiftMotor.setDirection(Direction.FORWARD);
+        rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void initDriveHardware() {
@@ -194,8 +208,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum ClawState {
         //      Front Left,Front Right,Back Left,Back Right
-        OPEN   (0.6, 0.7, 1.0, 0.4),
-        CLOSED (1.0, 0.3, 0.4, 1.0)
+        OPEN   (0.6, 0.7, 0.2, 0.8),
+        CLOSED (1.0, 0.3, 0.8, 0.2)
         ;
 
         final double flPos;
@@ -203,7 +217,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         final double blPos;
         final double brPos;
 
-        static final double ADAPT_OFFSET = 0.05;
+        static final double ADAPT_OFFSET = 0.1;
 
         ClawState(double flPos, double frPos, double blPos, double brPos) {
             this.flPos = flPos;
