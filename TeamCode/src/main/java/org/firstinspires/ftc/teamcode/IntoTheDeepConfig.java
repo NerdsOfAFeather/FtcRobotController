@@ -50,9 +50,9 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     boolean wristInPosition = true;
     boolean rearArmExtended = false;
 
-    double fWristPos = 0.0;
+    double fWristPos = 0.95;
     double rWristPos = 0.5;
-    double rearArmServoPos = 0.5;
+    double rearArmServoPos = 1.0;
 
     // Stores if the robot has a sample in its control
     // TODO: Need to add a distance sensor to the front arm that controls this
@@ -178,10 +178,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum FrontArm {
-        EXTENDED(1, 0.0),
-        EXTENDED_DOWN(1, 1.0),
-        WRIST_DOWN(0, 1.0),
-        RETRACTED(0, 0.0)
+        EXTENDED(1, 0.95),
+        EXTENDED_DOWN(1, 0.2),
+        WRIST_DOWN(0, 0.2),
+        RETRACTED(0, 0.95)
         ;
 
         final int extensionPos; // 1: Extended; 0: Retracted

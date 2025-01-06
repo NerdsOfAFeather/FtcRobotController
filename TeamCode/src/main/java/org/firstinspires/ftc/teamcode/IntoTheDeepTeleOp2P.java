@@ -22,8 +22,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
     @Override
     public void init() {
         initDriveHardware();
-        initFrontArm();
-        initRearArm();
+        initAttachmentHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -103,10 +102,10 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         // Toggle front wrist position (with a .5 second delay between inputs)
         if (gamepad2.left_trigger >= 0.3 && runtime.milliseconds() - frontWristTime >= 500) {
             // TODO: Add check for if we've picked up a sample correctly
-            if (fWristPos == 1.0) {
+            if (fWristPos == 0.95) {
                 fWristPos = 0.2;
             } else {
-                fWristPos = 1.0;
+                fWristPos = 0.95;
             }
             frontWristTime = runtime.milliseconds();
         }
@@ -119,20 +118,20 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
 
         // Rear arm position logic
         if (gamepad2.a) {
-            rearArmServoPos = 0.5; //TODO: maybe reprogram this servo?
+            rearArmServoPos = 0.3;
         } else if (gamepad2.b) {
-            rearArmServoPos = 0.575;
+            rearArmServoPos = 0.0; // Wall
         } else if (gamepad2.x) {
-            rearArmServoPos = 0.8;
+            rearArmServoPos = 1.0; // In the Robot
         }
 
         // Rear wrist logic (autonomous)
-        if (rearArmServoPos == 0.5) {
-            rWristPos = 0.7;
-        } else if (rearArmServoPos == 0.575) {
+        if (rearArmServoPos == 0.0) {
             rWristPos = 0.3;
-        } else if (rearArmServoPos == 0.8) {
-            rWristPos = 0.5;
+        } else if (rearArmServoPos == 0.3) {
+            rWristPos = 0.7;
+        } else if (rearArmServoPos == 1.0) {
+            rWristPos = 0.45;
         }
 
         // Front Arm Extension Logic
@@ -183,7 +182,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                 boolean frontArmInPosition = fArmMotor.getCurrentPosition() == 0;
 
                 boolean rearClawInPosition = rearClaw == ClawState.OPEN && runtime.milliseconds() - rearClawTime >= 500;
-                boolean rearArmInPosition = rearArmServoPos == 0.8;
+                boolean rearArmInPosition = rearArmServoPos == 1.0;
                 boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == R_ARM_RETRACTED;
 
                 boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
@@ -193,13 +192,13 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                     rearClaw = ClawState.OPEN;
                     rearClawTime = runtime.milliseconds();
                 } else if (!rearArmInPosition) {
-                    rearArmServoPos = 0.8;
+                    rearArmServoPos = 1.0;
                 } else if (!rearLiftInPosition) {
                     rtp(rearLiftMotor);
                     rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
                     rearLiftPower = 1.0;
                 }
-                if (!frontClawInPosition) { //TODO: Rear arm position checks
+                if (!frontClawInPosition) {
                     frontClaw = ClawState.CLOSED;
                     frontClawTime = runtime.milliseconds();
                 } else if (!frontWristInPosition) {
@@ -257,11 +256,11 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         // Adapt the front claw position if all of the following conditions are met:
         // 1. The front wrist is being moved to the up position
         // 2. It has been more than .7 seconds since the 'move up' command was given
-        // 3. It has been less than .8 seconds since the 'move up' command was given
+        // 3. It has been less than .78 seconds since the 'move up' command was given
         double fClawLPos = frontClaw.flPos;
         double fClawRPos = frontClaw.frPos;
         double fWTimeDiff = runtime.milliseconds() - frontWristTime;
-        boolean shouldOffset = fWrist.getPosition() == 1.0 && fWTimeDiff > 700 && fWTimeDiff < 800;
+        boolean shouldOffset = fWrist.getPosition() == 0.95 && fWTimeDiff > 700 && fWTimeDiff < 780;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
         if (shouldOffset) {
             fClawLPos -= ClawState.ADAPT_OFFSET;
@@ -287,6 +286,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         telemetry.addData("Claw Right Pos", fClawRPos);
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
         telemetry.addData("Right Trigger", gamepad1.right_trigger);
+        telemetry.addData("Trying Handoff", tryingHandoff);
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Back Claw", rearClaw);
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -295,7 +295,6 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
         telemetry.addData("ArmExtension", fArmMotor.getCurrentPosition());
-        // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
                 .addData("y", gamepad1.left_stick_y);
