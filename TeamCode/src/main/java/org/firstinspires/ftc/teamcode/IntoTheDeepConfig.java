@@ -80,6 +80,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         rearLiftMotor.setDirection(Direction.FORWARD);
 
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /**

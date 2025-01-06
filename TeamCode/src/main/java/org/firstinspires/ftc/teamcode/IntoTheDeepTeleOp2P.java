@@ -148,9 +148,14 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         }
 
         // Rear arm height logic
-        if (Math.abs(gamepad2.right_stick_y) > 0.3) {
+        if (Math.abs(gamepad2.right_stick_y) > 0.2) {
             rue(rearLiftMotor);
-            boolean canMove = rearLiftMotor.getCurrentPosition() <= R_ARM_EXTENDED && rearLiftMotor.getCurrentPosition() >= R_ARM_RETRACTED;
+            boolean canMove; // Down - 0, Basket 1/top rung - -2180
+            if (gamepad2.right_stick_y > 0.0) {
+                canMove = rearLiftMotor.getCurrentPosition() >= R_ARM_RETRACTED;
+            } else {
+                canMove = rearLiftMotor.getCurrentPosition() <= R_ARM_EXTENDED;
+            }
             if (canMove || overrideNoLift) {
                 rearLiftPower = gamepad2.right_stick_y;
             }
@@ -295,6 +300,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
         telemetry.addData("ArmExtension", fArmMotor.getCurrentPosition());
+        telemetry.addData("VerticalArm", rearLiftMotor.getCurrentPosition());
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
                 .addData("y", gamepad1.left_stick_y);
