@@ -61,8 +61,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     private static final double TURN_SPEED = 0.5;
 
     public static final int R_ARM_RETRACTED = 0;
-    public static final int R_ARM_MIDDLE = 500;
-    public static final int R_ARM_EXTENDED = 1000;
+    public static final int R_ARM_MIDDLE = -2180;
+    public static final int R_ARM_EXTENDED = -5000;
 
     public void initAttachmentHardware() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");

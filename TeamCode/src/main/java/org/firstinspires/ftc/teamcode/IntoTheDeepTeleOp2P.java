@@ -150,11 +150,11 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
         // Rear arm height logic
         if (Math.abs(gamepad2.right_stick_y) > 0.2) {
             rue(rearLiftMotor);
-            boolean canMove; // Down - 0, Basket 1/top rung - -2180
+            boolean canMove;
             if (gamepad2.right_stick_y > 0.0) {
-                canMove = rearLiftMotor.getCurrentPosition() >= R_ARM_RETRACTED;
+                canMove = rearLiftMotor.getCurrentPosition() <= R_ARM_RETRACTED;
             } else {
-                canMove = rearLiftMotor.getCurrentPosition() <= R_ARM_EXTENDED;
+                canMove = rearLiftMotor.getCurrentPosition() >= R_ARM_EXTENDED;
             }
             if (canMove || overrideNoLift) {
                 rearLiftPower = gamepad2.right_stick_y;
@@ -182,10 +182,13 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
 
         if (tryingHandoff) {
             if (handoffTime == -1.0) {
+                boolean frontClawPositionSet = frontClaw == ClawState.CLOSED;
                 boolean frontClawInPosition = frontClaw == ClawState.CLOSED && runtime.milliseconds() - frontClawTime >= 500;
+                boolean frontWristPositionSet = fWrist.getPosition() == FrontArm.RETRACTED.wristPos;
                 boolean frontWristInPosition = fWrist.getPosition() == FrontArm.RETRACTED.wristPos && runtime.milliseconds() - frontWristTime >= 500;
                 boolean frontArmInPosition = fArmMotor.getCurrentPosition() == 0;
 
+                boolean rearClawPositionSet = rearClaw == ClawState.OPEN;
                 boolean rearClawInPosition = rearClaw == ClawState.OPEN && runtime.milliseconds() - rearClawTime >= 500;
                 boolean rearArmInPosition = rearArmServoPos == 1.0;
                 boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == R_ARM_RETRACTED;
@@ -193,7 +196,7 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                 boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
                         && rearClawInPosition && rearArmInPosition && rearLiftInPosition;
 
-                if (!rearClawInPosition) {
+                if (!rearClawPositionSet) {
                     rearClaw = ClawState.OPEN;
                     rearClawTime = runtime.milliseconds();
                 } else if (!rearArmInPosition) {
@@ -203,10 +206,10 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                     rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
                     rearLiftPower = 1.0;
                 }
-                if (!frontClawInPosition) {
+                if (!frontClawPositionSet) {
                     frontClaw = ClawState.CLOSED;
                     frontClawTime = runtime.milliseconds();
-                } else if (!frontWristInPosition) {
+                } else if (!frontWristPositionSet) {
                     fWristPos = FrontArm.RETRACTED.wristPos;
                     frontWristTime = runtime.milliseconds();
                 } else if (!frontArmInPosition) {
