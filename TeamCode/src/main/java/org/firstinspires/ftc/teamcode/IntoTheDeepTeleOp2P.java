@@ -160,16 +160,16 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                 rearLiftPower = gamepad2.right_stick_y;
             }
         } else if (gamepad2.dpad_down) {
-            rtp(rearLiftMotor);
             rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
+            rtp(rearLiftMotor);
             rearLiftPower = 1.0;
         } else if (gamepad2.dpad_left) {
-            rtp(rearLiftMotor);
             rearLiftMotor.setTargetPosition(R_ARM_MIDDLE);
+            rtp(rearLiftMotor);
             rearLiftPower = 1.0;
         } else if (gamepad2.dpad_up) {
-            rtp(rearLiftMotor);
             rearLiftMotor.setTargetPosition(R_ARM_EXTENDED);
+            rtp(rearLiftMotor);
             rearLiftPower = 1.0;
         } else if (rearLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
             rearLiftPower = 0;
@@ -202,8 +202,8 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                 } else if (!rearArmInPosition) {
                     rearArmServoPos = 1.0;
                 } else if (!rearLiftInPosition) {
-                    rtp(rearLiftMotor);
                     rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
+                    rtp(rearLiftMotor);
                     rearLiftPower = 1.0;
                 }
                 if (!frontClawPositionSet) {
@@ -214,8 +214,8 @@ public class IntoTheDeepTeleOp2P extends IntoTheDeepConfig {
                     frontWristTime = runtime.milliseconds();
                 } else if (!frontArmInPosition) {
                     fArmMotor.setTargetPosition(0);
+                    rtp(rearLiftMotor);
                     fArmMotor.setPower(1.0);
-                    rtp(fArmMotor);
                 }
                 if (everythingInPlace) {
                     handoffTime = runtime.milliseconds();
