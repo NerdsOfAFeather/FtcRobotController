@@ -51,14 +51,16 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     double rWristPos = 0.5;
     double rearArmServoPos = 1.0;
 
+    @Deprecated
     public static final int R_ARM_RETRACTED = 0;
+    @Deprecated
     public static final int R_ARM_MIDDLE = -2180;
+    @Deprecated
     public static final int R_ARM_EXTENDED = -5000;
 
     public void initAttachmentHardware() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
         fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
-        fArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
@@ -69,38 +71,15 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         rearLiftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
 
         rearLiftMotor.setDirection(Direction.FORWARD);
+        fArmMotor.setDirection(Direction.FORWARD);
 
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        fArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
 
-    /**
-     * Do not use (not on actual robot)
-     */
-    @Deprecated
-    public void initRearArmMotor() {
-        rearArmMotor = hardwareMap.get(DcMotorEx.class, "RearArmMotor");
-        rearArmMotor.setDirection(Direction.FORWARD);
-        rearArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    public void initFrontArm() {
-        fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
         fArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fClawL = hardwareMap.get(Servo.class, "fClawL");
-        fClawR = hardwareMap.get(Servo.class, "fClawR");
-        fWrist = hardwareMap.get(Servo.class, "FrontWrist");
-    }
-
-    public void initRearArm() {
-        rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
-        rClawR = hardwareMap.get(Servo.class, "RearClawRight");
-        rearArmServo = hardwareMap.get(Servo.class, "RearArm");
-        rearWrist = hardwareMap.get(Servo.class, "RearWrist");
-        rearLiftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
-
-        rearLiftMotor.setDirection(Direction.FORWARD);
-        rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void initDriveHardware() {
@@ -136,7 +115,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public void initAuto() {
         initDriveHardware();
-        initFrontArm();
+        initAttachmentHardware();
         initIMU();
         drive = new IntoTheDeepMecanumDrive(hardwareMap);
     }
@@ -187,8 +166,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum RearLift {
         IDLE(0),
-        LOW(1000),
-        HIGH(3000)
+        LOW(-2180),
+        HIGH(5000)
         ;
 
         final int motorPos;

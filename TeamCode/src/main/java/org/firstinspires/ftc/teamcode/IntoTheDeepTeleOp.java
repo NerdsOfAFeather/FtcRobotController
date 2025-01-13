@@ -94,13 +94,14 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         }
 
         // Toggle front claw position (with a .5 second delay between inputs)
+        // TODO: Replace these timeouts with a was last pressed but still keep track of the time just in case
         if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - frontClawTime >= 500) {
             frontClaw = toggle(frontClaw);
             frontClawTime = runtime.milliseconds();
         }
 
         // Toggle front wrist position (with a .5 second delay between inputs)
-        if (gamepad2.left_trigger >= 0.3 && runtime.milliseconds() - frontWristTime >= 500) {
+        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - frontWristTime >= 500) {
             // TODO: Add check for if we've picked up a sample correctly
             if (frontArm.wristPos == FrontArm.WRIST_DOWN.wristPos) {
                 frontArm = FrontArm.RETRACTED;
@@ -135,10 +136,10 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         }
 
         // Front Arm Extension Logic
-        if (Math.abs(gamepad2.left_stick_x) > 0.2) {
+        if (Math.abs(gamepad2.left_stick_y) > 0.2) {
             rue(fArmMotor);
-            fArmMotor.setPower(gamepad2.left_stick_x);
-        } else if (Math.abs(gamepad2.left_stick_y) < -0.5) {
+            fArmMotor.setPower(gamepad2.left_stick_y);
+        } else if (Math.abs(gamepad2.left_stick_x) < -0.5) {
             fArmMotor.setTargetPosition(0);
             fArmMotor.setPower(1.0);
             rtp(fArmMotor);
@@ -152,23 +153,23 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             rue(rearLiftMotor);
             boolean canMove; // Down - 0, Basket 1/top rung - -2180
             if (gamepad2.right_stick_y > 0.0) {
-                canMove = rearLiftMotor.getCurrentPosition() >= R_ARM_RETRACTED;
+                canMove = rearLiftMotor.getCurrentPosition() <= RearLift.IDLE.motorPos;
             } else {
-                canMove = rearLiftMotor.getCurrentPosition() <= R_ARM_EXTENDED;
+                canMove = rearLiftMotor.getCurrentPosition() >= RearLift.HIGH.motorPos;
             }
             if (canMove || overrideNoLift) {
                 rearLiftPower = gamepad2.right_stick_y;
             }
         } else if (gamepad2.dpad_down) {
-            rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
+            rearLiftMotor.setTargetPosition(RearLift.IDLE.motorPos);
             rearLiftPower = 1.0;
             rtp(rearLiftMotor);
         } else if (gamepad2.dpad_left) {
-            rearLiftMotor.setTargetPosition(R_ARM_MIDDLE);
+            rearLiftMotor.setTargetPosition(RearLift.LOW.motorPos);
             rearLiftPower = 1.0;
             rtp(rearLiftMotor);
         } else if (gamepad2.dpad_up) {
-            rearLiftMotor.setTargetPosition(R_ARM_EXTENDED);
+            rearLiftMotor.setTargetPosition(RearLift.HIGH.motorPos);
             rearLiftPower = 1.0;
             rtp(rearLiftMotor);
         } else if (rearLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
@@ -179,42 +180,51 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         if (gamepad2.y) {
             tryingHandoff = true;
         }
+        // TODO: Add a button cache-ing system that would allow for the drivers to hit (for example) y,
+        //  then dpad up, and the lift would automatically extend after it was done with the handoff
 
         if (tryingHandoff) {
             if (handoffTime == -1.0) {
-                boolean frontClawInPosition = frontClaw == ClawState.CLOSED && runtime.milliseconds() - frontClawTime >= 500;
-                boolean frontWristInPosition = fWrist.getPosition() == FrontArm.RETRACTED.wristPos && runtime.milliseconds() - frontWristTime >= 500;
+                boolean frontClawPositionSet = frontClaw == ClawState.CLOSED;
+                boolean frontClawInPosition = frontClawPositionSet && runtime.milliseconds() - frontClawTime >= 500;
+                boolean frontWristPositionSet = fWrist.getPosition() == FrontArm.RETRACTED.wristPos;
+                boolean frontWristInPosition = frontWristPositionSet && runtime.milliseconds() - frontWristTime >= 500;
+                boolean frontArmPositionSet = fArmMotor.getTargetPosition() == 0;
                 boolean frontArmInPosition = fArmMotor.getCurrentPosition() == 0;
 
-                boolean rearClawInPosition = rearClaw == ClawState.OPEN && runtime.milliseconds() - rearClawTime >= 500;
-                boolean rearArmInPosition = rearArmServoPos == 1.0;
-                boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == R_ARM_RETRACTED;
+                boolean rearClawPositionSet = rearClaw == ClawState.OPEN;
+                boolean rearClawInPosition = rearClawPositionSet && runtime.milliseconds() - rearClawTime >= 500;
+                boolean rearArmInPosition = rearArmServoPos == 1.0; // TODO: Make a timer here
+                boolean rearLiftPositionSet = rearLiftMotor.getTargetPosition() == RearLift.IDLE.motorPos;
+                boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == RearLift.IDLE.motorPos;
 
                 boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
                         && rearClawInPosition && rearArmInPosition && rearLiftInPosition;
 
-                if (!rearClawInPosition) {
+                if (!rearClawPositionSet) {
                     rearClaw = ClawState.OPEN;
                     rearClawTime = runtime.milliseconds();
                 } else if (!rearArmInPosition) {
                     rearArmServoPos = 1.0;
-                } else if (!rearLiftInPosition) {
-                    rearLiftMotor.setTargetPosition(R_ARM_RETRACTED);
+                } else if (!rearLiftPositionSet) {
+                    rearLiftMotor.setTargetPosition(RearLift.IDLE.motorPos);
                     rearLiftPower = 1.0;
                     rtp(rearLiftMotor);
                 }
-                if (!frontClawInPosition) {
+                if (!frontClawPositionSet) {
                     frontClaw = ClawState.CLOSED;
                     frontClawTime = runtime.milliseconds();
-                } else if (!frontWristInPosition) {
+                } else if (!frontWristPositionSet) {
                     fWristPos = FrontArm.RETRACTED.wristPos;
                     frontWristTime = runtime.milliseconds();
-                } else if (!frontArmInPosition) {
+                } else if (!frontArmPositionSet) {
                     fArmMotor.setTargetPosition(0);
                     fArmMotor.setPower(1.0);
                     rtp(fArmMotor);
                 }
                 if (everythingInPlace) {
+                    fArmMotor.setPower(0.0);
+                    rearLiftPower = 0.0;
                     handoffTime = runtime.milliseconds();
                 }
             } else {
@@ -234,23 +244,6 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
                 }
             }
         }
-
-        // This is test code:
-        //
-        // Uncomment the following code to test your motor directions.
-        // Each button should make the corresponding motor run FORWARD.
-        //   1) First get all the motors to take to correct positions on the robot
-        //      by adjusting your Robot Configuration if necessary.
-        //   2) Then make sure they run in the correct direction by modifying the
-        //      the setDirection() calls above.
-        // Once the correct motors move in the correct direction re-comment this code.
-
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
 
         // Set drive motor powers
         leftFrontDrive.setPower(leftFrontPower);
@@ -311,6 +304,4 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.update();
     }
 
-    @Override
-    public void stop() {}
 }

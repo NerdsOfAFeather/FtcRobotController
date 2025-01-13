@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Disabled
 public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
 
+    // TODO: Most of the controls in here still need to be sorted out
     private ElapsedTime runtime = new ElapsedTime();
     double axial;
     double lateral;
