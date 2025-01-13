@@ -47,18 +47,9 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     double frontClawTime = 0;
     double frontWristTime = 0;
 
-    boolean wristInPosition = true;
-    boolean rearArmExtended = false;
-
     double fWristPos = 0.95;
     double rWristPos = 0.5;
     double rearArmServoPos = 1.0;
-
-    // Stores if the robot has a sample in its control
-    // TODO: Need to add a distance sensor to the front arm that controls this
-    boolean hasSample = false;
-
-    private static final double TURN_SPEED = 0.5;
 
     public static final int R_ARM_RETRACTED = 0;
     public static final int R_ARM_MIDDLE = -2180;
@@ -243,21 +234,5 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     static void rue(DcMotor motor) {
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * Houses logic for the rear lift of the robot being allowed to move.
-     * TODO: I probably missed some logic elements that need to be added
-     * @return whether or not the lift can move in the current robot configuration
-     */
-    boolean canMoveLift() {
-        if (frontArm == FrontArm.RETRACTED) {
-            // If we don't have a sample and the front arm is retracted,
-            // there's no way to break something by moving
-            if (!hasSample) return true;
-
-            if (frontClaw == ClawState.OPEN) return true;
-        }
-        return false;
     }
 }

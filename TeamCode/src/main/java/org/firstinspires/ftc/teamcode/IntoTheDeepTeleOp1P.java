@@ -19,7 +19,7 @@ public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
     @Override
     public void init() {
         initDriveHardware();
-        initFrontArm();
+        initAttachmentHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
