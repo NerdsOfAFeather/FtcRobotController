@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,13 +52,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     double fWristPos = 0.95;
     double rWristPos = 0.5;
     double rearArmServoPos = 1.0;
-
-    @Deprecated
-    public static final int R_ARM_RETRACTED = 0;
-    @Deprecated
-    public static final int R_ARM_MIDDLE = -2180;
-    @Deprecated
-    public static final int R_ARM_EXTENDED = -5000;
 
     public void initAttachmentHardware() {
         fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
@@ -117,11 +112,20 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         initDriveHardware();
         initAttachmentHardware();
         initIMU();
+        initEOCV();
         drive = new IntoTheDeepMecanumDrive(hardwareMap);
     }
 
-    public void traj(Trajectory trajectory) {
+    public void follow(Trajectory trajectory) {
         drive.followTrajectory(trajectory);
+    }
+
+    public TrajectoryBuilder newTraj() {
+        return newTraj(new Pose2d());
+    }
+
+    public TrajectoryBuilder newTraj(Pose2d startPos) {
+        return drive.trajectoryBuilder(startPos);
     }
 
     public Trajectory left(double distance) {
@@ -167,7 +171,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     enum RearLift {
         IDLE(0),
         LOW(-2180),
-        HIGH(5000)
+        HIGH(-5000)
         ;
 
         final int motorPos;
@@ -213,5 +217,13 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     static void rue(DcMotor motor) {
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    static Vector2d pt(int x, int y) {
+        return new Vector2d(x, y);
+    }
+
+    static double rad(double deg) {
+        return Math.toRadians(deg);
     }
 }

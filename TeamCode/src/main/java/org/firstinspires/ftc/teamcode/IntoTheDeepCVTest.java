@@ -23,28 +23,21 @@ public class IntoTheDeepCVTest extends IntoTheDeepConfig {
     @Override
     public void init_loop() {
         //telemetry.addData("Position", getPosition());
-        //telemetry.addData("Bingus", "Bongus");
-        //telemetry.update();
-        /*
+        telemetry.addData("Bingus", "Bongus");
+        telemetryAprilTag();
+        telemetry.update();
+
         if (gamepad1.dpad_left) {
-            setStage(TemplatePipelineStage.LEFT);
+            setActiveCamera1();
         } else if (gamepad1.dpad_right) {
-            setStage(TemplatePipelineStage.RIGHT);
-        } else if (gamepad1.dpad_up) {
-            setStage(TemplatePipelineStage.CENTER);
-        } else if (gamepad1.dpad_down) {
-            setStage(TemplatePipelineStage.FULL);
-        } else if (gamepad1.right_bumper) {
-            setStage(TemplatePipelineStage.FILTERED_CENTER);
-        } else if (gamepad1.left_bumper) {
-            setStage(TemplatePipelineStage.FILTERED_LEFT);
-        } */
+            setActiveCamera2();
+        }
+
         if (gamepad1.x) {
             team = BLUE_RIGHT;
         } else if (gamepad1.b) {
             team = RED_RIGHT;
         }
-        
     }
 
     @Override
