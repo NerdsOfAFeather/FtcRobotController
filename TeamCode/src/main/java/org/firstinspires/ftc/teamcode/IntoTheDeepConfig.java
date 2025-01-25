@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -15,6 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+
+import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
@@ -29,38 +30,34 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public Servo fClawL = null;
     public Servo fClawR = null;
     public Servo fWrist = null;
-    public CRServo fArmExtension = null;
     public DcMotorEx fArmMotor = null;
     public Servo rClawL = null;
     public Servo rClawR = null;
     public Servo rearArmServo = null;
     public Servo rearWrist = null;
-    public DcMotorEx rearArmMotor = null;
     public DcMotorEx rearLiftMotor = null;
     public IntoTheDeepMecanumDrive drive;
     IMU imu;
 
     ClawState rearClaw = ClawState.CLOSED;
     ClawState frontClaw = ClawState.CLOSED;
-    RearLift rearLift = RearLift.IDLE;
     FrontArm frontArm = FrontArm.RETRACTED;
+    RearArm rearArm = RearArm.IN_ROBOT;
 
     double rearClawTime = 0;
     double frontClawTime = 0;
     double frontWristTime = 0;
 
-    double fWristPos = 0.95;
     double rWristPos = 0.5;
     double rearArmServoPos = 1.0;
 
     public void initAttachmentHardware() {
-        fArmExtension = hardwareMap.get(CRServo.class, "FrontArmExtension");
         fArmMotor = hardwareMap.get(DcMotorEx.class, "FrontArmMotor");
         fClawL = hardwareMap.get(Servo.class, "fClawL");
         fClawR = hardwareMap.get(Servo.class, "fClawR");
         fWrist = hardwareMap.get(Servo.class, "FrontWrist");
-        rClawL = hardwareMap.get(Servo.class, "RearClawLeft");
-        rClawR = hardwareMap.get(Servo.class, "RearClawRight");
+        rClawL = hardwareMap.get(Servo.class, "rClawL");
+        rClawR = hardwareMap.get(Servo.class, "rClawR");
         rearWrist = hardwareMap.get(Servo.class, "RearWrist");
         rearArmServo = hardwareMap.get(Servo.class, "RearArm");
         rearLiftMotor = hardwareMap.get(DcMotorEx.class, "LiftMotor");
@@ -69,6 +66,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         fArmMotor.setDirection(Direction.FORWARD);
 
         rearLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearLiftMotor.setMotorDisable();
 
         fArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -84,10 +82,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
 
-        leftFrontDrive.setDirection(Direction.REVERSE);
-        leftBackDrive.setDirection(Direction.REVERSE);
-        rightFrontDrive.setDirection(Direction.FORWARD);
-        rightBackDrive.setDirection(Direction.FORWARD);
+        leftFrontDrive.setDirection(Direction.FORWARD);
+        leftBackDrive.setDirection(Direction.FORWARD);
+        rightFrontDrive.setDirection(Direction.REVERSE);
+        rightBackDrive.setDirection(Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -114,6 +112,93 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         initIMU();
         initEOCV();
         drive = new IntoTheDeepMecanumDrive(hardwareMap);
+    }
+
+    enum FrontArm {
+        EXTENDED(1, 0.9),
+        EXTENDED_DOWN(1, 0.2),
+        WRIST_DOWN(0, 0.2),
+        RETRACTED(0, 0.9)
+        ;
+
+        final int extensionPos; // 1: Extended; 0: Retracted
+        final double wristPos;  // 0.0: Up;     1.0: Down
+
+        FrontArm(int extensionPos, double wristPos) {
+            this.extensionPos = extensionPos;
+            this.wristPos = wristPos;
+        }
+    }
+
+    enum RearLift {
+        IDLE(0),
+        LOW(2180),
+        HIGH(4800)
+        ;
+
+        final int motorPos;
+
+        RearLift(int motorPos) {
+            this.motorPos = motorPos;
+        }
+    }
+
+    enum ClawState {
+        //      Front Left,Front Right,Back Left,Back Right
+        OPEN   (0.6, 0.7, 0.8, 0.2),
+        CLOSED (1.0, 0.3, 0.2, 0.8)
+        ;
+
+        final double flPos;
+        final double frPos;
+        final double blPos;
+        final double brPos;
+
+        static final double ADAPT_OFFSET = 0.1;
+
+        ClawState(double flPos, double frPos, double blPos, double brPos) {
+            this.flPos = flPos;
+            this.frPos = frPos;
+            this.blPos = blPos;
+            this.brPos = brPos;
+        }
+    }
+
+    static ClawState toggle(ClawState state) {
+        if (state == ClawState.OPEN) {
+            state = ClawState.CLOSED;
+        } else if (state == ClawState.CLOSED) {
+            state = ClawState.OPEN;
+        }
+        return state;
+    }
+
+    enum RearArm {
+        IN_ROBOT(1.0, 0.45, RearLift.IDLE),
+        DEPOSIT_SAMPLE(0.4, 0.6, RearLift.HIGH),
+        DEPOSIT_LOW_SPEC(0.3, 0.9, RearLift.IDLE),
+        DEPOSIT_HIGH_SPEC(0.3, 0.6, RearLift.LOW),
+        PICKUP_SPEC(0.0, 0.3, RearLift.IDLE)
+        ;
+
+        final double elbowPos;
+        final double wristPos;
+        final RearLift liftHeight;
+
+
+        RearArm(double elbowPos, double wristPos, RearLift liftHeight) {
+            this.elbowPos = elbowPos;
+            this.wristPos = wristPos;
+            this.liftHeight = liftHeight;
+        }
+    }
+
+    static void rtp(DcMotor motor) {
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    static void rue(DcMotor motor) {
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void follow(Trajectory trajectory) {
@@ -150,73 +235,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public void turnRight(int deg) {
         drive.turn(-Math.toRadians(deg));
-    }
-
-    enum FrontArm {
-        EXTENDED(1, 0.95),
-        EXTENDED_DOWN(1, 0.2),
-        WRIST_DOWN(0, 0.2),
-        RETRACTED(0, 0.95)
-        ;
-
-        final int extensionPos; // 1: Extended; 0: Retracted
-        final double wristPos;  // 0.0: Up;     1.0: Down
-
-        FrontArm(int extensionPos, double wristPos) {
-            this.extensionPos = extensionPos;
-            this.wristPos = wristPos;
-        }
-    }
-
-    enum RearLift {
-        IDLE(0),
-        LOW(-2180),
-        HIGH(-5000)
-        ;
-
-        final int motorPos;
-
-        RearLift(int motorPos) {
-            this.motorPos = motorPos;
-        }
-    }
-
-    enum ClawState {
-        //      Front Left,Front Right,Back Left,Back Right
-        OPEN   (0.6, 0.7, 0.2, 0.8),
-        CLOSED (1.0, 0.3, 0.8, 0.2)
-        ;
-
-        final double flPos;
-        final double frPos;
-        final double blPos;
-        final double brPos;
-
-        static final double ADAPT_OFFSET = 0.1;
-
-        ClawState(double flPos, double frPos, double blPos, double brPos) {
-            this.flPos = flPos;
-            this.frPos = frPos;
-            this.blPos = blPos;
-            this.brPos = brPos;
-        }
-    }
-
-    static ClawState toggle(ClawState state) {
-        if (state == ClawState.OPEN) {
-            state = ClawState.CLOSED;
-        } else if (state == ClawState.CLOSED) {
-            state = ClawState.OPEN;
-        }
-        return state;
-    }
-
-    static void rtp(DcMotor motor) {
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    static void rue(DcMotor motor) {
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     static Vector2d pt(int x, int y) {

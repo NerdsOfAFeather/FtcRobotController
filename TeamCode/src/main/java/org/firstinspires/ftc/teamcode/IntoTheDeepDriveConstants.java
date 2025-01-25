@@ -23,8 +23,8 @@ public class IntoTheDeepDriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 960;
-    public static final double MAX_RPM = 150;
+    public static final double TICKS_PER_REV = 480;
+    public static final double MAX_RPM = 300;
     public static final String FR_MOTOR = "FrontRightDrive";
     public static final String BR_MOTOR = "BackRightDrive";
     public static final String FL_MOTOR = "FrontLeftDrive";
@@ -52,7 +52,7 @@ public class IntoTheDeepDriveConstants {
      */
     public static double WHEEL_RADIUS = 2; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 14; // in
+    public static double TRACK_WIDTH = 15.5; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -92,10 +92,10 @@ public class IntoTheDeepDriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
      
      */
-    public static double MAX_VEL = 26.70353755551324;
-    public static double MAX_ACCEL = 26.70353755551324;
-    public static double MAX_ANG_VEL = Math.toRadians(109.28571428571428);
-    public static double MAX_ANG_ACCEL = Math.toRadians(109.28571428571428);
+    public static double MAX_VEL = 44.40707511102648;
+    public static double MAX_ACCEL = 44.40707511102648;
+    public static double MAX_ANG_VEL = Math.toRadians(228);
+    public static double MAX_ANG_ACCEL = Math.toRadians(228);
 
 
     public static double encoderTicksToInches(double ticks) {

@@ -30,13 +30,13 @@ import java.util.List;
 @Config
 public class IntoTheDeepWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
-    public static double WHEEL_RADIUS = 0.6889; // in
+    public static double WHEEL_RADIUS = 0.625; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 3; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = 4; // in; offset of the lateral wheel
+    public static double LATERAL_DISTANCE = 6; // in; distance between the left and right wheels
+    public static double FORWARD_OFFSET = -1; // in; offset of the lateral wheel
 
-    public static double X_MULTIPLIER = 1.00004547;
+    public static double X_MULTIPLIER = 1.2;
     public static double Y_MULTIPLIER = 1;
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
@@ -61,7 +61,7 @@ public class IntoTheDeepWheelLocalizer extends ThreeTrackingWheelLocalizer {
 
         leftEncoder.setDirection(Encoder.Direction.FORWARD);
         rightEncoder.setDirection(Encoder.Direction.REVERSE);
-        frontEncoder.setDirection(Encoder.Direction.FORWARD);
+        frontEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {
@@ -100,9 +100,9 @@ public class IntoTheDeepWheelLocalizer extends ThreeTrackingWheelLocalizer {
         lastEncVels.add(frontVel);
 
         return Arrays.asList(
-                encoderTicksToInches(leftVel),
-                encoderTicksToInches(rightVel),
-                encoderTicksToInches(frontVel)
+                encoderTicksToInches(leftVel) * X_MULTIPLIER,
+                encoderTicksToInches(rightVel) * X_MULTIPLIER,
+                encoderTicksToInches(frontVel) * Y_MULTIPLIER
         );
     }
 }

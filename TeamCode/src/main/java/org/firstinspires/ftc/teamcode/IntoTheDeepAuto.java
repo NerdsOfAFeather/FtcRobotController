@@ -24,8 +24,10 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         initAuto();
 
         fWrist.setPosition(1.0);
-        fClawL.setPosition(ClawState.CLOSED.flPos);
-        fClawR.setPosition(ClawState.CLOSED.frPos);
+        fClawL.setPosition(ClawState.OPEN.flPos);
+        fClawR.setPosition(ClawState.OPEN.frPos);
+        rClawL.setPosition(ClawState.CLOSED.blPos);
+        rClawR.setPosition(ClawState.CLOSED.brPos);
 
         //startAndEnableRobotVision();
 
@@ -64,7 +66,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         fWrist.setPosition(FrontArm.WRIST_DOWN.wristPos);
 
         if (team == RED_RIGHT) {
-            Pose2d startPose = new Pose2d(15.0, -65.0, 90.0);
+            Pose2d startPose = new Pose2d(15.0, -60.0, Math.toRadians(90.0));
+            drive.setPoseEstimate(startPose);
             Trajectory moveToDepositPreload = newTraj(startPose)
                     .splineToLinearHeading(new Pose2d(-10.0, -35.0, Math.toRadians(270.0)), 0.0)
                     .build();
@@ -98,6 +101,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
                     .build();
 
             follow(moveToDepositPreload);
+            requestOpModeStop();
             depositSpec();
             follow(pushGroundSamples);
             rClawL.setPosition(ClawState.CLOSED.blPos);

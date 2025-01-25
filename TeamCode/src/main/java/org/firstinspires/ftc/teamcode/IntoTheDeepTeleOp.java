@@ -18,6 +18,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     double rearLiftPower = 0.0;
     double handoffTime = -1.0;
     boolean tryingHandoff = false;
+    boolean autoMovingLift = false;
+    boolean offsetForDeposit = false;
+    boolean lastX = false;
+
+    final double SPEED_MULTIPLIER = 0.75;
 
     @Override
     public void init() {
@@ -61,7 +66,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             axial = 0;
         }
         if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
-            lateral = -gamepad1.left_stick_x;
+            lateral = gamepad1.left_stick_x;
         } else {
             lateral = 0;
         }
@@ -84,6 +89,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             leftBackPower /= max;
             rightBackPower /= max;
         }
+
+        leftFrontPower *= SPEED_MULTIPLIER;
+        rightFrontPower *= SPEED_MULTIPLIER;
+        leftBackPower *= SPEED_MULTIPLIER;
+        rightBackPower *= SPEED_MULTIPLIER;
 
         // Apply slowMode
         if (slowMode) {
@@ -117,29 +127,14 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             rearClawTime = runtime.milliseconds();
         }
 
-        // Rear arm position logic
-        if (gamepad2.a) {
-            rearArmServoPos = 0.3;
-        } else if (gamepad2.b) {
-            rearArmServoPos = 0.0; // Wall
-        } else if (gamepad2.x) {
-            rearArmServoPos = 1.0; // In the Robot
-        }
-
-        // Rear wrist logic (autonomous)
-        if (rearArmServoPos == 0.0) {
-            rWristPos = 0.3;
-        } else if (rearArmServoPos == 0.3) {
-            rWristPos = 0.7;
-        } else if (rearArmServoPos == 1.0) {
-            rWristPos = 0.45;
-        }
-
         // Front Arm Extension Logic
-        if (Math.abs(gamepad2.left_stick_y) > 0.2) {
+        if (gamepad1.dpad_up) {
             rue(fArmMotor);
-            fArmMotor.setPower(gamepad2.left_stick_y);
-        } else if (Math.abs(gamepad2.left_stick_x) < -0.5) {
+            fArmMotor.setPower(1.0);
+        } else if (gamepad1.dpad_down) {
+            rue(fArmMotor);
+            fArmMotor.setPower(-1.0);
+        } else if (gamepad1.dpad_left) {
             fArmMotor.setTargetPosition(0);
             fArmMotor.setPower(1.0);
             rtp(fArmMotor);
@@ -150,56 +145,75 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
         // Rear arm height logic
         if (Math.abs(gamepad2.right_stick_y) > 0.2) {
+            autoMovingLift = false;
             rue(rearLiftMotor);
             boolean canMove; // Down - 0, Basket 1/top rung - -2180
             if (gamepad2.right_stick_y > 0.0) {
-                canMove = rearLiftMotor.getCurrentPosition() <= RearLift.IDLE.motorPos;
+                canMove = rearLiftMotor.getCurrentPosition() >= RearLift.IDLE.motorPos;
             } else {
-                canMove = rearLiftMotor.getCurrentPosition() >= RearLift.HIGH.motorPos;
+                canMove = rearLiftMotor.getCurrentPosition() <= RearLift.HIGH.motorPos;
             }
             if (canMove || overrideNoLift) {
-                rearLiftPower = gamepad2.right_stick_y;
+                rearLiftPower = -gamepad2.right_stick_y;
+            } else {
+                rearLiftPower = 0.0;
             }
         } else if (gamepad2.dpad_down) {
-            rearLiftMotor.setTargetPosition(RearLift.IDLE.motorPos);
-            rearLiftPower = 1.0;
-            rtp(rearLiftMotor);
+            if (gamepad2.back) {
+                rearLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+            rearArm = RearArm.IN_ROBOT;
+            autoMovingLift = true;
+        } else if (gamepad2.a) {
+            rearArm = RearArm.PICKUP_SPEC;
+            autoMovingLift = true;
         } else if (gamepad2.dpad_left) {
-            rearLiftMotor.setTargetPosition(RearLift.LOW.motorPos);
-            rearLiftPower = 1.0;
-            rtp(rearLiftMotor);
+            rearArm = RearArm.DEPOSIT_HIGH_SPEC;
+            autoMovingLift = true;
+        } else if (gamepad2.b && !gamepad2.start) {
+            rearArm = RearArm.DEPOSIT_LOW_SPEC;
+            autoMovingLift = true;
         } else if (gamepad2.dpad_up) {
-            rearLiftMotor.setTargetPosition(RearLift.HIGH.motorPos);
-            rearLiftPower = 1.0;
-            rtp(rearLiftMotor);
-        } else if (rearLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+            rearArm = RearArm.DEPOSIT_SAMPLE;
+            autoMovingLift = true;
+        } else if (!autoMovingLift) {
             rearLiftPower = 0;
+        }
+        if (autoMovingLift) {
+             rearLiftMotor.setTargetPosition(rearArm.liftHeight.motorPos);
+             rearLiftPower = 1.0;
+             rtp(rearLiftMotor);
+        }
+        if (gamepad2.x && !lastX) {
+            offsetForDeposit = !offsetForDeposit;
         }
 
         // Handoff Logic
         if (gamepad2.y) {
-            tryingHandoff = true;
+            tryingHandoff = !tryingHandoff;
         }
         // TODO: Add a button cache-ing system that would allow for the drivers to hit (for example) y,
         //  then dpad up, and the lift would automatically extend after it was done with the handoff
 
+        boolean frontClawPositionSet = frontClaw == ClawState.CLOSED;
+        boolean frontClawInPosition = frontClawPositionSet && runtime.milliseconds() - frontClawTime >= 500;
+        boolean frontWristPositionSet = fWrist.getPosition() == FrontArm.RETRACTED.wristPos;
+        boolean frontWristInPosition = frontWristPositionSet && runtime.milliseconds() - frontWristTime >= 750;
+        boolean frontArmPositionSet = fArmMotor.getTargetPosition() == 0;
+        boolean frontArmInPosition = fArmMotor.getCurrentPosition() == 0;
+
+        boolean rearClawPositionSet = rearClaw == ClawState.OPEN;
+        boolean rearClawInPosition = rearClawPositionSet && runtime.milliseconds() - rearClawTime >= 500;
+        boolean rearArmInPosition = rearArmServoPos == 1.0; // TODO: Make a timer here
+        boolean rearLiftPositionSet = rearLiftMotor.getTargetPosition() == RearLift.IDLE.motorPos;
+        boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == RearLift.IDLE.motorPos;
+
+        boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
+                && rearClawInPosition && rearArmInPosition && rearLiftInPosition;
+
+
         if (tryingHandoff) {
             if (handoffTime == -1.0) {
-                boolean frontClawPositionSet = frontClaw == ClawState.CLOSED;
-                boolean frontClawInPosition = frontClawPositionSet && runtime.milliseconds() - frontClawTime >= 500;
-                boolean frontWristPositionSet = fWrist.getPosition() == FrontArm.RETRACTED.wristPos;
-                boolean frontWristInPosition = frontWristPositionSet && runtime.milliseconds() - frontWristTime >= 500;
-                boolean frontArmPositionSet = fArmMotor.getTargetPosition() == 0;
-                boolean frontArmInPosition = fArmMotor.getCurrentPosition() == 0;
-
-                boolean rearClawPositionSet = rearClaw == ClawState.OPEN;
-                boolean rearClawInPosition = rearClawPositionSet && runtime.milliseconds() - rearClawTime >= 500;
-                boolean rearArmInPosition = rearArmServoPos == 1.0; // TODO: Make a timer here
-                boolean rearLiftPositionSet = rearLiftMotor.getTargetPosition() == RearLift.IDLE.motorPos;
-                boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() == RearLift.IDLE.motorPos;
-
-                boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
-                        && rearClawInPosition && rearArmInPosition && rearLiftInPosition;
 
                 if (!rearClawPositionSet) {
                     rearClaw = ClawState.OPEN;
@@ -215,7 +229,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
                     frontClaw = ClawState.CLOSED;
                     frontClawTime = runtime.milliseconds();
                 } else if (!frontWristPositionSet) {
-                    fWristPos = FrontArm.RETRACTED.wristPos;
+                    frontArm = FrontArm.RETRACTED;
                     frontWristTime = runtime.milliseconds();
                 } else if (!frontArmPositionSet) {
                     fArmMotor.setTargetPosition(0);
@@ -234,13 +248,14 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
                 } else if (diff <= 1000) {
                     frontClaw = ClawState.OPEN;
                 } else if (diff <= 1200) {
-                    fWristPos = 0.7;
+                    frontArm = FrontArm.WRIST_DOWN;
                 } else if (diff <= 1500) {
                     rearArmServoPos = 0.7;
                 } else if (diff <= 1700) {
-                    fWristPos = FrontArm.RETRACTED.wristPos;
+                    frontArm = FrontArm.RETRACTED;
                 } else {
                     tryingHandoff = false;
+                    handoffTime = -1.0;
                 }
             }
         }
@@ -258,12 +273,14 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         double fClawLPos = frontClaw.flPos;
         double fClawRPos = frontClaw.frPos;
         double fWTimeDiff = runtime.milliseconds() - frontWristTime;
-        boolean shouldOffset = fWrist.getPosition() == 0.95 && fWTimeDiff > 700 && fWTimeDiff < 780;
+        boolean shouldOffset = fWrist.getPosition() == FrontArm.RETRACTED.wristPos && fWTimeDiff > 800 && fWTimeDiff < 900;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
         if (shouldOffset) {
             fClawLPos -= ClawState.ADAPT_OFFSET;
             fClawRPos += ClawState.ADAPT_OFFSET;
         }
+        double rearElbowOffset = offsetForDeposit ? 0.1 : 0.00;
+        rearElbowOffset += gamepad2.left_stick_y/10.0;
 
         // Set attachment actuators powers/positions
         fClawL.setPosition(fClawLPos);
@@ -271,10 +288,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rClawL.setPosition(rearClaw.blPos);
         rClawR.setPosition(rearClaw.brPos);
         fWrist.setPosition(frontArm.wristPos);
-        rearWrist.setPosition(rWristPos);
-        rearArmServo.setPosition(rearArmServoPos);
+        rearWrist.setPosition(rearArm.wristPos);
+        rearArmServo.setPosition(rearArm.elbowPos - rearElbowOffset);
         rearLiftMotor.setPower(rearLiftPower);
 
+        lastX = gamepad2.x;
 
         // Show telemetry to the DS
         telemetry.addData("Wrist Position", fWrist.getPosition());
@@ -287,6 +305,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.addData("Trying Handoff", tryingHandoff);
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Back Claw", rearClaw);
+        telemetry.addData("Rear Arm", rearArm);
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
@@ -300,7 +319,30 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.addLine("Right joystick | ")
                 .addData("x", gamepad1.right_stick_x)
                 .addData("y", gamepad1.right_stick_y);
+        telemetry.addLine("Back Left joystick | ")
+                .addData("x", gamepad2.left_stick_x)
+                .addData("y", gamepad2.left_stick_y);
+        telemetry.addLine("Back Right joystick | ")
+                .addData("x", gamepad2.right_stick_x)
+                .addData("y", gamepad2.right_stick_y);
         telemetry.addData("Slow mode", slowMode);
+        telemetry.addData("frontClawPositionSet", frontClawPositionSet);
+        telemetry.addData("frontClawInPosition", frontClawInPosition);
+        telemetry.addData("frontWristPositionSet", frontWristPositionSet);
+        telemetry.addData("frontWristInPosition", frontWristInPosition);
+        telemetry.addData("frontArmPositionSet", frontArmPositionSet);
+        telemetry.addData("frontArmInPosition", frontArmInPosition);
+
+        telemetry.addData("rearClawPositionSet", rearClawPositionSet);
+        telemetry.addData("rearClawInPosition", rearClawInPosition);
+        telemetry.addData("rearArmInPosition", rearArmInPosition);
+        telemetry.addData("rearLiftPositionSet", rearLiftPositionSet);
+        telemetry.addData("rearLiftInPosition", rearLiftInPosition);
+
+        telemetry.addData("everythingInPlace", everythingInPlace);
+        telemetry.addData("handoffTime", handoffTime);
+        telemetry.addData("rearArmServoPos", rearArmServoPos);
+
         telemetry.update();
     }
 
