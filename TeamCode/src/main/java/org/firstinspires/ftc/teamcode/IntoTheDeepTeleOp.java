@@ -14,9 +14,13 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     double lateral;
     double yaw;
     boolean slowMode;
+    boolean lastRb = false;
+    boolean reversedControls = true;
+    boolean lastY = false;
     boolean overrideNoLift;
     double rearLiftPower = 0.0;
     double handoffTime = -1.0;
+    double manualFrontClawOffsetTime = 0.0;
     boolean tryingHandoff = false;
     boolean autoMovingLift = false;
     boolean offsetForDeposit = false;
@@ -46,10 +50,8 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         double rightBackPower;
 
         // Divides the wheel speed in half (or doubles it, depends on how you look at it)
-        if (gamepad1.right_bumper && !slowMode) {
-            slowMode = true;
-        } else if (gamepad1.left_bumper && slowMode) {
-            slowMode = false;
+        if (gamepad1.right_bumper && !lastRb) {
+            slowMode = !slowMode;
         }
 
         // Overrides the encoder limits on the rear lift motor
@@ -74,6 +76,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             yaw = gamepad1.right_stick_x;
         } else {
             yaw = 0;
+        }
+
+        if (reversedControls) {
+            axial = -axial;
+            lateral = -lateral;
         }
 
         leftFrontPower = axial + lateral + yaw;
@@ -129,11 +136,21 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
         // Front Arm Extension Logic
         if (gamepad1.dpad_up) {
+            boolean canMove = fArmMotor.getCurrentPosition() <= 800;
             rue(fArmMotor);
-            fArmMotor.setPower(1.0);
+            if (canMove || overrideNoLift) {
+                fArmMotor.setPower(1.0);
+            } else {
+                fArmMotor.setPower(0.0);
+            }
         } else if (gamepad1.dpad_down) {
+            boolean canMove = fArmMotor.getCurrentPosition() >= 0;
             rue(fArmMotor);
-            fArmMotor.setPower(-1.0);
+            if (canMove || overrideNoLift) {
+                fArmMotor.setPower(-1.0);
+            } else {
+                fArmMotor.setPower(0.0);
+            }
         } else if (gamepad1.dpad_left) {
             fArmMotor.setTargetPosition(0);
             fArmMotor.setPower(1.0);
@@ -266,6 +283,10 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
+        if (gamepad1.left_bumper) {
+            manualFrontClawOffsetTime = runtime.milliseconds();
+        }
+
         // Adapt the front claw position if all of the following conditions are met:
         // 1. The front wrist is being moved to the up position
         // 2. It has been more than .7 seconds since the 'move up' command was given
@@ -275,12 +296,16 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         double fWTimeDiff = runtime.milliseconds() - frontWristTime;
         boolean shouldOffset = fWrist.getPosition() == FrontArm.RETRACTED.wristPos && fWTimeDiff > 800 && fWTimeDiff < 900;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
-        if (shouldOffset) {
+        if (shouldOffset || runtime.milliseconds() - manualFrontClawOffsetTime <= 100.0) {
             fClawLPos -= ClawState.ADAPT_OFFSET;
             fClawRPos += ClawState.ADAPT_OFFSET;
         }
         double rearElbowOffset = offsetForDeposit ? 0.1 : 0.00;
         rearElbowOffset += gamepad2.left_stick_y/10.0;
+
+        if (manualFrontClawOffsetTime >= 0.0) {
+            manualFrontClawOffsetTime--;
+        }
 
         // Set attachment actuators powers/positions
         fClawL.setPosition(fClawLPos);
@@ -293,6 +318,8 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rearLiftMotor.setPower(rearLiftPower);
 
         lastX = gamepad2.x;
+        lastRb = gamepad1.right_bumper;
+        lastY = gamepad1.y;
 
         // Show telemetry to the DS
         telemetry.addData("Wrist Position", fWrist.getPosition());

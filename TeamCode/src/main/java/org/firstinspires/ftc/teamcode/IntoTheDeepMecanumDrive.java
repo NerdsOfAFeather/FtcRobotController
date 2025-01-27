@@ -104,7 +104,7 @@ public class IntoTheDeepMecanumDrive extends MecanumDrive {
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
-            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+            motorConfigurationType.setAchieveableMaxRPMFraction(0.5);
             motor.setMotorType(motorConfigurationType);
         }
 
