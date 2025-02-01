@@ -123,7 +123,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     enum RearLift {
         IDLE(0),
         LOW(2180),
-        HIGH(4800)
+        HIGH(4400)
         ;
 
         final int motorPos;
@@ -165,7 +165,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum RearArm {
         IN_ROBOT(1.0, 0.45, RearLift.IDLE),
-        DEPOSIT_SAMPLE(0.4, 0.6, RearLift.HIGH),
+        DEPOSIT_SAMPLE(0.5, 0.6, RearLift.HIGH),
         DEPOSIT_LOW_SPEC(0.3, 0.9, RearLift.IDLE),
         DEPOSIT_HIGH_SPEC(0.3, 0.6, RearLift.LOW),
         PICKUP_SPEC(0.0, 0.3, RearLift.IDLE)

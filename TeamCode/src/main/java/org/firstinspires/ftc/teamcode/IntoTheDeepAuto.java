@@ -19,11 +19,11 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
         initAuto();
 
-        fWrist.setPosition(1.0);
         fClawL.setPosition(ClawState.OPEN.flPos);
         fClawR.setPosition(ClawState.OPEN.frPos);
         rClawL.setPosition(ClawState.CLOSED.blPos);
         rClawR.setPosition(ClawState.CLOSED.brPos);
+        fWrist.setPosition(FrontArm.RETRACTED.wristPos);
 
         //startAndEnableRobotVision();
 
@@ -55,7 +55,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         fClawL.setPosition(ClawState.OPEN.flPos);
         fClawR.setPosition(ClawState.OPEN.frPos);
         rClawL.setPosition(ClawState.CLOSED.blPos);
-        fClawR.setPosition(ClawState.CLOSED.brPos);
+        rClawR.setPosition(ClawState.CLOSED.brPos);
         fWrist.setPosition(FrontArm.WRIST_DOWN.wristPos);
 
         if (team == RED_RIGHT) {
