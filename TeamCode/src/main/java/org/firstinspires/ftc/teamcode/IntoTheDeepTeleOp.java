@@ -15,7 +15,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     double yaw;
     boolean slowMode;
     boolean lastRb = false;
-    boolean reversedControls = true;
+    boolean reversedControls = false;
     boolean lastY = false;
     boolean overrideNoLift;
     double rearLiftPower = 0.0;
@@ -59,6 +59,10 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             overrideNoLift = true;
         } else if (gamepad2.left_bumper && overrideNoLift) {
             overrideNoLift = false;
+        }
+
+        if (gamepad1.y && !lastY) {
+            reversedControls = !reversedControls;
         }
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -307,6 +311,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             manualFrontClawOffsetTime--;
         }
 
+        double rearElbowPos = rearArm.elbowPos - rearElbowOffset;
+        if (rearArm == RearArm.DEPOSIT_HIGH_SPEC && rearLiftMotor.getCurrentPosition() >= rearLiftMotor.getTargetPosition()) {
+            rearElbowPos = RearArm.PICKUP_SPEC.elbowPos;
+        }
+
         // Set attachment actuators powers/positions
         fClawL.setPosition(fClawLPos);
         fClawR.setPosition(fClawRPos);
@@ -314,7 +323,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rClawR.setPosition(rearClaw.brPos);
         fWrist.setPosition(frontArm.wristPos);
         rearWrist.setPosition(rearArm.wristPos);
-        rearArmServo.setPosition(rearArm.elbowPos - rearElbowOffset);
+        rearArmServo.setPosition(rearElbowPos);
         rearLiftMotor.setPower(rearLiftPower);
 
         lastX = gamepad2.x;
