@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.TeamColor.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @Autonomous(name = "IntoTheDeepAuto", group = "Autonomous", preselectTeleOp = "IntoTheDeepTeleOp2p")
+@Disabled
 public class IntoTheDeepAuto extends IntoTheDeepConfig {
     static int delay = 0;
     static boolean stopped = false;

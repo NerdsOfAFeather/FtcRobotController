@@ -1,18 +1,52 @@
+/* Copyright (c) 2017 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="IntoTheDeepTeleOp", group="OpMode")
-//@Disabled
-public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
+import org.firstinspires.ftc.teamcode.stampede.Stampede;
 
-    private ElapsedTime runtime = new ElapsedTime();
-    double axial;
-    double lateral;
-    double yaw;
+@TeleOp(name = "StampedeEnhancedTeleOp")
+public class StampedeEnhancedTeleOp extends IntoTheDeepConfig {
+
+    /* Declare OpMode members. */
+    Stampede stampede;
+    double x1, y1, x2;
+    double speedfactor = 0.75;
+    double driveAngle = 0;
+    double driveAngleCheckTime = 0;
+    ElapsedTime runtime = new ElapsedTime();
+
     boolean slowMode;
     boolean lastRb = false;
     boolean reversedControls = false;
@@ -25,14 +59,22 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
     boolean autoMovingLift = false;
     boolean offsetForDeposit = false;
     boolean lastX = false;
-    double rearElbowPos2 = 0.0;
 
-    final double SPEED_MULTIPLIER = 0.75;
+    public void initRobot() {
+        stampede = new Stampede();
+        initAttachmentHardware();
+    }
 
+    /*
+     * Code to run ONCE when the driver hits INIT
+     */
     @Override
     public void init() {
-        initDriveHardware();
-        initAttachmentHardware();
+        initRobot();
+        stampede.init(hardwareMap);
+        // You can set the robot's starting orientation
+        stampede.angleTracker.setOrientation(180);
+
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -44,11 +86,6 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
     @Override
     public void loop() {
-        double max;
-        double leftFrontPower;
-        double rightFrontPower;
-        double leftBackPower;
-        double rightBackPower;
 
         // Divides the wheel speed in half (or doubles it, depends on how you look at it)
         if (gamepad1.right_bumper && !lastRb) {
@@ -66,54 +103,41 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             reversedControls = !reversedControls;
         }
 
-        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        if (Math.abs(gamepad1.left_stick_y) >= 0.2) {
-            axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+        //turn correcting
+        if (Math.abs(gamepad1.left_stick_y) > .2) {
+            y1 = -gamepad1.left_stick_y;
+        }
+        if (Math.abs(gamepad1.left_stick_x) > .2) {
+            x1 = gamepad1.left_stick_x;
+        }
+        boolean corrected = false;
+        if (Math.abs(gamepad1.right_stick_x) > .2) {
+            // are we turning?  If so, remember our current heading
+            x2 = gamepad1.right_stick_x;
+            driveAngle = stampede.angleTracker.getOrientation();
+            driveAngleCheckTime = getRuntime() + 0.25;
+
+        } else if (Math.abs(gamepad1.left_stick_x) > .2 || Math.abs(gamepad1.left_stick_y) > .2 &&
+                getRuntime() > driveAngleCheckTime) {
+            // we aren't turning, but we are moving.  Rotate back to the original heading when we started moving
+            if (Math.abs(stampede.angleDifference(stampede.angleTracker.getOrientation(), driveAngle)) > 0.5) {
+                x2 = stampede.angleDifference(stampede.angleTracker.getOrientation(), driveAngle) / 25;
+                corrected = true;
+            }
         } else {
-            axial = 0;
+            // we aren't moving at all, note which way we are facing
+            driveAngle = stampede.angleTracker.getOrientation();
         }
-        if (Math.abs(gamepad1.left_stick_x) >= 0.2) {
-            lateral = gamepad1.left_stick_x;
-        } else {
-            lateral = 0;
+        if (gamepad1.left_trigger > .4) {
+            speedfactor = 0.25;
+        } else if (gamepad1.right_trigger > .2) {
+            speedfactor = 1;
         }
-        if (Math.abs(gamepad1.right_stick_x) >= 0.2) {
-            yaw = gamepad1.right_stick_x;
-        } else {
-            yaw = 0;
-        }
-
-        if (reversedControls) {
-            axial = -axial;
-            lateral = -lateral;
-        }
-
-        leftFrontPower = axial + lateral + yaw;
-        rightFrontPower = axial - lateral - yaw;
-        leftBackPower = axial - lateral + yaw;
-        rightBackPower = axial + lateral - yaw;
-        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-        max = Math.max(max, Math.abs(leftBackPower));
-        max = Math.max(max, Math.abs(rightBackPower));
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
-        }
-
-        leftFrontPower *= SPEED_MULTIPLIER;
-        rightFrontPower *= SPEED_MULTIPLIER;
-        leftBackPower *= SPEED_MULTIPLIER;
-        rightBackPower *= SPEED_MULTIPLIER;
-
-        // Apply slowMode
-        if (slowMode) {
-            leftFrontPower /= 2;
-            rightFrontPower /= 2;
-            leftBackPower /= 2;
-            rightBackPower /= 2;
-        }
+        x1 *= speedfactor;
+        y1 *= speedfactor;
+        x2 *= speedfactor;
+        stampede.drive(reversedControls ? -y1 : y1, reversedControls ? -x1 : x1, x2, telemetry);
+        telemetry.addData("Autoturning Active", corrected ? "Yes" : "No");
 
         // Toggle front claw position (with a .5 second delay between inputs)
         // TODO: Replace these timeouts with a was last pressed but still keep track of the time just in case
@@ -141,7 +165,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
         // Front Arm Extension Logic
         if (gamepad1.dpad_up) {
-            boolean canMove = fArmMotor.getCurrentPosition() <= 1300;
+            boolean canMove = fArmMotor.getCurrentPosition() <= 1200;
             rue(fArmMotor);
             if (canMove || overrideNoLift) {
                 fArmMotor.setPower(1.0);
@@ -202,9 +226,9 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             rearLiftPower = 0;
         }
         if (autoMovingLift) {
-             rearLiftMotor.setTargetPosition(rearArm.liftHeight.motorPos);
-             rearLiftPower = 1.0;
-             rtp(rearLiftMotor);
+            rearLiftMotor.setTargetPosition(rearArm.liftHeight.motorPos);
+            rearLiftPower = 1.0;
+            rtp(rearLiftMotor);
         }
         if (gamepad2.x && !lastX) {
             offsetForDeposit = !offsetForDeposit;
@@ -282,12 +306,6 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             }
         }
 
-        // Set drive motor powers
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
-
         if (gamepad1.left_bumper) {
             manualFrontClawOffsetTime = runtime.milliseconds();
         }
@@ -317,8 +335,6 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
             rearElbowPos = RearArm.PICKUP_SPEC.elbowPos;
         }
 
-        rearElbowPos2 += gamepad2.left_stick_x /100;
-
         // Set attachment actuators powers/positions
         fClawL.setPosition(fClawLPos);
         fClawR.setPosition(fClawRPos);
@@ -326,7 +342,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rClawR.setPosition(rearClaw.brPos);
         fWrist.setPosition(frontArm.wristPos);
         rearWrist.setPosition(rearArm.wristPos);
-        //rearArmServo.setPosition(rearElbowPos2);
+        rearArmServo.setPosition(rearElbowPos);
         rearLiftMotor.setPower(rearLiftPower);
 
         lastX = gamepad2.x;
@@ -345,11 +361,11 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Back Claw", rearClaw);
         telemetry.addData("Rear Arm", rearArm);
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
-        telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
-        telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
+        telemetry.addData("Front left/Right", "%4.2f, %4.2f", stampede.driveFrontLeft.getPower(), stampede.driveFrontRight.getPower());
+        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", stampede.driveRearLeft.getPower(), stampede.driveRearRight.getPower());
+        telemetry.addData("EncoderRight", stampede.odopodRight.getCurrentPosition());
+        telemetry.addData("EncoderCenter", stampede.odopodMiddle.getCurrentPosition());
+        telemetry.addData("EncoderLeft", stampede.odopodLeft.getCurrentPosition());
         telemetry.addData("ArmExtension", fArmMotor.getCurrentPosition());
         telemetry.addData("VerticalArm", rearLiftMotor.getCurrentPosition());
         telemetry.addLine("Left joystick | ")
@@ -381,9 +397,25 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.addData("everythingInPlace", everythingInPlace);
         telemetry.addData("handoffTime", handoffTime);
         telemetry.addData("rearArmServoPos", rearArmServoPos);
-        telemetry.addData("rearElbowPOS2", rearElbowPos2);
 
+
+
+
+
+
+
+
+
+
+        stampede.updateFieldPosition();
+        stampede.reportTelemetry(telemetry);
         telemetry.update();
     }
 
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
+    }
 }

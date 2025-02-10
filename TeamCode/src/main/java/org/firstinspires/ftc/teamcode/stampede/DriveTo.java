@@ -12,13 +12,13 @@ public class DriveTo {
 
     /** Distance from target when robot starts slowing down (in inches). */
     //the P value of PID is 1/FULL_SPEED_DISTANCE, making FULL_SPEED_DISTANCE bigger makes the P decrease
-    public static double FULL_SPEED_DISTANCE = 12;
+    public static double FULL_SPEED_DISTANCE = 6;
 
     /** Angle from the target when the robot starts slowing down (in degrees).   */
     public static double FULL_SPEED_ANGLE = 20;
 
     /** Distance from target, when not stopping between actions, that it starts slowing down at (in inches). */
-    public static double NO_STOP_FULL_SPEED_DISTANCE = 12;
+    public static double NO_STOP_FULL_SPEED_DISTANCE = 6;
 
     /** Angle from target, when not stopping between actions, that it starts slowing down at (in degrees).   */
     public static double NO_STOP_FULL_SPEED_ANGLE = 20;
@@ -36,7 +36,7 @@ public class DriveTo {
     public static double NO_STOP_CLOSE_ENOUGH_ANGLE = 3;
 
     /** When stopped before starting an action, the time it takes to speed up to maxSpeedFactor (in seconds)    */
-    public static double TIME_TO_SPEED_UP = .5;
+    public static double TIME_TO_SPEED_UP = 2;
 
     /** Factor determining how far the speed can stray from the target speed (on x and y values)   */
     public static double DISTANCE_PID_D = 0.01;

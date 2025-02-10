@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -66,29 +65,29 @@ public class Stampede {
      *
      * Total left odometry pod encoder count when traveling a decided forward distance (IF its negative, keep the negative sign).
      */
-    static double LEFT_ENCODER_FORWARD_VALUE = -31297 + -31422 + -31945 + -31571;
+    static double LEFT_ENCODER_FORWARD_VALUE =  181026 + 179756 + 179785 + 180738;
     /** Total middle odometry pod encoder count when traveling a decided forward distance (IF its negative, keep the negative sign). */
-    static double MIDDLE_ENCODER_FORWARD_VALUE = -398 + -840 + -669 + -686;
+    static double MIDDLE_ENCODER_FORWARD_VALUE = -267 + -390 + -148 + 363;
     /** Total right odometry pod encoder count when traveling a decided forward distance (IF its negative, keep the negative sign). */
-    static double RIGHT_ENCODER_FORWARD_VALUE = -32007 + -32042 + -31976 + -31996;
+    static double RIGHT_ENCODER_FORWARD_VALUE = 182656 + 180137 + 181181 + 181341;
     /** Decided distance from encoder forward value tests (we drove forward 96in) times number of tests (in inches). */
     static double FORWARD_TRAVEL = 96 * 4;
 
     /** Total left odometry pod encoder count when traveling a decided strafe distance (IF its negative, keep the negative sign). */
-    static double LEFT_ENCODER_STRAFE_VALUE = 727 + 94 + -187 + 1597;
+    static double LEFT_ENCODER_STRAFE_VALUE = 678 + 2801 + 833 + 1785;
     /** Total middle odometry pod encoder count when traveling a decided strafe distance (IF its negative, keep the negative sign). */
-    static double MIDDLE_ENCODER_STRAFE_VALUE = -31983 + -32027 + -32093 + -31979;
+    static double MIDDLE_ENCODER_STRAFE_VALUE = 181503 + 179593 + 179849 + 180210;
     /** Total right odometry pod encoder count when traveling a decided strafe distance (IF its negative, keep the negative sign). */
-    static double RIGHT_ENCODER_STRAFE_VALUE = -455 + -1147 + -1384 + -204;
+    static double RIGHT_ENCODER_STRAFE_VALUE = 191 + 2395 + 1628 + -828;
     /** Decided distance from encoder strafe value tests (we strafed right 96in) times number of tests (in inches). */
     static double STRAFE_TRAVEL = 96 * 4;
 
     /** Total left odometry pod encoder count when spinning a decided amount (IF its negative, keep the negative sign). */
-    static double LEFT_ENCODER_CW_TURN = 132984 + 133344 + 138101 + 137789;
+    static double LEFT_ENCODER_CW_TURN = 382383 + 377900 + 380522 + 380284;
     /** Total middle odometry pod encoder count when spinning a decided amount (IF its negative, keep the negative sign). */
-    static double MIDDLE_ENCODER_CW_TURN = 74385 + 73464 + 86852 + 86790;
+    static double MIDDLE_ENCODER_CW_TURN = -86231 + -87340 + -92430 + -94367;
     /** Total right odometry pod encoder count when spinning a decided amount (IF its negative, keep the negative sign). */
-    static double RIGHT_ENCODER_CW_TURN = -126787 + -126350 + -120872 + -121079;
+    static double RIGHT_ENCODER_CW_TURN = -345231 + -348105 + -348206 + -346163;
     /**
      * Decided amount from encoder spinning value tests [we spun clockwise (CW) ten times (3600 degrees)] times number
      * of tests (in inches).
@@ -158,9 +157,14 @@ public class Stampede {
     public void initWheelHardware(boolean withEncoder) {
         // These PID values worked for us (using REV ultraplanetary motors)
         driveFrontLeft = setUpEncoderMotor("FrontLeftDrive", DcMotor.Direction.FORWARD, 12, 10, 0.0, 5.0, withEncoder);
-        driveFrontRight = setUpEncoderMotor("FrontRightDrive", DcMotor.Direction.FORWARD, 12, 10, 0.0, 5.0, withEncoder);
-        driveRearLeft = setUpEncoderMotor("BackLeftDrive", DcMotor.Direction.REVERSE, 12, 10, 0.0, 5.0, withEncoder);
+        driveFrontRight = setUpEncoderMotor("FrontRightDrive", DcMotor.Direction.REVERSE, 12, 10, 0.0, 5.0, withEncoder);
+        driveRearLeft = setUpEncoderMotor("BackLeftDrive", DcMotor.Direction.FORWARD, 12, 10, 0.0, 5.0, withEncoder);
         driveRearRight = setUpEncoderMotor("BackRightDrive", DcMotor.Direction.REVERSE, 12, 10, 0.0, 5.0, withEncoder);
+
+        driveFrontLeft.setZeroPowerBehavior(BRAKE);
+        driveFrontRight.setZeroPowerBehavior(BRAKE);
+        driveRearLeft.setZeroPowerBehavior(BRAKE);
+        driveRearRight.setZeroPowerBehavior(BRAKE);
 
         hasWheelEncoders = withEncoder;
     }
@@ -185,9 +189,9 @@ public class Stampede {
         initWheelHardware(false);
         // If using odometry pods pass true, otherwise pass false
         if (true) {
-            odopodLeft = hwMap.get(DcMotorEx.class, "BackLeftDrive");
+            odopodLeft = hwMap.get(DcMotorEx.class, "FrontLeftDrive");
             odopodRight = hwMap.get(DcMotorEx.class, "BackRightDrive");
-            odopodMiddle = hwMap.get(DcMotorEx.class, "FrontLeftDrive");
+            odopodMiddle = hwMap.get(DcMotorEx.class, "BackLeftDrive");
         }
         // If using SparkFun otos pass true, otherwise pass false
         if (false) {

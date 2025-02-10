@@ -31,7 +31,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     IMU imu;
 
     ClawState rearClaw = ClawState.CLOSED;
-    ClawState frontClaw = ClawState.CLOSED;
+    protected ClawState frontClaw = ClawState.CLOSED;
     FrontArm frontArm = FrontArm.RETRACTED;
     RearArm rearArm = RearArm.IN_ROBOT;
 
@@ -106,8 +106,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum FrontArm {
         EXTENDED(1, 0.9),
-        EXTENDED_DOWN(1, 0.2),
-        WRIST_DOWN(0, 0.2),
+        EXTENDED_DOWN(1, 0.1),
+        WRIST_DOWN(0, 0.1),
         RETRACTED(0, 0.9)
         ;
 
@@ -122,7 +122,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum RearLift {
         IDLE(0),
-        LOW(2180),
+        LOW(2500),
         HIGH(4400)
         ;
 
@@ -135,8 +135,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum ClawState {
         //      Front Left,Front Right,Back Left,Back Right
-        OPEN   (0.6, 0.7, 0.8, 0.2),
-        CLOSED (1.0, 0.3, 0.2, 0.8)
+        OPEN   (0.6, 0.8, 0.8, 0.2),
+        CLOSED (1.0, 0.4, 0.2, 0.8)
         ;
 
         final double flPos;
@@ -164,10 +164,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum RearArm {
-        IN_ROBOT(1.0, 0.45, RearLift.IDLE),
+        IN_ROBOT(1.0, 0.4, RearLift.IDLE),
         DEPOSIT_SAMPLE(0.5, 0.6, RearLift.HIGH),
         DEPOSIT_LOW_SPEC(0.3, 0.9, RearLift.IDLE),
-        DEPOSIT_HIGH_SPEC(0.3, 0.6, RearLift.LOW),
+        DEPOSIT_HIGH_SPEC(0.3, 0.9, RearLift.LOW),
         PICKUP_SPEC(0.0, 0.3, RearLift.IDLE)
         ;
 

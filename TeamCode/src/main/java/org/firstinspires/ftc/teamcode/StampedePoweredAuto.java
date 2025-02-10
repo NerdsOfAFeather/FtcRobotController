@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.test;
+package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LEFT;
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_RIGHT;
@@ -6,9 +6,8 @@ import static org.firstinspires.ftc.teamcode.TeamColor.RED_LEFT;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED_RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.IntoTheDeepConfig;
 import org.firstinspires.ftc.teamcode.stampede.DriveTo;
 import org.firstinspires.ftc.teamcode.stampede.Stampede;
 
@@ -16,12 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-@Autonomous(name = "StampedeTestAuto", group = "Autonomous")
-public class AutoExample extends IntoTheDeepConfig {
-    boolean isRed = false;
-    boolean isAudience = false;
-    boolean recentIsRedChange = false;
-    boolean recentAudienceChange = false;
+@Autonomous(name = "StampedePoweredAuto", group = "Autonomous", preselectTeleOp = "StampedeEnhancedTeleOp")
+public class StampedePoweredAuto extends IntoTheDeepConfig {
+    boolean liftPosSet = false;
+    boolean liftInPosition = false;
     DriveTo driveTo;
     Stampede stampede;
     // This is the FIRST state for the State Machine
@@ -40,30 +37,38 @@ public class AutoExample extends IntoTheDeepConfig {
     public void init() {
         stampede = new Stampede();
         stampede.init(hardwareMap);
+        initAttachmentHardware();
+        rearArmServo.setPosition(RearArm.IN_ROBOT.elbowPos);
+        rearWrist.setPosition(RearArm.IN_ROBOT.wristPos);
+        rClawL.setPosition(ClawState.CLOSED.blPos);
+        rClawR.setPosition(ClawState.CLOSED.brPos);
+        fClawL.setPosition(ClawState.CLOSED.flPos);
+        fClawR.setPosition(ClawState.CLOSED.frPos);
+        fWrist.setPosition(0.5);
 
         driveTo = new DriveTo(stampede, telemetry);
 
         //x, y, heading for start positions
-        drivePositionsAudienceRed.put("start", new double[]{-12, -63, 90});
-        drivePositionsAudienceBlue.put("start", new double[]{-12, 63, -90});
-        drivePositionsBackRed.put("start", new double[]{12, -63, 90});
-        drivePositionsBackBlue.put("start", new double[]{12, 63, -90});
+        drivePositionsAudienceRed.put("start", new double[]{-48, -72, 90});
+        drivePositionsAudienceBlue.put("start", new double[]{0, -72, 90});
+        drivePositionsBackRed.put("start", new double[]{0, -72, 90});
+        drivePositionsBackBlue.put("start", new double[]{-48, -72, 90});
 
-        drivePositionsAudienceRed.put("Position 1", new double[]{-36, -40, 90});
-        drivePositionsAudienceBlue.put("Position 1", new double[]{-36, 40, -90});
-        drivePositionsBackRed.put("Position 1", new double[]{12, -40, 90});
-        drivePositionsBackBlue.put("Position 1", new double[]{36, 40, -90});
+        drivePositionsAudienceRed.put("Position 1", new double[]{-48, -60, 90});
+        drivePositionsAudienceBlue.put("Position 1", new double[]{0, -48, 90});
+        drivePositionsBackRed.put("Position 1", new double[]{0, -48, 90});
+        drivePositionsBackBlue.put("Position 1", new double[]{-48, -60, 90});
 
-        drivePositionsAudienceRed.put("Position 2", new double[]{24, -48, 135});
-        drivePositionsAudienceBlue.put("Position 2", new double[]{-48, 60, 0});
-        drivePositionsBackRed.put("Position 2", new double[]{48, -60, 0});
-        drivePositionsBackBlue.put("Position 2", new double[]{-24, 48, 135 + 180});
+        drivePositionsAudienceRed.put("Position 2", new double[]{-60, -60, 90});
+        drivePositionsAudienceBlue.put("Position 2", new double[]{72, -48, 90});
+        drivePositionsBackRed.put("Position 2", new double[]{0, -48, 270});
+        drivePositionsBackBlue.put("Position 2", new double[]{-60, -60, 90});
 
-        drivePositionsAudienceRed.put("Position 3", new double[]{48, -60, 135});
-        drivePositionsAudienceBlue.put("Position 3", new double[]{-48, -48, 0});
-        drivePositionsBackRed.put("Position 3", new double[]{48, -48, 0});
-        drivePositionsBackBlue.put("Position 3", new double[]{-48, 60, 135 + 180});
-    }
+        drivePositionsAudienceRed.put("Position 3", new double[]{-69, -66, 45});
+        drivePositionsAudienceBlue.put("Position 3", new double[]{0, -36, 270});
+        drivePositionsBackRed.put("Position 3", new double[]{0, -36, 270});
+        drivePositionsBackBlue.put("Position 3", new double[]{-69, -66, 45});
+    } // TODO: Add step 3 with attachments
 
     @Override
     public void init_loop() {
@@ -153,7 +158,6 @@ public class AutoExample extends IntoTheDeepConfig {
             return true;
         }
         */
-        //if ()
         if (getRuntime() < wait) {
             return true;
         }
@@ -172,12 +176,66 @@ public class AutoExample extends IntoTheDeepConfig {
     public void actionStep2() {
         // stopBetween is whether the robot will stop between positions, or just drive through the position.
         driveTo.setTargetPosition(drivePositions.get("Position 2"), .25, false);
-        nextState = "actionStep3";
+        nextState = "actionStep3"; // TODO
     }
 
     public void actionStep3() {
         driveTo.setTargetPosition(drivePositions.get("Position 3"), .5);
-        nextState = "actionStop";
+        nextState = "actionStep4";
+    }
+
+    public void actionStep4() {
+        if (drivePositions.equals(drivePositionsAudienceRed) || drivePositions.equals(drivePositionsBackBlue)) {
+            if (!liftPosSet) {
+                rearLiftMotor.setTargetPosition(RearArm.DEPOSIT_SAMPLE.liftHeight.motorPos);
+                rearLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rearLiftMotor.setPower(1.0);
+                liftPosSet = true;
+                nextState = "actionStep4";
+            } else if (!liftInPosition) {
+                rearLiftMotor.setPower(1.0);
+                if (Math.abs(rearLiftMotor.getTargetPosition() - rearLiftMotor.getCurrentPosition()) <= 50)
+                    liftInPosition = true;
+                nextState = "actionStep4";
+            } else {
+                rearLiftMotor.setPower(0.0);
+                rearArmServo.setPosition(RearArm.DEPOSIT_SAMPLE.elbowPos);
+                rearWrist.setPosition(RearArm.DEPOSIT_SAMPLE.wristPos);
+                wait = getRuntime() + 2;
+                nextState = "actionStep5";
+            }
+        } else {
+            nextState = "actionStop";
+        }
+    }
+
+    public void actionStep5() {
+        rClawL.setPosition(ClawState.OPEN.blPos);
+        rClawR.setPosition(ClawState.OPEN.brPos);
+        wait = getRuntime() + 2;
+        liftPosSet = false;
+        liftInPosition = false;
+        nextState = "actionStep6";
+    }
+
+    public void actionStep6() {
+        rearArmServo.setPosition(RearArm.IN_ROBOT.elbowPos);
+        rearWrist.setPosition(RearArm.IN_ROBOT.wristPos);
+        if (!liftPosSet) {
+            rearLiftMotor.setTargetPosition(RearArm.IN_ROBOT.liftHeight.motorPos);
+            rearLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rearLiftMotor.setPower(1.0);
+            liftPosSet = true;
+            nextState = "actionStep6";
+        } else if (!liftInPosition) {
+            rearLiftMotor.setPower(1.0);
+            if (Math.abs(rearLiftMotor.getTargetPosition() - rearLiftMotor.getCurrentPosition()) <= 50)
+                liftInPosition = true;
+            nextState = "actionStep6";
+        } else {
+            rearLiftMotor.setPower(0.0);
+            nextState = "actionStop";
+        }
     }
 
     public void actionStop() {
