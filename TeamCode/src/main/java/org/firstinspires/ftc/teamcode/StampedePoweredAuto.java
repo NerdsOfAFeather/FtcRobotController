@@ -25,6 +25,7 @@ public class StampedePoweredAuto extends IntoTheDeepConfig {
     String nextState = "actionStart";
     // We'll set this when we need to wait for an action to complete rather than check if the lift or drive is busy.
     double wait = 0;
+    int count = 4;
 
     // For where coordinates are on the field for our different auto modes (diff start positions, ect.)
     HashMap<String, double[]> drivePositionsAudienceRed = new HashMap<>();
@@ -68,6 +69,15 @@ public class StampedePoweredAuto extends IntoTheDeepConfig {
         drivePositionsAudienceBlue.put("Position 3", new double[]{0, -36, 270});
         drivePositionsBackRed.put("Position 3", new double[]{0, -36, 270});
         drivePositionsBackBlue.put("Position 3", new double[]{-69, -66, 45});
+
+        drivePositionsAudienceRed.put("Position 4", new double[]{-54, -46, 90});
+        drivePositionsBackBlue.put("Position 4", new double[]{-54, -46, 90});
+
+        drivePositionsAudienceRed.put("Position 5", new double[]{-62, -46, 90});
+        drivePositionsBackBlue.put("Position 5", new double[]{-62, -46, 90});
+
+        drivePositionsAudienceRed.put("Position 6", new double[]{-62, -46, 90});
+        drivePositionsBackBlue.put("Position 6", new double[]{-62, -46, 90});
     } // TODO: Add step 3 with attachments
 
     @Override
@@ -234,8 +244,52 @@ public class StampedePoweredAuto extends IntoTheDeepConfig {
             nextState = "actionStep6";
         } else {
             rearLiftMotor.setPower(0.0);
-            nextState = "actionStop";
+            if (count == 6)
+                nextState = "actionStop";
+            else
+                nextState = "actionStep7";
         }
+    }
+
+    public void actionStep7() {
+        driveTo.setTargetPosition(drivePositions.get("Position " + count));
+        fClawL.setPosition(ClawState.OPEN.flPos);
+        fClawR.setPosition(ClawState.OPEN.frPos);
+        nextState = "actionStep8";
+    }
+
+    public void actionStep8() {
+        fWrist.setPosition(FrontArm.WRIST_DOWN.wristPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep9";
+    }
+
+    public void actionStep9() {
+        fClawL.setPosition(ClawState.CLOSED.flPos);
+        fClawR.setPosition(ClawState.CLOSED.frPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep10";
+    }
+
+    public void actionStep10() {
+        fWrist.setPosition(FrontArm.RETRACTED.wristPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep11";
+    }
+
+    public void actionStep11() {
+        rClawL.setPosition(ClawState.CLOSED.blPos);
+        rClawR.setPosition(ClawState.CLOSED.brPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep12";
+    }
+
+    public void actionStep12() {
+        fClawL.setPosition(ClawState.OPEN.flPos);
+        fClawR.setPosition(ClawState.OPEN.frPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep3";
+        count++;
     }
 
     public void actionStop() {
