@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
@@ -15,12 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
-import androidx.annotation.Nullable;
-
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /** Created by Gavin for FTC Team 6347 */
-@Config
 public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
@@ -36,11 +28,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     public Servo rearArmServo = null;
     public Servo rearWrist = null;
     public DcMotorEx rearLiftMotor = null;
-    public IntoTheDeepMecanumDrive drive;
     IMU imu;
 
     ClawState rearClaw = ClawState.CLOSED;
-    ClawState frontClaw = ClawState.CLOSED;
+    protected ClawState frontClaw = ClawState.CLOSED;
     FrontArm frontArm = FrontArm.RETRACTED;
     RearArm rearArm = RearArm.IN_ROBOT;
 
@@ -111,13 +102,12 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         initAttachmentHardware();
         initIMU();
         initEOCV();
-        drive = new IntoTheDeepMecanumDrive(hardwareMap);
     }
 
     enum FrontArm {
         EXTENDED(1, 0.9),
-        EXTENDED_DOWN(1, 0.2),
-        WRIST_DOWN(0, 0.2),
+        EXTENDED_DOWN(1, 0.1),
+        WRIST_DOWN(0, 0.1),
         RETRACTED(0, 0.9)
         ;
 
@@ -132,7 +122,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum RearLift {
         IDLE(0),
-        LOW(2180),
+        LOW(2500),
         HIGH(4400)
         ;
 
@@ -145,8 +135,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum ClawState {
         //      Front Left,Front Right,Back Left,Back Right
-        OPEN   (0.6, 0.7, 0.8, 0.2),
-        CLOSED (1.0, 0.3, 0.2, 0.8)
+        OPEN   (0.6, 0.8, 0.8, 0.2),
+        CLOSED (1.0, 0.4, 0.2, 0.8)
         ;
 
         final double flPos;
@@ -174,10 +164,10 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     }
 
     enum RearArm {
-        IN_ROBOT(1.0, 0.45, RearLift.IDLE),
+        IN_ROBOT(1.0, 0.4, RearLift.IDLE),
         DEPOSIT_SAMPLE(0.5, 0.6, RearLift.HIGH),
         DEPOSIT_LOW_SPEC(0.3, 0.9, RearLift.IDLE),
-        DEPOSIT_HIGH_SPEC(0.3, 0.6, RearLift.LOW),
+        DEPOSIT_HIGH_SPEC(0.3, 0.9, RearLift.LOW),
         PICKUP_SPEC(0.0, 0.3, RearLift.IDLE)
         ;
 
@@ -201,47 +191,4 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void follow(Trajectory trajectory) {
-        drive.followTrajectory(trajectory);
-    }
-
-    public TrajectoryBuilder newTraj() {
-        return newTraj(new Pose2d());
-    }
-
-    public TrajectoryBuilder newTraj(Pose2d startPos) {
-        return drive.trajectoryBuilder(startPos);
-    }
-
-    public Trajectory left(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).strafeLeft(distance).build();
-    }
-
-    public Trajectory right(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).strafeRight(distance).build();
-    }
-
-    public Trajectory forward(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).forward(distance).build();
-    }
-
-    public Trajectory back(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
-    }
-
-    public void turnLeft(int deg) {
-        drive.turn(Math.toRadians(deg));
-    }
-
-    public void turnRight(int deg) {
-        drive.turn(-Math.toRadians(deg));
-    }
-
-    static Vector2d pt(double x, double y) {
-        return new Vector2d(x, y);
-    }
-
-    static double rad(double deg) {
-        return Math.toRadians(deg);
-    }
 }

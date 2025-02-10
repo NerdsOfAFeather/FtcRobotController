@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.test;
 
 import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_RIGHT;
 import static org.firstinspires.ftc.teamcode.TeamColor.RED_RIGHT;
@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.TeamColor.RED_RIGHT;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.IntoTheDeepConfig;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="IntoTheDeepCVTest", group="OpMode")
