@@ -159,8 +159,8 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     enum RearArm {
         IN_ROBOT(1.0, 0.4, RearLift.IDLE),
         DEPOSIT_SAMPLE(0.5, 0.6, RearLift.HIGH),
-        DEPOSIT_LOW_SPEC(0.3, 0.9, RearLift.IDLE),
-        DEPOSIT_HIGH_SPEC(0.3, 0.9, RearLift.LOW),
+        DEPOSIT_LOW_SPEC(0.8, 0.4, RearLift.IDLE),
+        DEPOSIT_HIGH_SPEC(0.8, 0.4, RearLift.LOW),
         PICKUP_SPEC(0.0, 0.3, RearLift.IDLE)
         ;
 

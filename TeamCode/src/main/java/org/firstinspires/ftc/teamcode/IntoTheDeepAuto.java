@@ -27,6 +27,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     // We'll set this when we need to wait for an action to complete rather than check if the lift or drive is busy.
     double wait = 0;
     int count = 4;
+    int specCount = 3;
 
     // For where coordinates are on the field for our different auto modes (diff start positions, ect.)
     HashMap<String, double[]> drivePositionsAudienceRed = new HashMap<>();
@@ -63,14 +64,15 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
         drivePositionsAudienceRed.put("Position 2", new double[]{-60, -60, 90});
         drivePositionsAudienceBlue.put("Position 2", new double[]{72, -48, 90});
-        drivePositionsBackRed.put("Position 2", new double[]{0, -48, 270});
+        drivePositionsBackRed.put("Position 2", new double[]{0, -48, 90});
         drivePositionsBackBlue.put("Position 2", new double[]{-60, -60, 90});
 
         drivePositionsAudienceRed.put("Position 3", new double[]{-69, -66, 45});
-        drivePositionsAudienceBlue.put("Position 3", new double[]{0, -36, 270});
-        drivePositionsBackRed.put("Position 3", new double[]{0, -36, 270});
+        drivePositionsAudienceBlue.put("Position 3", new double[]{0, -36, 90});
+        drivePositionsBackRed.put("Position 3", new double[]{0, -36, 90});
         drivePositionsBackBlue.put("Position 3", new double[]{-69, -66, 45});
 
+        // Samples
         drivePositionsAudienceRed.put("Position 4", new double[]{-54, -46, 90});
         drivePositionsBackBlue.put("Position 4", new double[]{-54, -46, 90});
 
@@ -79,6 +81,41 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
         drivePositionsAudienceRed.put("Position 6", new double[]{-62, -46, 90});
         drivePositionsBackBlue.put("Position 6", new double[]{-62, -46, 90});
+
+        // Specimens
+        drivePositionsAudienceBlue.put("Back Up", new double[]{0, -30, 90});
+        drivePositionsBackRed.put("Back Up", new double[]{0, -30, 90});
+
+        drivePositionsAudienceBlue.put("Move Right", new double[]{36, -30, 90});
+        drivePositionsBackRed.put("Move Right", new double[]{36, -30, 90});
+
+        drivePositionsAudienceBlue.put("Move Forward Before 1", new double[]{36, -12, 90});
+        drivePositionsBackRed.put("Move Forward Before 1", new double[]{36, -12, 90});
+
+        drivePositionsAudienceBlue.put("Move Right Before 1", new double[]{52, -12, 90});
+        drivePositionsBackRed.put("Move Right Before 1", new double[]{52, -12, 90});
+
+        drivePositionsAudienceBlue.put("Push Back 1", new double[]{52, -65, 90});
+        drivePositionsBackRed.put("Push Back 1", new double[]{52, -65, 90});
+
+        drivePositionsAudienceBlue.put("Move Forward Before 2", new double[]{52, -12, 90});
+        drivePositionsBackRed.put("Move Forward Before 2", new double[]{52, -12, 90});
+
+        drivePositionsAudienceBlue.put("Move Right Before 2", new double[]{60, -12, 90});
+        drivePositionsBackRed.put("Move Right Before 2", new double[]{60, -12, 90});
+
+        drivePositionsAudienceBlue.put("Push Back 2", new double[]{60, -65, 90});
+        drivePositionsBackRed.put("Push Back 2", new double[]{60, -65, 90});
+
+        drivePositionsAudienceBlue.put("Pickup Spec", new double[]{48, -65, 90});
+        drivePositionsBackRed.put("Pickup Spec", new double[]{48, -65, 90});
+
+        drivePositionsAudienceBlue.put("Position 4", new double[]{4, -36, 90});
+        drivePositionsBackRed.put("Position 4", new double[]{4, -36, 90});
+
+        drivePositionsAudienceBlue.put("Position 5", new double[]{8, -36, 90});
+        drivePositionsBackRed.put("Position 5", new double[]{8, -36, 90});
+
     }
 
     @Override
@@ -172,6 +209,10 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         return getRuntime() < wait;
     }
 
+    // -----------------------------------
+    // ---- Section: Common Functions ----
+    // -----------------------------------
+
     // This is the State Machine, it's the "steps" the robot will follow.
     public void actionStart() {
         driveTo.setTargetPosition(drivePositions.get("Position 1"), .25);
@@ -188,12 +229,28 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     }
 
     public void actionStep3() {
-        driveTo.setTargetPosition(drivePositions.get("Position 3"), .5);
-        if (drivePositions.equals(drivePositionsAudienceRed) || drivePositions.equals(drivePositionsBackBlue)) 
+        liftPosSet = false;
+        liftInPosition = false;
+        if (drivePositions.equals(drivePositionsAudienceRed) || drivePositions.equals(drivePositionsBackBlue)) {
+            driveTo.setTargetPosition(drivePositions.get("Position 3"), .5);
             nextState = "actionRaiseLiftForSample";
-        else 
+        } else if (drivePositions.equals(drivePositionsAudienceBlue) || drivePositions.equals(drivePositionsBackRed)) {
+            driveTo.setTargetPosition(drivePositions.get("Position " + specCount), .5);
+            nextState = "actionRaiseLiftForSpec";
+            specCount++;
+        } else
             nextState = "actionStop";
     }
+
+    public void actionStop() {
+        stampede.drive(0.0, 0.0, 0.0, telemetry);
+        driveTo.areWeThereYet = true;
+        nextState = "actionDone";
+    }
+
+    // -----------------------------------
+    // ---- Section: Sample Functions ----
+    // -----------------------------------
 
     public void actionRaiseLiftForSample() {
         if (!liftPosSet) {
@@ -290,9 +347,135 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         count++;
     }
 
-    public void actionStop() {
-        stampede.drive(0.0, 0.0, 0.0, telemetry);
-        driveTo.areWeThereYet = true;
-        nextState = "actionDone";
+    // ----------------------------------
+    // ---- Section: Spec Functions ----
+    // ----------------------------------
+
+    public void actionRaiseLiftForSpec() {
+        if (!liftPosSet) {
+            rearLiftMotor.setTargetPosition(RearArm.DEPOSIT_HIGH_SPEC.liftHeight.motorPos);
+            rearLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rearLiftMotor.setPower(1.0);
+            liftPosSet = true;
+            nextState = "actionRaiseLiftForSpec";
+        } else if (!liftInPosition) {
+            rearLiftMotor.setPower(1.0);
+            if (Math.abs(rearLiftMotor.getTargetPosition() - rearLiftMotor.getCurrentPosition()) <= 50)
+                liftInPosition = true;
+            nextState = "actionRaiseLiftForSpec";
+        } else {
+            rearLiftMotor.setPower(0.0);
+            rearArmServo.setPosition(RearArm.DEPOSIT_HIGH_SPEC.elbowPos);
+            rearWrist.setPosition(RearArm.DEPOSIT_HIGH_SPEC.wristPos);
+            wait = getRuntime() + 1;
+            nextState = "actionDepositSpec";
+            liftPosSet = false;
+            liftInPosition = false;
+        }
     }
+
+    public void actionDepositSpec() {
+        if (!liftPosSet) {
+            rearLiftMotor.setTargetPosition(RearArm.DEPOSIT_SAMPLE.liftHeight.motorPos);
+            rearLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rearLiftMotor.setPower(1.0);
+            liftPosSet = true;
+            nextState = "actionDepositSpec";
+        } else if (!liftInPosition) {
+            rearLiftMotor.setPower(1.0);
+            if (Math.abs(rearLiftMotor.getTargetPosition() - rearLiftMotor.getCurrentPosition()) <= 500)
+                liftInPosition = true;
+            nextState = "actionDepositSpec";
+        } else {
+            if (specCount == 5) {
+                count = 6;
+                nextState = "actionBackUp";
+            }
+            rearLiftMotor.setPower(0.0);
+            rClawL.setPosition(ClawState.OPEN.blPos);
+            rClawR.setPosition(ClawState.OPEN.brPos);
+            wait = getRuntime() + 1;
+            nextState = "actionSetArmPickupSpec";
+        }
+    }
+
+    public void actionSetArmPickupSpec() {
+        if (!liftPosSet) {
+            rearArmServo.setPosition(RearArm.PICKUP_SPEC.elbowPos);
+            rearWrist.setPosition(RearArm.PICKUP_SPEC.wristPos);
+            rearLiftMotor.setTargetPosition(RearArm.PICKUP_SPEC.liftHeight.motorPos);
+            rearLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rearLiftMotor.setPower(1.0);
+            liftPosSet = true;
+            nextState = "actionSetArmPickupSpec";
+        } else if (!liftInPosition) {
+            rearLiftMotor.setPower(1.0);
+            if (Math.abs(rearLiftMotor.getTargetPosition() - rearLiftMotor.getCurrentPosition()) <= 500)
+                liftInPosition = true;
+            nextState = "actionSetArmPickupSpec";
+        } else {
+            rearLiftMotor.setPower(0.0);
+            rClawL.setPosition(ClawState.OPEN.blPos);
+            rClawR.setPosition(ClawState.OPEN.brPos);
+            wait = getRuntime() + 1;
+            nextState = "actionBackUp";
+        }
+    }
+
+    public void actionBackUp() {
+        driveTo.setTargetPosition(drivePositions.get("Back Up"), .5, false);
+        if (count == 6)
+            nextState = "actionRetractArm";
+        else
+             nextState = "actionMoveRight";
+    }
+
+    public void actionMoveRight() {
+        driveTo.setTargetPosition(drivePositions.get("Move Right"), .5, false);
+        nextState = "actionMoveForwardBefore1";
+    }
+
+    public void actionMoveForwardBefore1() {
+        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 1"), .5, false);
+        nextState = "actionMoveRightBefore1";
+    }
+
+    public void actionMoveRightBefore1() {
+        driveTo.setTargetPosition(drivePositions.get("Move Right Before 1"), .5, false);
+        nextState = "actionPushBack1";
+    }
+
+    public void actionPushBack1() {
+        driveTo.setTargetPosition(drivePositions.get("Push Back 1"), .5, false);
+        nextState = "actionMoveForwardBefore2";
+    }
+
+    public void actionMoveForwardBefore2() {
+        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 2"), .5, false);
+        nextState = "actionMoveRightBefore2";
+    }
+
+    public void actionMoveRightBefore2() {
+        driveTo.setTargetPosition(drivePositions.get("Move Right Before 2"), .5, false);
+        nextState = "actionPushBack2";
+    }
+
+    public void actionPushBack2() {
+        driveTo.setTargetPosition(drivePositions.get("Push Back 2"), .5, false);
+        nextState = "actionMoveToPickupSpec";
+    }
+
+    public void actionMoveToPickupSpec() {
+        driveTo.setTargetPosition(drivePositions.get("Pickup Spec"), .5, false);
+        nextState = "actionPickupSpec";
+    }
+
+    public void actionPickupSpec() {
+        rClawL.setPosition(ClawState.CLOSED.blPos);
+        rClawR.setPosition(ClawState.CLOSED.brPos);
+        wait = getRuntime() + 1;
+        nextState = "actionStep3";
+    }
+
+
 }
