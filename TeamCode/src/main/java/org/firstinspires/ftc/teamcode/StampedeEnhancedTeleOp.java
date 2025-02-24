@@ -399,14 +399,6 @@ public class StampedeEnhancedTeleOp extends IntoTheDeepConfig {
         telemetry.addData("rearArmServoPos", rearArmServoPos);
 
 
-
-
-
-
-
-
-
-
         stampede.updateFieldPosition();
         stampede.reportTelemetry(telemetry);
         telemetry.update();

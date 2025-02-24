@@ -31,7 +31,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
     IMU imu;
 
     ClawState rearClaw = ClawState.CLOSED;
-    protected ClawState frontClaw = ClawState.CLOSED;
+    ClawState frontClaw = ClawState.CLOSED;
     FrontArm frontArm = FrontArm.RETRACTED;
     RearArm rearArm = RearArm.IN_ROBOT;
 
@@ -95,13 +95,6 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     public YawPitchRollAngles getRawAngles() {
         return imu.getRobotYawPitchRollAngles();
-    }
-
-    public void initAuto() {
-        initDriveHardware();
-        initAttachmentHardware();
-        initIMU();
-        initEOCV();
     }
 
     enum FrontArm {

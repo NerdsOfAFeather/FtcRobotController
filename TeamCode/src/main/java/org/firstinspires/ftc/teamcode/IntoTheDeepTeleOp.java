@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //@Disabled
 public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     double axial;
     double lateral;
     double yaw;
@@ -326,7 +326,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         rClawR.setPosition(rearClaw.brPos);
         fWrist.setPosition(frontArm.wristPos);
         rearWrist.setPosition(rearArm.wristPos);
-        //rearArmServo.setPosition(rearElbowPos2);
+        rearArmServo.setPosition(rearElbowPos);
         rearLiftMotor.setPower(rearLiftPower);
 
         lastX = gamepad2.x;
