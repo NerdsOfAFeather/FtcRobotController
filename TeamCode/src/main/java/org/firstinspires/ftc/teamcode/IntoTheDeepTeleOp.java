@@ -205,7 +205,8 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
         // Front Arm Extension Logic
         if (gamepad1.dpad_up) {
-            boolean canMove = fArmMotor.getCurrentPosition() <= 1300;
+            int limit = rearArm == RearArm.IN_ROBOT ? 1900 : 1300;
+            boolean canMove = fArmMotor.getCurrentPosition() <= limit;
             rue(fArmMotor);
             if (canMove || overrideNoLift) {
                 fArmMotor.setPower(1.0);

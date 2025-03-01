@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.stampede;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DriveTo {
     double xTarget;
     double yTarget;
@@ -9,6 +12,7 @@ public class DriveTo {
     double targetMaxSpeed;
     boolean stopBetweenTarget;
     boolean wasStopped = true;
+    Map<String, String> telemetryData = new HashMap<>();
 
     /** Distance from target when robot starts slowing down (in inches). */
     //the P value of PID is 1/FULL_SPEED_DISTANCE, making FULL_SPEED_DISTANCE bigger makes the P decrease
@@ -181,6 +185,11 @@ public class DriveTo {
     public void sendTelemetry(Telemetry telemetry) {
         double[] distanceToDrive = stampede.getTravelValues(xTarget, yTarget, headingTarget);
         telemetry.addData("distanceToDrive", "%4.2f %4.2f %4.2f", distanceToDrive[0], distanceToDrive[1], distanceToDrive[2]);
+        if (!telemetryData.isEmpty()) {
+            telemetry.addData("Forward Speed", telemetryData.get("Forward Speed"));
+            telemetry.addData("Right Speed", telemetryData.get("Right Speed"));
+            telemetry.addData("CW Turn Speed", telemetryData.get("CW Turn Speed"));
+        }
     }
 
     /**
@@ -265,6 +274,9 @@ public class DriveTo {
         lastTimeCheck = currentTime;
         lastDistanceToDrive = distanceToDrive;
 
+        telemetryData.put("Forward Speed", String.valueOf(forwardSpeed));
+        telemetryData.put("Right Speed", String.valueOf(rightSpeed));
+        telemetryData.put("CW Turn Speed", String.valueOf(cwTurnSpeed));
         //drive
         stampede.drive(forwardSpeed, rightSpeed, cwTurnSpeed, telemetry);
     }

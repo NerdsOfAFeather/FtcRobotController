@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.stampede.Stampede;
 
+/** Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "StampedeEnhancedTeleOp")
 public class StampedeEnhancedTeleOp extends IntoTheDeepConfig {
 
