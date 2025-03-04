@@ -24,6 +24,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     Stampede stampede;
     // This is the FIRST state for the State Machine
     String nextState = "actionStart";
+    static double speed = 2; //const speed for all the robot driving actions
     // We'll set this when we need to wait for an action to complete rather than check if the lift or drive is busy.
     double wait = 0;
     int count = 4;
@@ -45,9 +46,9 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         rearWrist.setPosition(RearArm.IN_ROBOT.wristPos);
         rClawL.setPosition(ClawState.CLOSED.blPos);
         rClawR.setPosition(ClawState.CLOSED.brPos);
-        fClawL.setPosition(ClawState.CLOSED.flPos);
-        fClawR.setPosition(ClawState.CLOSED.frPos);
-        fWrist.setPosition(0.5);
+        fClawL.setPosition(ClawState.OPEN.flPos);
+        fClawR.setPosition(ClawState.OPEN.frPos);
+        fWrist.setPosition(0.85);
 
         driveTo = new DriveTo(stampede, telemetry);
 
@@ -73,8 +74,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         drivePositionsBackBlue.put("Position 3", new double[]{-69, -66, 45});
 
         // Samples
-        drivePositionsAudienceRed.put("Position 4", new double[]{-54, -46, 90});
-        drivePositionsBackBlue.put("Position 4", new double[]{-54, -46, 90});
+        drivePositionsAudienceRed.put("Position 4", new double[]{-58, -44, 90});
+        drivePositionsBackBlue.put("Position 4", new double[]{-58, -44, 90});
 
         drivePositionsAudienceRed.put("Position 5", new double[]{-62, -46, 90});
         drivePositionsBackBlue.put("Position 5", new double[]{-62, -46, 90});
@@ -156,6 +157,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     @Override
     public void loop() {
         stampede.updateFieldPosition();
+        stampede.reportTelemetry(telemetry);
         telemetry.addData("Field Position (Coordinates)", "%.2f, %.2f, %.2f", stampede.xFieldPos, stampede.yFieldPos, stampede.headingField);
         telemetry.addData("IMU Orientation", "IMU %.2f", stampede.angleTracker.getOrientation());
         telemetry.addData("Next action", nextState);
@@ -215,16 +217,19 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
     // This is the State Machine, it's the "steps" the robot will follow.
     public void actionStart() {
-        driveTo.setTargetPosition(drivePositions.get("Position 1"), .5);
+        driveTo.areWeThereYet = false;
+        driveTo.setTargetPosition(drivePositions.get("Position 1"), speed, true);
         // This is how you can add a wait.
-        //wait = getRuntime() + 5;
+        wait = getRuntime() + 1;
         // Name what the next action should be.
         nextState = "actionStep2";
     }
 
     public void actionStep2() {
-        // stopBetween is whether the robot will stop between positions, or just drive through the position.
-        driveTo.setTargetPosition(drivePositions.get("Position 2"), .5, false);
+        driveTo.areWeThereYet = false;
+        // stopBetween is whether the robot will stop between positions, or just d rive through the position.
+        driveTo.setTargetPosition(drivePositions.get("Position 2"), speed, false);
+        wait = getRuntime() + 1;
         nextState = "actionStep3";
     }
 
@@ -232,10 +237,12 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         liftPosSet = false;
         liftInPosition = false;
         if (drivePositions.equals(drivePositionsAudienceRed) || drivePositions.equals(drivePositionsBackBlue)) {
-            driveTo.setTargetPosition(drivePositions.get("Position 3"), .5);
+            driveTo.areWeThereYet = false;
+            driveTo.setTargetPosition(drivePositions.get("Position 3"), speed,true);
             nextState = "actionRaiseLiftForSample";
         } else if (drivePositions.equals(drivePositionsAudienceBlue) || drivePositions.equals(drivePositionsBackRed)) {
-            driveTo.setTargetPosition(drivePositions.get("Position " + specCount), .5);
+            driveTo.areWeThereYet = false;
+            driveTo.setTargetPosition(drivePositions.get("Position " + specCount), speed, true);
             nextState = "actionRaiseLiftForSpec";
             specCount++;
         } else
@@ -266,7 +273,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             nextState = "actionRaiseLiftForSample";
         } else {
             rearLiftMotor.setPower(0.0);
-            rearArmServo.setPosition(RearArm.DEPOSIT_SAMPLE.elbowPos);
+            rearArmServo.setPosition(RearArm.DEPOSIT_SAMPLE.elbowPos+0.1);
             rearWrist.setPosition(RearArm.DEPOSIT_SAMPLE.wristPos);
             wait = getRuntime() + 2;
             nextState = "actionDepositSample";
@@ -284,6 +291,9 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     }
 
     public void actionRetractArm() {
+        rClawR.setPosition(ClawState.CLOSED.brPos);
+        rClawL.setPosition(ClawState.CLOSED.blPos);
+        wait = getRuntime() + 1;//wait for claw to close so it doesn't get stuck on bucket
         rearArmServo.setPosition(RearArm.IN_ROBOT.elbowPos);
         rearWrist.setPosition(RearArm.IN_ROBOT.wristPos);
         if (!liftPosSet) {
@@ -307,7 +317,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     }
 
     public void actionDriveToNextPresetSample() {
-        driveTo.setTargetPosition(drivePositions.get("Position " + count), .5);
+        driveTo.setTargetPosition(drivePositions.get("Position " + count), speed);
         fClawL.setPosition(ClawState.OPEN.flPos);
         fClawR.setPosition(ClawState.OPEN.frPos);
         nextState = "actionLowerWrist";
@@ -322,6 +332,8 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     public void actionGrabSample() {
         fClawL.setPosition(ClawState.CLOSED.flPos);
         fClawR.setPosition(ClawState.CLOSED.frPos);
+        rClawR.setPosition(ClawState.OPEN.brPos);
+        rClawL.setPosition(ClawState.OPEN.blPos);//opens the rear claw to take in the sample handoff
         wait = getRuntime() + 1;
         nextState = "actionRaiseWrist";
     }
@@ -329,6 +341,14 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     public void actionRaiseWrist() {
         fWrist.setPosition(FrontArm.RETRACTED.wristPos);
         wait = getRuntime() + 1;
+        nextState = "actionShiftSampleInFrontClaw";
+    }
+    public void actionShiftSampleInFrontClaw() {
+        fClawL.setPosition(ClawState.CLOSED.flPos - ClawState.ADAPT_OFFSET);//opens it a little
+        fClawR.setPosition(ClawState.CLOSED.frPos + ClawState.ADAPT_OFFSET);//to shift sample back
+        sleep(100);
+        fClawL.setPosition(ClawState.CLOSED.flPos);
+        fClawR.setPosition(ClawState.CLOSED.frPos);//sets the claw pos back to normal closed
         nextState = "actionCloseRearClaw";
     }
 
@@ -423,7 +443,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     }
 
     public void actionBackUp() {
-        driveTo.setTargetPosition(drivePositions.get("Back Up"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Back Up"), speed, false);
         if (count == 6)
             nextState = "actionRetractArm";
         else
@@ -431,42 +451,42 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
     }
 
     public void actionMoveRight() {
-        driveTo.setTargetPosition(drivePositions.get("Move Right"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Move Right"), speed, false);
         nextState = "actionMoveForwardBefore1";
     }
 
     public void actionMoveForwardBefore1() {
-        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 1"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 1"), speed, false);
         nextState = "actionMoveRightBefore1";
     }
 
     public void actionMoveRightBefore1() {
-        driveTo.setTargetPosition(drivePositions.get("Move Right Before 1"), .5, false);
-        nextState = "actionPushBack1";
+        driveTo.setTargetPosition(drivePositions.get("Move Right Before 1"), speed, false);
+
     }
 
     public void actionPushBack1() {
-        driveTo.setTargetPosition(drivePositions.get("Push Back 1"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Push Back 1"), speed, false);
         nextState = "actionMoveForwardBefore2";
     }
 
     public void actionMoveForwardBefore2() {
-        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 2"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Move Forward Before 2"), speed, false);
         nextState = "actionMoveRightBefore2";
     }
 
     public void actionMoveRightBefore2() {
-        driveTo.setTargetPosition(drivePositions.get("Move Right Before 2"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Move Right Before 2"), speed, false);
         nextState = "actionPushBack2";
     }
 
     public void actionPushBack2() {
-        driveTo.setTargetPosition(drivePositions.get("Push Back 2"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Push Back 2"), speed, false);
         nextState = "actionMoveToPickupSpec";
     }
 
     public void actionMoveToPickupSpec() {
-        driveTo.setTargetPosition(drivePositions.get("Pickup Spec"), .5, false);
+        driveTo.setTargetPosition(drivePositions.get("Pickup Spec"), speed, false);
         nextState = "actionPickupSpec";
     }
 

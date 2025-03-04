@@ -42,69 +42,6 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         runtime.reset();
     }
 
-    public void handoff(){
-        boolean frontClawPositionSet = frontClaw == ClawState.CLOSED;
-        boolean frontClawInPosition = frontClawPositionSet && runtime.milliseconds() - frontClawTime >= 500;
-        boolean frontWristPositionSet = fWrist.getPosition() == FrontArm.RETRACTED.wristPos;
-        boolean frontWristInPosition = frontWristPositionSet && runtime.milliseconds() - frontWristTime >= 750;
-        boolean frontArmPositionSet = fArmMotor.getTargetPosition() == 0;
-        boolean frontArmInPosition = fArmMotor.getCurrentPosition() <= 0;
-
-        boolean rearClawPositionSet = rearClaw == ClawState.OPEN;
-        boolean rearClawInPosition = rearClawPositionSet && runtime.milliseconds() - rearClawTime >= 500;
-        boolean rearArmInPosition = rearArmServoPos == 1.0; // TODO: Make a timer here
-        boolean rearLiftPositionSet = rearLiftMotor.getTargetPosition() == RearLift.IDLE.motorPos;
-        boolean rearLiftInPosition = rearLiftMotor.getCurrentPosition() <= RearLift.IDLE.motorPos;
-
-        boolean everythingInPlace = frontClawInPosition && frontWristInPosition && frontArmInPosition
-                && rearClawInPosition && rearArmInPosition && rearLiftInPosition;
-
-        if (handoffTime == -1.0) {
-
-            if (!rearClawPositionSet) {
-                rearClaw = ClawState.OPEN;
-                rearClawTime = runtime.milliseconds();
-            } else if (!rearArmInPosition) {
-                rearArmServoPos = 1.0;
-            } else if (!rearLiftPositionSet) {
-                rearLiftMotor.setTargetPosition(RearLift.IDLE.motorPos);//sets the target position
-                rearLiftPower = 1.0;
-                rtp(rearLiftMotor);//sets to target position
-            }
-            if (!frontClawPositionSet) {
-                frontClaw = ClawState.CLOSED;
-                frontClawTime = runtime.milliseconds();
-            } else if (!frontWristPositionSet) {
-                frontArm = FrontArm.RETRACTED;
-                frontWristTime = runtime.milliseconds();
-            } else if (!frontArmPositionSet) {
-                fArmMotor.setTargetPosition(0);
-                fArmMotor.setPower(1.0);
-                rtp(fArmMotor);
-            }
-            if (everythingInPlace) {
-                fArmMotor.setPower(0.0);
-                rearLiftPower = 0.0;
-                handoffTime = runtime.milliseconds();
-            }
-        } else {
-            double diff = runtime.milliseconds() - handoffTime;
-            if (diff <= 500) {
-                rearClaw = ClawState.CLOSED;
-            } else if (diff <= 1000) {
-                frontClaw = ClawState.OPEN;
-            } else if (diff <= 1200) {
-                frontArm = FrontArm.WRIST_DOWN;
-            } else if (diff <= 1500) {
-                rearArmServoPos = 0.7;
-            } else if (diff <= 1700) {
-                frontArm = FrontArm.RETRACTED;
-            } else {
-                tryingHandoff = false;
-                handoffTime = -1.0;
-            }
-        }
-    }
 
     @Override
     public void loop() {
