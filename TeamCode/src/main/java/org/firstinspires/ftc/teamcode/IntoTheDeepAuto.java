@@ -215,7 +215,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
     // This is the State Machine, it's the "steps" the robot will follow.
     public void actionStart() {
-        driveTo.setTargetPosition(drivePositions.get("Position 1"), .25);
+        driveTo.setTargetPosition(drivePositions.get("Position 1"), .5);
         // This is how you can add a wait.
         //wait = getRuntime() + 5;
         // Name what the next action should be.
@@ -224,7 +224,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
 
     public void actionStep2() {
         // stopBetween is whether the robot will stop between positions, or just drive through the position.
-        driveTo.setTargetPosition(drivePositions.get("Position 2"), .25, false);
+        driveTo.setTargetPosition(drivePositions.get("Position 2"), .5, false);
         nextState = "actionStep3";
     }
 

@@ -128,7 +128,7 @@ public abstract class IntoTheDeepConfig extends IntoTheDeepObjectDetection {
 
     enum ClawState {
         //      Front Left,Front Right,Back Left,Back Right
-        OPEN   (0.6, 0.8, 0.8, 0.2),
+        OPEN   (0.6, 0.8, 0.5, 0.5),
         CLOSED (1.0, 0.4, 0.2, 0.8)
         ;
 

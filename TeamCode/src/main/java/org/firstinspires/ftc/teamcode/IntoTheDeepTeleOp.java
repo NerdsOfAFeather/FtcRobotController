@@ -413,8 +413,8 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
-        telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
-        telemetry.addData("EncoderLeft", leftBackDrive.getCurrentPosition());
+        telemetry.addData("EncoderCenter", leftBackDrive.getCurrentPosition());
+        telemetry.addData("EncoderLeft", leftFrontDrive.getCurrentPosition());
         telemetry.addData("ArmExtension", fArmMotor.getCurrentPosition());
         telemetry.addData("VerticalArm", rearLiftMotor.getCurrentPosition());
         telemetry.addLine("Left joystick | ")
