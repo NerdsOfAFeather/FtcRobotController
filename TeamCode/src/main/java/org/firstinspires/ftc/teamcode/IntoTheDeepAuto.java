@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-@Autonomous(name = "StampedePoweredAuto", group = "Autonomous", preselectTeleOp = "StampedeEnhancedTeleOp")
+@Autonomous(name = "IntoTheDeepAuto", group = "Autonomous", preselectTeleOp = "IntoTheDeepTeleOp")
 public class IntoTheDeepAuto extends IntoTheDeepConfig {
     boolean liftPosSet = false;
     boolean liftInPosition = false;
