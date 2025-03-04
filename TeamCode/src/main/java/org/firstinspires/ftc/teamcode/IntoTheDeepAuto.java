@@ -343,10 +343,15 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
         wait = getRuntime() + 1;
         nextState = "actionShiftSampleInFrontClaw";
     }
+
     public void actionShiftSampleInFrontClaw() {
         fClawL.setPosition(ClawState.CLOSED.flPos - ClawState.ADAPT_OFFSET);//opens it a little
         fClawR.setPosition(ClawState.CLOSED.frPos + ClawState.ADAPT_OFFSET);//to shift sample back
-        sleep(100);
+        wait = getRuntime() + 0.1;
+        nextState = "actionShiftBack";
+    }
+
+    public void actionShiftBack() {
         fClawL.setPosition(ClawState.CLOSED.flPos);
         fClawR.setPosition(ClawState.CLOSED.frPos);//sets the claw pos back to normal closed
         nextState = "actionCloseRearClaw";
