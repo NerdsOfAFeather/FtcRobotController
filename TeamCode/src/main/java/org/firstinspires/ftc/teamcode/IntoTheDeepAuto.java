@@ -273,7 +273,7 @@ public class IntoTheDeepAuto extends IntoTheDeepConfig {
             nextState = "actionRaiseLiftForSample";
         } else {
             rearLiftMotor.setPower(0.0);
-            rearArmServo.setPosition(RearArm.DEPOSIT_SAMPLE.elbowPos+0.1);
+            rearArmServo.setPosition(RearArm.DEPOSIT_SAMPLE.elbowPos);
             rearWrist.setPosition(RearArm.DEPOSIT_SAMPLE.wristPos);
             wait = getRuntime() + 2;
             nextState = "actionDepositSample";

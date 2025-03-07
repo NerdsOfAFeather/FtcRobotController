@@ -303,7 +303,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         double fWTimeDiff = runtime.milliseconds() - frontWristTime;
         boolean shouldOffset = fWrist.getPosition() == FrontArm.RETRACTED.wristPos && fWTimeDiff > 800 && fWTimeDiff < 900;
         if (frontClaw != ClawState.CLOSED) shouldOffset = false;
-        if (shouldOffset || runtime.milliseconds() - manualFrontClawOffsetTime <= 100.0) {
+        if (shouldOffset || runtime.milliseconds() - manualFrontClawOffsetTime <= 50.0) {
             fClawLPos -= ClawState.ADAPT_OFFSET;
             fClawRPos += ClawState.ADAPT_OFFSET;
         }
