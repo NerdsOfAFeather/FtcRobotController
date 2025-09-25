@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "IntoTheDeepTeleOp1P", group = "Linear Opmode")
-@Disabled
+// @Disabled
 public class IntoTheDeepTeleOp1P extends IntoTheDeepConfig {
 
     private final ElapsedTime runtime = new ElapsedTime();

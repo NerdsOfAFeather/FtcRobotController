@@ -49,7 +49,7 @@ public class DriveTo {
     public static double ANGLE_PID_D = 0.0005;
 
     /** Maximum amount of time until the robot gives up on the current action and moves onto the next one (in seconds) */
-    public static double MAX_STALL_TIME = .25;
+    public static double MAX_STALL_TIME = 1;
 
     /** Minimum travel distance in order to be considered moving (in inches)     */
     public static double MIN_MOVE_DIST = 0.02;

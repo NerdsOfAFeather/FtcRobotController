@@ -315,9 +315,10 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
         }
 
         double rearElbowPos = rearArm.elbowPos - rearElbowOffset;
+        /*
         if (rearArm == RearArm.DEPOSIT_HIGH_SPEC && rearLiftMotor.getCurrentPosition() >= rearLiftMotor.getTargetPosition()) {
             rearElbowPos = RearArm.PICKUP_SPEC.elbowPos;
-        }
+        }*/
 
         rearElbowPos2 += gamepad2.left_stick_x /100;
 
@@ -382,7 +383,7 @@ public class IntoTheDeepTeleOp extends IntoTheDeepConfig {
 
         telemetry.addData("everythingInPlace", everythingInPlace);
         telemetry.addData("handoffTime", handoffTime);
-        telemetry.addData("rearArmServoPos", rearArmServoPos);
+        telemetry.addData("rearArmServoPos", rearElbowPos);
         telemetry.addData("rearElbowPOS2", rearElbowPos2);
 
         telemetry.update();
