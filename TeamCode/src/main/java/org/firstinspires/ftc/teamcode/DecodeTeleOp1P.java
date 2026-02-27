@@ -108,15 +108,15 @@ public class DecodeTeleOp1P extends DecodeConfig {
         // 2nd = 90 deg
         // Final = 270 deg
         if (gamepad1.a) {
-            outputPos = nextAvailable(outputMotor, 0);
+            outputPos = nextAvailable(storageMotor, 0);
             outputManual = false;
             outputPower = 0.25;
         } else if (gamepad1.b) {
-            outputPos = nextAvailable(outputMotor, 60);
+            outputPos = nextAvailable(storageMotor, 60);
             outputManual = false;
             outputPower = 0.25;
         } else if (gamepad1.y) {
-            outputPos = nextAvailable(outputMotor, 60);
+            outputPos = nextAvailable(storageMotor, 60);
             outputManual = false;
             outputPower = 0.25;
         } else if (gamepad1.dpad_down) {
@@ -140,10 +140,10 @@ public class DecodeTeleOp1P extends DecodeConfig {
         }
 
         if (outputManual) {
-            outputMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            storageMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
-            outputMotor.setTargetPosition(outputPos);
-            outputMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            storageMotor.setTargetPosition(outputPos);
+            storageMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         // This is test code:
@@ -168,7 +168,7 @@ public class DecodeTeleOp1P extends DecodeConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
-        outputMotor.setPower(outputPower);
+        storageMotor.setPower(outputPower);
         flywheelLeft.setPower(flywheelPower);
         flywheelRight.setPower(flywheelPower);
 
@@ -182,7 +182,7 @@ public class DecodeTeleOp1P extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftBackDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
-        telemetry.addData("Output Encoder", outputMotor.getCurrentPosition());
+        telemetry.addData("Output Encoder", storageMotor.getCurrentPosition());
         telemetry.addData("FlyLeft Encoder", flywheelLeft.getCurrentPosition());
         telemetry.addData("FlyRight Encoder", flywheelRight.getCurrentPosition());
         telemetry.addData("Output Power", outputPower);

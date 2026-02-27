@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
@@ -17,6 +19,9 @@ import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirect
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Created by Gavin for FTC Team 6347 */
 public abstract class DecodeConfig extends DecodeObjectDetection {
@@ -28,11 +33,14 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public DcMotorEx flywheelLeft = null;
     public DcMotorEx flywheelRight = null;
     public DcMotorEx intakeMotor = null;
-    public DcMotor outputMotor = null;
+    public DcMotor storageMotor = null;
+    public Servo releaseServo = null;
+    public NormalizedColorSensor storage1;
+    public NormalizedColorSensor storage2;
+    public NormalizedColorSensor storage3;
     IMU imu;
 
     public void initDriveHardware() {
-
         leftFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontLeftDrive");
         leftBackDrive = hardwareMap.get(DcMotorEx.class, "BackLeftDrive");
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
@@ -50,14 +58,25 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     }
 
     public void initIntakeHardware() {
-
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
-    public void initOutputHardware() {
+    public void initStorageHardware() {
+        storageMotor = hardwareMap.get(DcMotorEx.class, "Storage");
 
+        storageMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        storageMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        releaseServo = hardwareMap.get(Servo.class, "Release");
+
+        storage1 = hardwareMap.get(NormalizedColorSensor.class, "Storage1");
+        storage2 = hardwareMap.get(NormalizedColorSensor.class, "Storage2");
+        storage3 = hardwareMap.get(NormalizedColorSensor.class, "Storage3");
+    }
+
+    public void initOutputHardware() {
         flywheelLeft = hardwareMap.get(DcMotorEx.class, "FlywheelLeft");
         flywheelRight = hardwareMap.get(DcMotorEx.class, "FlywheelRight");
 
@@ -84,6 +103,14 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public void initAuto() {
         initDriveHardware();
         initIMU();
+    }
+
+    public Storage getStoragePositions() {
+        List<Color> colors = new ArrayList<>();
+
+        // storage1.getNormalizedColors();
+
+        return new Storage(colors);
     }
 
     public int nextAvailable(DcMotor motor, int position) {
@@ -177,7 +204,7 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     public class Flappers {
 
-        private DcMotorEx output;
+        private final DcMotorEx output;
         public Flappers(HardwareMap hardwareMap) {
             output = hardwareMap.get(DcMotorEx.class, "Output");
             output.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -228,6 +255,28 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     public Action sleep(double time) {
         return new SleepAction(time);
+    }
+
+    public class Storage {
+        final Color position1;
+        final Color position2;
+        final Color position3;
+
+        public Storage(List<Color> colors) {
+            if (colors.size() != 3) {
+                position1 = null;
+                position2 = null;
+                position3 = null;
+            } else {
+                position1 = colors.get(0);
+                position2 = colors.get(1);
+                position3 = colors.get(2);
+            }
+        }
+    }
+
+    public enum Color {
+        PURPLE, GREEN, UNKNOWN
     }
 
 }
