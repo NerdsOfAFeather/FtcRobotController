@@ -39,9 +39,6 @@ public class TemplateTeleOp extends TemplateConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        double intakePower;
-        double intakePower2;
-        double liftPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -88,82 +85,6 @@ public class TemplateTeleOp extends TemplateConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawLtime > 500) {
-            if (servoLOpen) {
-                clawLPos = 0.5; // Close
-                servoLOpen = false;
-            } else {
-                clawLPos = 1.0;
-                servoLOpen = true;
-            }
-            clawLtime = runtime.milliseconds();
-        }
-        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawRtime > 500) {
-            if (servoROpen) {
-                clawRPos = 0.5; // Close
-                servoROpen = false;
-            } else {
-                clawRPos = 0.0;
-                servoROpen = true;
-            }
-            clawRtime = runtime.milliseconds();
-        }
-
-        if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
-            intakePower = Math.pow(-gamepad2.left_stick_y, 2);
-            if (gamepad2.left_stick_y < 0) {
-                intakePower = -intakePower;
-            }
-        } else {
-            intakePower = 0;
-        }
-
-        if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            intakePower2 = Math.pow(gamepad2.right_stick_y*.6, 2);
-            if (gamepad2.right_stick_y < 0) {
-                intakePower2 = -intakePower2;
-            }
-        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
-            intakePower2 = 0;
-        } else {
-            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
-                intakePower2 = 0.25;
-                if (intakeMotor2.getCurrentPosition() > 20) {
-                    intakePower2 = 0.1;
-                }
-            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
-                intakePower2 = 0.25;
-                if (intakeMotor2.getCurrentPosition() > 10) {
-                    intakePower2 = 0.1;
-                }
-            } else {
-                intakePower2 = 0.25;
-            }
-        }
-
-        if (gamepad2.dpad_up) {
-            intakeMotor2.setTargetPosition(0);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        } else if (gamepad2.dpad_down) {
-            intakeMotor2.setTargetPosition(ARM_GROUND);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        } else if (gamepad2.dpad_left) {
-            intakeMotor2.setTargetPosition(ARM_BACKDROP);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
-        if (gamepad2.right_bumper) {
-            liftPower = 1;
-        } else if (gamepad2.left_bumper) {
-            liftPower = -1;
-        } else {
-            liftPower = 0;
-        }
-
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -185,11 +106,6 @@ public class TemplateTeleOp extends TemplateConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        intakeMotor.setPower(intakePower);
-        intakeMotor2.setPower(intakePower2);
-        liftMotor.setPower(liftPower);
-        clawServoL.setPosition(clawLPos);
-        clawServoR.setPosition(clawRPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -197,13 +113,9 @@ public class TemplateTeleOp extends TemplateConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        telemetry.addData("Intake Power", intakePower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
-        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
-        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
-        telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)

@@ -9,12 +9,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -27,7 +25,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -37,11 +34,6 @@ public abstract class TemplateObjectDetection extends OpMode {
      * The variable to store our instance of the AprilTag processor.
      */
     private AprilTagProcessor aprilTag;
-
-    /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
-     */
-    private TfodProcessor tfod;
 
     /**
      * The variable to store our instance of the vision portal.
@@ -54,15 +46,12 @@ public abstract class TemplateObjectDetection extends OpMode {
 
     protected void startAndEnableRobotVision() {
         initAprilTag();
-        initTfod();
         initVisionPortal();
         enableAprilTagProcessor();
-        enableTFODProcessor();
     }
 
     protected void closeAndDisableRobotVision() {
         disableAprilTagProcessor();
-        disableTFODProcessor();
         closeVisionPortal();
     }
 
@@ -135,7 +124,6 @@ public abstract class TemplateObjectDetection extends OpMode {
 
         // Set and enable the processor.
         builder.addProcessor(aprilTag);
-        builder.addProcessor(tfod);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
@@ -147,14 +135,6 @@ public abstract class TemplateObjectDetection extends OpMode {
 
     protected void disableAprilTagProcessor() {
         visionPortal.setProcessorEnabled(aprilTag, false);
-    }
-
-    protected void enableTFODProcessor() {
-        visionPortal.setProcessorEnabled(tfod, true);
-    }
-
-    protected void disableTFODProcessor() {
-        visionPortal.setProcessorEnabled(tfod, false);
     }
 
     protected void closeVisionPortal() {
@@ -186,50 +166,6 @@ public abstract class TemplateObjectDetection extends OpMode {
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-    }
-
-    protected void initTfod() {
-
-        // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-
-                // Use setModelAssetName() if the TF Model is built in as an asset.
-                // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
-
-                //.setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
-
-                .build();
-
-        // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.75f);
-
-    }
-
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
-    private void telemetryTfod() {
-
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }
 
     }
 
