@@ -18,7 +18,6 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
-    public TemplateMecanumDrive drive;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
@@ -58,6 +57,5 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
     public void initAuto() {
         initDriveHardware();
         initIMU();
-        drive = new TemplateMecanumDrive(hardwareMap);
     }
 }
