@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
+
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /** Created by Gavin for FTC Team 6347 */
@@ -63,25 +60,4 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
         initIMU();
         drive = new TemplateMecanumDrive(hardwareMap);
     }
-
-    public void traj(Trajectory trajectory) {
-        drive.followTrajectory(trajectory);
-    }
-
-    public Trajectory left(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).strafeLeft(distance).build();
-    }
-
-    public Trajectory right(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).strafeRight(distance).build();
-    }
-
-    public Trajectory forward(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).forward(distance).build();
-    }
-
-    public Trajectory back(double distance) {
-        return drive.trajectoryBuilder(new Pose2d()).back(distance).build();
-    }
-
 }
