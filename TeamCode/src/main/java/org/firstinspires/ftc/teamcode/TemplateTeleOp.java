@@ -13,10 +13,12 @@ public class TemplateTeleOp extends TemplateConfig {
     double lateral;
     double yaw;
     boolean slowMode;
+    boolean storage = false;
 
     @Override
     public void init() {
         initDriveHardware();
+        initAttachmentHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -77,6 +79,20 @@ public class TemplateTeleOp extends TemplateConfig {
             rightFrontPower /= 2;
             leftBackPower /= 2;
             rightBackPower /= 2;
+        }
+
+        if(gamepad2.a) {
+            if(storage){
+                storage = false;
+            }else {
+             storage = true;
+            }
+        }
+
+        if(storage){
+            storageMotor.setPower(1.0);
+        }else{
+            storageMotor.setPower(0.0);
         }
 
         // This is test code:

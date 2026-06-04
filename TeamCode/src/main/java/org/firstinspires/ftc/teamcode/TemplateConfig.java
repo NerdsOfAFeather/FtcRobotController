@@ -18,6 +18,7 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
+    public DcMotorEx storageMotor = null;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
@@ -39,6 +40,14 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void initAttachmentHardware(){
+        storageMotor = hardwareMap.get(DcMotorEx.class, "Output");
+
+        storageMotor.setDirection(Direction.FORWARD);
+
+        storageMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void initIMU() {
