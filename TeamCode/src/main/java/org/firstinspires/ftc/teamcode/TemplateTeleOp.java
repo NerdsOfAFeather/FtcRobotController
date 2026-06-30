@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageTeleOp", group="OpMode")
+@TeleOp(name="BenTestTeleop", group="OpMode")
 public class TemplateTeleOp extends TemplateConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -18,7 +17,8 @@ public class TemplateTeleOp extends TemplateConfig {
     @Override
     public void init() {
         initDriveHardware();
-        initAttachmentHardware();
+        initIntakeHardware();
+        initStorageHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -35,6 +35,7 @@ public class TemplateTeleOp extends TemplateConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
+        double storagePower = 0;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -81,18 +82,26 @@ public class TemplateTeleOp extends TemplateConfig {
             rightBackPower /= 2;
         }
 
-        if(gamepad2.a) {
+        if(gamepad2.dpad_up) {
+            if(!storage){
+                storage = true;
+            }
+        }
+
+        if(gamepad2.dpad_down){
             if(storage){
                 storage = false;
-            }else {
-             storage = true;
             }
         }
 
         if(storage){
-            storageMotor.setPower(1.0);
+            intakeMotor.setPower(1.0);
         }else{
-            storageMotor.setPower(0.0);
+            intakeMotor.setPower(0.0);
+        }
+
+        if(Math.abs(gamepad2.right_stick_y) >= 0.1){
+            storagePower = -gamepad2.right_stick_y / 2;
         }
 
         // This is test code:
@@ -116,6 +125,7 @@ public class TemplateTeleOp extends TemplateConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+        storageMotor.setPower(storagePower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
