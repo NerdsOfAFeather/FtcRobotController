@@ -13,12 +13,14 @@ public class TemplateTeleOp extends TemplateConfig {
     double yaw;
     boolean slowMode;
     boolean storage = false;
+    double releasePosition = 0.75;
 
     @Override
     public void init() {
         initDriveHardware();
         initIntakeHardware();
         initStorageHardware();
+        initOutputHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -36,6 +38,7 @@ public class TemplateTeleOp extends TemplateConfig {
         double leftBackPower;
         double rightBackPower;
         double storagePower = 0;
+        double flywheelVelocity;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -100,8 +103,22 @@ public class TemplateTeleOp extends TemplateConfig {
             intakeMotor.setPower(0.0);
         }
 
+        if(gamepad2.left_stick_y >= 0.2){ // Down
+            flywheelVelocity = gamepad2.left_stick_y * 775;
+        } else if (gamepad2.left_stick_y <= -0.2) {// Up
+            flywheelVelocity = -gamepad2.left_stick_y * 925;
+        }else {
+            flywheelVelocity = 0;
+        }
+
         if(Math.abs(gamepad2.right_stick_y) >= 0.1){
-            storagePower = -gamepad2.right_stick_y / 2;
+            storagePower = -gamepad2.right_stick_y / 3;
+        }
+
+        if(gamepad2.left_trigger >= 0.3){
+            releasePosition = 0.5;
+        } else if (gamepad2.right_trigger >= 0.3) {
+            releasePosition = 0.75;
         }
 
         // This is test code:
@@ -126,6 +143,9 @@ public class TemplateTeleOp extends TemplateConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         storageMotor.setPower(storagePower);
+        releaseServo.setPosition(releasePosition);
+        flywheelLeft.setVelocity(flywheelVelocity);
+        flywheelRight.setVelocity(flywheelVelocity);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -136,6 +156,8 @@ public class TemplateTeleOp extends TemplateConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+
+        telemetry.addData("Flywheel Velocity", flywheelVelocity);
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)

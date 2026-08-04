@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
@@ -20,6 +21,9 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
     public DcMotorEx rightBackDrive = null;
     public DcMotorEx intakeMotor = null;
     public DcMotorEx storageMotor = null;
+    public DcMotorEx flywheelLeft = null;
+    public DcMotorEx flywheelRight = null;
+    public Servo releaseServo = null;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
@@ -32,10 +36,10 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
 
-        leftFrontDrive.setDirection(Direction.FORWARD);
+        leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.REVERSE);
-        rightBackDrive.setDirection(Direction.REVERSE);
+        rightBackDrive.setDirection(Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -53,6 +57,18 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
 
     public void initStorageHardware(){
         storageMotor = hardwareMap.get(DcMotorEx.class, "Storage");
+        releaseServo = hardwareMap.get(Servo.class, "Release");
+    }
+
+    public void initOutputHardware(){
+        flywheelLeft = hardwareMap.get(DcMotorEx.class, "FlywheelLeft");
+        flywheelRight = hardwareMap.get(DcMotorEx.class, "FlywheelRight");
+
+        flywheelLeft.setDirection(Direction.REVERSE);
+        flywheelRight.setDirection(Direction.FORWARD);
+
+        flywheelLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheelRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void initIMU() {
