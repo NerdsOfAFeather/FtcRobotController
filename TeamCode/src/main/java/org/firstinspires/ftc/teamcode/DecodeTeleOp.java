@@ -20,7 +20,6 @@ public class DecodeTeleOp extends DecodeConfig {
     @Override
     public void init() {
         initDriveHardware();
-        initOutputHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -85,44 +84,6 @@ public class DecodeTeleOp extends DecodeConfig {
             rightBackPower /= 2;
         }
 
-        // 180 deg = 120 ticks
-        // Initial = 0 deg
-        // 2nd = 90 deg
-        // Final = 270 deg
-        if (gamepad2.a) {
-            outputPos = nextAvailable(outputMotor, 0);
-            outputManual = false;
-            outputPower = 0.25;
-        } else if (gamepad2.b) {
-            outputPos = nextAvailable(outputMotor, 60);
-            outputManual = false;
-            outputPower = 0.25;
-        } else if (gamepad2.y) {
-            outputPos = nextAvailable(outputMotor, 60);
-            outputManual = false;
-            outputPower = 0.25;
-        } else if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            outputManual = true;
-            outputPower = -gamepad2.right_stick_y / 16;
-        } else if (outputManual) {
-            outputPower = 0;
-        } else {
-            outputPower = .25;
-        }
-
-        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
-            flywheelPower = -gamepad2.left_stick_y;
-        } else {
-            flywheelPower = 0;
-        }
-
-        if (outputManual) {
-            outputMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } else {
-            outputMotor.setTargetPosition(outputPos);
-            outputMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -145,10 +106,6 @@ public class DecodeTeleOp extends DecodeConfig {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
-        outputMotor.setPower(outputPower);
-        flywheelLeft.setPower(flywheelPower);
-        flywheelRight.setPower(flywheelPower);
-
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
         telemetry.addData("Right Trigger", gamepad1.right_trigger);
@@ -159,11 +116,6 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftBackDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
-        telemetry.addData("Output Encoder", outputMotor.getCurrentPosition());
-        telemetry.addData("FlyLeft Encoder", flywheelLeft.getCurrentPosition());
-        telemetry.addData("FlyRight Encoder", flywheelRight.getCurrentPosition());
-        telemetry.addData("Output Power", outputPower);
-        telemetry.addData("Flywheel Power", flywheelPower);
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
