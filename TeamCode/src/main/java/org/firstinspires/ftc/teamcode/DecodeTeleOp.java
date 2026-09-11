@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="DecodeTeleOp", group="OpMode")
+@TeleOp(name="DecodeTeleOp", group="Ayyyy this makes it be at the top of the list")
 public class DecodeTeleOp extends DecodeConfig {
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -41,7 +41,7 @@ public class DecodeTeleOp extends DecodeConfig {
         double rightBackPower;
         // double intakePower;
         double outputPower;
-        double flywheelPower;
+        double flywheelVelocity;
 
         if (gamepad1.right_bumper && !slowMode) {
             slowMode = true;
@@ -139,11 +139,11 @@ public class DecodeTeleOp extends DecodeConfig {
         }
 
         if (gamepad2.left_stick_y >= 0.2) { // Down
-            flywheelPower = gamepad2.left_stick_y * 0.5;
+            flywheelVelocity = gamepad2.left_stick_y * 10_000 * flywheelPowerMultiplier;
         } else if (gamepad2.left_stick_y <= -0.2) { // Up
-            flywheelPower = -gamepad2.left_stick_y * 0.8;
+            flywheelVelocity = -gamepad2.left_stick_y * 10_500 * flywheelPowerMultiplier;
         } else {
-            flywheelPower = 0;
+            flywheelVelocity = 0;
         }
 
         if (outputManual) {
@@ -176,8 +176,8 @@ public class DecodeTeleOp extends DecodeConfig {
         rightBackDrive.setPower(rightBackPower);
 
         outputMotor.setPower(outputPower);
-        flywheelLeft.setPower(flywheelPower);
-        flywheelRight.setPower(flywheelPower);
+        flywheelLeft.setVelocity(flywheelVelocity);
+        flywheelRight.setVelocity(flywheelVelocity);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -193,7 +193,7 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("FlyLeft Encoder", flywheelLeft.getCurrentPosition());
         telemetry.addData("FlyRight Encoder", flywheelRight.getCurrentPosition());
         telemetry.addData("Output Power", outputPower);
-        telemetry.addData("Flywheel Power", flywheelPower);
+        telemetry.addData("Flywheel Velocity", flywheelVelocity);
         telemetry.addData("Flywheel Power Multiplier", flywheelPowerMultiplier);
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")

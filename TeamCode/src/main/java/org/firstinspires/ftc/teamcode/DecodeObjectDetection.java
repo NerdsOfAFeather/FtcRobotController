@@ -349,6 +349,10 @@ public abstract class DecodeObjectDetection extends OpMode {
 
     }
 
+    protected List<AprilTagDetection> getDetections() {
+        return aprilTag.getDetections();
+    }
+
     protected ArtifactDetection getArtifactCounts() {
         return new ArtifactDetection(purpleLocator, greenLocator);
     }
