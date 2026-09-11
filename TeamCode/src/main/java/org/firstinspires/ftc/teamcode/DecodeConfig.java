@@ -18,7 +18,9 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
-    public DcMotorEx outputMotor = null;
+    public DcMotorEx flywheelLeft = null;
+    public DcMotorEx flywheelRight = null;
+    public DcMotor outputMotor = null;
     IMU imu;
 
     public void initDriveHardware() {
@@ -45,10 +47,16 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     public void initOutputHardware() {
 
-        outputMotor = hardwareMap.get(DcMotorEx.class, "Output");
+        outputMotor = hardwareMap.get(DcMotor.class, "Output");
+        flywheelLeft = hardwareMap.get(DcMotorEx.class, "FlywheelLeft");
+        flywheelRight = hardwareMap.get(DcMotorEx.class, "FlywheelRight");
 
-        outputMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outputMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flywheelLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheelRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        flywheelLeft.setDirection(Direction.REVERSE);
+        flywheelRight.setDirection(Direction.FORWARD);
     }
 
     public void initIMU() {

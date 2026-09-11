@@ -35,6 +35,7 @@ public class DecodeTeleOp extends DecodeConfig {
         double leftBackPower;
         double rightBackPower;
         double intakePower;
+        double flywheelPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -98,6 +99,12 @@ public class DecodeTeleOp extends DecodeConfig {
             outputPower = 0.0;
         }
 
+        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
+            flywheelPower = gamepad2.left_stick_y;
+        } else {
+            flywheelPower = 0;
+        }
+
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -121,6 +128,8 @@ public class DecodeTeleOp extends DecodeConfig {
         rightBackDrive.setPower(rightBackPower);
 
         outputMotor.setPower(outputPower);
+        flywheelLeft.setPower(flywheelPower);
+        flywheelRight.setPower(flywheelPower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
