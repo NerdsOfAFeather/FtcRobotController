@@ -28,7 +28,7 @@ public class OTOSLocalizer implements Localizer {
     private Pose2d currentPose;
 
     public OTOSLocalizer(HardwareMap hardwareMap, Pose2d initialPose) {
-        // TODO: make sure your config has an OTOS device with this name
+        // make sure your config has an OTOS device with this name
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         otos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         currentPose = initialPose;
