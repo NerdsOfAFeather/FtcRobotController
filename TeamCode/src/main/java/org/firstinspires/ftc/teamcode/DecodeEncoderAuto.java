@@ -1,19 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_SHORT;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
+import static org.firstinspires.ftc.teamcode.TeamColor.RED_SHORT;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import static org.firstinspires.ftc.teamcode.TeamColor.*;
 
 /**Created by Gavin for FTC Team 6347 */
-@Autonomous(name = "DecodeAuto", group = "Autonomous", preselectTeleOp = "DecodeTeleOp")
-public class DecodeAuto extends DecodeConfig {
+@Autonomous(name = "DecodeEncoderAuto", group = "Autonomous", preselectTeleOp = "DecodeTeleOp")
+@Disabled
+public class DecodeEncoderAuto extends DecodeConfig {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -79,17 +85,17 @@ public class DecodeAuto extends DecodeConfig {
                     tab1.build(),
                     intake.turnOn(),
                     flywheels.spinUpSlower(),
-                    sleep(3.0),
+                    sleep(4.0),
                     flappers.turnOn(),
-                    sleep(0.5),
+                    sleep(0.8),
                     flappers.turnOff(),
-                    sleep(0.4),
+                    sleep(0.3),
                     flappers.turnOn(),
-                    sleep(0.5),
+                    sleep(0.8),
                     flappers.turnOff(),
-                    sleep(0.4),
+                    sleep(0.3),
                     flappers.turnOn(),
-                    sleep(0.5),
+                    sleep(0.8),
                     flappers.turnOff(),
                     flywheels.spinDown(),
                     intake.turnOff(),
@@ -103,26 +109,25 @@ public class DecodeAuto extends DecodeConfig {
             MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
 
             TrajectoryActionBuilder tab = drive.actionBuilder(new Pose2d(launchPos, 0))
-                    .lineToX(5.0)
-                    .strafeTo(new Vector2d(5.0, team == BLUE_LONG ? 20.0 : -20.0));
+                    .lineToX(10.0);
 
             Flywheels flywheels = new Flywheels(hardwareMap);
-            Storage storage = new Storage(hardwareMap);
+            Storage flappers = new Storage(hardwareMap);
 
             Actions.runBlocking(new SequentialAction(
                     flywheels.spinUp(),
                     sleep(3.0),
-                    storage.turnOn(),
-                    sleep(0.5),
-                    storage.turnOff(),
-                    sleep(0.4),
-                    storage.turnOn(),
-                    sleep(0.5),
-                    storage.turnOff(),
-                    sleep(0.4),
-                    storage.turnOn(),
-                    sleep(0.5),
-                    storage.turnOff(),
+                    flappers.turnOn(),
+                    sleep(0.8),
+                    flappers.turnOff(),
+                    sleep(0.3),
+                    flappers.turnOn(),
+                    sleep(0.8),
+                    flappers.turnOff(),
+                    sleep(0.3),
+                    flappers.turnOn(),
+                    sleep(2.0),
+                    flappers.turnOff(),
                     flywheels.spinDown(),
                     tab.build()
             ));

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -15,6 +16,9 @@ public class DecodeTeleOp extends DecodeConfig {
     boolean inverted;
     boolean sorterManual = true;
     boolean releaseActive = false;
+    boolean intakeActive = false;
+    double releasePosition = 0.75;
+    LastGamepadState lastGamepad2;
 
     @Override
     public void init() {
@@ -41,7 +45,6 @@ public class DecodeTeleOp extends DecodeConfig {
         double intakePower;
         double sorterPower;
         double flywheelVelocity;
-        double releasePosition;
 
         if (gamepad1.right_bumper && !slowMode) {
             slowMode = true;
@@ -67,7 +70,7 @@ public class DecodeTeleOp extends DecodeConfig {
             lateral = 0;
         }
         if (Math.abs(gamepad1.right_stick_x) >= 0.2) {
-            yaw = -gamepad1.right_stick_x;
+            yaw = -gamepad1.right_stick_x * .75;
         } else {
             yaw = 0;
         }
@@ -93,27 +96,51 @@ public class DecodeTeleOp extends DecodeConfig {
             rightBackPower /= 2;
         }
 
-        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
-            intakePower = -gamepad2.left_stick_y;
-        } else {
-            intakePower = 0;
+        if (inverted) {
+            leftFrontPower = -leftFrontPower;
+            rightFrontPower = -rightFrontPower;
+            leftBackPower = -leftBackPower;
+            rightBackPower = -rightBackPower;
         }
 
+        if (gamepad2.dpad_up) {
+            intakeActive = true;
+        } else if (gamepad2.dpad_down) {
+            intakeActive = false;
+        }
+
+        intakePower = intakeActive ? -1.0 : 0.0;
+
         if (gamepad2.left_stick_y >= 0.2) { // Down
-            flywheelVelocity = gamepad2.left_stick_y * 900;
+            flywheelVelocity = gamepad2.left_stick_y * 775;
         } else if (gamepad2.left_stick_y <= -0.2) { // Up
-            flywheelVelocity = -gamepad2.left_stick_y * 1_000;
+            flywheelVelocity = -gamepad2.left_stick_y * 925;
         } else {
             flywheelVelocity = 0;
         }
 
-        if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            sorterPower = gamepad2.right_stick_y;
+        if (Math.abs(gamepad2.right_stick_y) >= 0.1) {
+            if (!sorterManual) {
+                sorterManual = true;
+                storageMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            sorterPower = -gamepad2.right_stick_y / 2;
+        } else if (gamepad2.a && lastGamepad2 != null && !lastGamepad2.a) {
+            sorterManual = false;
+            storageMotor.setTargetPosition(storageMotor.getCurrentPosition() + 285);
+            storageMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            sorterPower = 0.5;
+        } else if (!sorterManual) {
+            sorterPower = 0.5;
         } else {
             sorterPower = 0;
         }
 
-        releasePosition = gamepad2.right_stick_x;
+        if (gamepad2.left_trigger >= 0.3) {
+            releasePosition = 0.5;
+        } else if (gamepad2.right_trigger >= 0.3) {
+            releasePosition = 0.75;
+        }
         // releasePosition = releaseActive ? -1.0 : 1.0;
 
         // This is test code:
@@ -143,6 +170,8 @@ public class DecodeTeleOp extends DecodeConfig {
         flywheelRight.setVelocity(flywheelVelocity);
         flywheelLeft.setVelocity(flywheelVelocity);
 
+        lastGamepad2 = new LastGamepadState(gamepad2);
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -169,6 +198,11 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("Storage Motor Power", sorterPower);
         telemetry.addData("Storage Motor Position", storageMotor.getCurrentPosition());
         telemetry.addData("Release Servo Position", releaseServo.getPosition());
+
+        telemetry.addLine("Storage Colors")
+                .addData("1", getStoragePositions().position1)
+                .addData("2", getStoragePositions().position2)
+                .addData("3", getStoragePositions().position3);
 
         telemetry.addData("Flywheel Velocity", flywheelVelocity);
 

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
@@ -47,7 +48,7 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
 
         leftFrontDrive.setDirection(Direction.REVERSE);
-        leftBackDrive.setDirection(Direction.FORWARD);
+        leftBackDrive.setDirection(Direction.REVERSE);
         rightFrontDrive.setDirection(Direction.REVERSE);
         rightBackDrive.setDirection(Direction.FORWARD);
 
@@ -74,6 +75,10 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         storage1 = hardwareMap.get(NormalizedColorSensor.class, "Storage1");
         storage2 = hardwareMap.get(NormalizedColorSensor.class, "Storage2");
         storage3 = hardwareMap.get(NormalizedColorSensor.class, "Storage3");
+
+        storage1.setGain(10.0f);
+        storage2.setGain(10.0f);
+        storage3.setGain(10.0f);
     }
 
     public void initOutputHardware() {
@@ -102,15 +107,33 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     public void initAuto() {
         initDriveHardware();
+        initIntakeHardware();
+        initStorageHardware();
+        initOutputHardware();
         initIMU();
     }
 
-    public Storage getStoragePositions() {
-        List<Color> colors = new ArrayList<>();
+    public StorageColors getStoragePositions() {
+        List<Color> colorList = new ArrayList<>();
 
-        // storage1.getNormalizedColors();
+        List<NormalizedRGBA> list = List.of(
+                storage1.getNormalizedColors(),
+                storage2.getNormalizedColors(),
+                storage3.getNormalizedColors());
 
-        return new Storage(colors);
+        for (NormalizedRGBA colors : list) {
+            if (colors.green >= 0.3) {
+                if (colors.red >= 0.3) {
+                    colorList.add(Color.PURPLE);
+                    continue;
+                }
+                colorList.add(Color.GREEN);
+                continue;
+            }
+            colorList.add(Color.UNKNOWN);
+        }
+
+        return new StorageColors(colorList);
     }
 
     public int nextAvailable(DcMotor motor, int position) {
@@ -157,11 +180,17 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         private class SpinUp implements Action {
             private boolean initialized = false;
 
+            private final int velocity;
+
+            public SpinUp(int velocity) {
+                this.velocity = velocity;
+            }
+
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    flywheelLeft.setPower(1.0);
-                    flywheelRight.setPower(1.0);
+                    flywheelLeft.setVelocity(velocity);
+                    flywheelRight.setVelocity(velocity);
                     initialized = true;
                 }
 
@@ -193,7 +222,15 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         }
 
         public Action spinUp() {
-            return new SpinUp();
+            return new SpinUp(925);
+        }
+
+        public Action spinUpFaster() {
+            return new SpinUp(975);
+        }
+
+        public Action spinUpSlower() {
+            return new SpinUp(775);
         }
 
         public Action spinDown() {
@@ -202,15 +239,15 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     }
 
-    public class Flappers {
+    public class Intake {
 
-        private final DcMotorEx output;
-        public Flappers(HardwareMap hardwareMap) {
-            output = hardwareMap.get(DcMotorEx.class, "Output");
-            output.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        private final DcMotorEx intake;
+        public Intake(HardwareMap hardwareMap) {
+            intake = hardwareMap.get(DcMotorEx.class, "Intake");
+            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            output.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            output.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         private class TurnOn implements Action {
@@ -220,7 +257,7 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    output.setPower(1.0 / 16.0);
+                    intake.setPower(-1);
                     initialized = true;
                 }
 
@@ -235,7 +272,7 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    output.setPower(0.0);
+                    intake.setPower(0.0);
                     initialized = true;
                 }
 
@@ -253,16 +290,105 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
     }
 
+    public class Storage {
+
+        private final DcMotorEx storage;
+        public Storage(HardwareMap hardwareMap) {
+            storage = hardwareMap.get(DcMotorEx.class, "Storage");
+            storage.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            storage.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            storage.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        private class TurnOn implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    storage.setPower(1.0 / 2.0);
+                    initialized = true;
+                }
+
+                return false;
+            }
+        }
+
+        private class TurnOff implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    storage.setPower(0.0);
+                    initialized = true;
+                }
+
+                return false;
+            }
+        }
+
+        private class RotateOnce implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    storage.setTargetPosition(storage.getCurrentPosition() + 285);
+                    initialized = true;
+                }
+
+                return false;
+            }
+        }
+
+        private class InitialRotation implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    storage.setTargetPosition(storage.getCurrentPosition() + 140);
+                    initialized = true;
+                }
+
+                return false;
+            }
+        }
+
+        public Action turnOn() {
+            return new TurnOn();
+        }
+
+        public Action turnOff() {
+            return new TurnOff();
+        }
+
+        public Action rotateOnce() {
+            return new RotateOnce();
+        }
+
+        public Action initialRotation() {
+            return new InitialRotation();
+        }
+
+    }
+
     public Action sleep(double time) {
         return new SleepAction(time);
     }
 
-    public class Storage {
+    public class StorageColors {
         final Color position1;
         final Color position2;
         final Color position3;
 
-        public Storage(List<Color> colors) {
+        public StorageColors(List<Color> colors) {
             if (colors.size() != 3) {
                 position1 = null;
                 position2 = null;
