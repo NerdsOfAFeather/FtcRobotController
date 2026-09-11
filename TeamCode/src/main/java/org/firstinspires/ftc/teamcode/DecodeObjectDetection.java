@@ -9,12 +9,11 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -40,7 +39,7 @@ public abstract class DecodeObjectDetection extends OpMode {
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
-    private TfodProcessor tfod;
+    private ColorBlobLocatorProcessor colorBlob;
 
     /**
      * The variable to store our instance of the vision portal.
@@ -134,7 +133,6 @@ public abstract class DecodeObjectDetection extends OpMode {
 
         // Set and enable the processor.
         builder.addProcessor(aprilTag);
-        builder.addProcessor(tfod);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
@@ -149,11 +147,11 @@ public abstract class DecodeObjectDetection extends OpMode {
     }
 
     protected void enableTFODProcessor() {
-        visionPortal.setProcessorEnabled(tfod, true);
+        visionPortal.setProcessorEnabled(colorBlob, true);
     }
 
     protected void disableTFODProcessor() {
-        visionPortal.setProcessorEnabled(tfod, false);
+        visionPortal.setProcessorEnabled(colorBlob, false);
     }
 
     protected void closeVisionPortal() {
@@ -191,7 +189,7 @@ public abstract class DecodeObjectDetection extends OpMode {
     protected void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
+        colorBlob = new ColorBlobLocatorProcessor.Builder()
 
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
@@ -207,7 +205,7 @@ public abstract class DecodeObjectDetection extends OpMode {
                 .build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.75f);
+        // colorBlob.init();
 
     }
 
@@ -216,19 +214,19 @@ public abstract class DecodeObjectDetection extends OpMode {
      */
     private void telemetryTfod() {
 
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }
+//        List<Recognition> currentRecognitions = colorBlob.getRecognitions();
+//        telemetry.addData("# Objects Detected", currentRecognitions.size());
+//
+//        // Step through the list of recognitions and display info for each one.
+//        for (Recognition recognition : currentRecognitions) {
+//            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+//            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+//
+//            telemetry.addData(""," ");
+//            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+//            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+//            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+//        }
 
     }
 

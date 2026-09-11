@@ -119,43 +119,43 @@ public class DecodeTeleOp1P extends DecodeConfig {
             intakePower = 0.0;
         }
 
-        if (gamepad1.b) {
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            intakePower2 = 0.25;
-        } else if (gamepad1.x) {
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            intakePower2 = -0.25;
-        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
-            intakePower2 = 0;
-        } else {
-            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
-                intakePower2 = 0.25;
-                if (intakeMotor2.getCurrentPosition() > 20) {
-                    intakePower2 = 0.1;
-                }
-            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
-                intakePower2 = 0.25;
-                if (intakeMotor2.getCurrentPosition() > 10) {
-                    intakePower2 = 0.1;
-                }
-            } else {
-                intakePower2 = 0.25;
-            }
-        }
-
-        if (gamepad1.dpad_up) {
-            intakeMotor2.setTargetPosition(0);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        } else if (gamepad1.dpad_down) {
-            intakeMotor2.setTargetPosition(ARM_GROUND);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        } else if (gamepad1.dpad_left) {
-            intakeMotor2.setTargetPosition(ARM_BACKDROP);
-            intakePower2 = 0.25;
-            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
+//        if (gamepad1.b) {
+//            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            intakePower2 = 0.25;
+//        } else if (gamepad1.x) {
+//            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            intakePower2 = -0.25;
+//        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
+//            intakePower2 = 0;
+//        } else {
+//            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
+//                intakePower2 = 0.25;
+//                if (intakeMotor2.getCurrentPosition() > 20) {
+//                    intakePower2 = 0.1;
+//                }
+//            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
+//                intakePower2 = 0.25;
+//                if (intakeMotor2.getCurrentPosition() > 10) {
+//                    intakePower2 = 0.1;
+//                }
+//            } else {
+//                intakePower2 = 0.25;
+//            }
+//        }
+//
+//        if (gamepad1.dpad_up) {
+//            intakeMotor2.setTargetPosition(0);
+//            intakePower2 = 0.25;
+//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        } else if (gamepad1.dpad_down) {
+//            intakeMotor2.setTargetPosition(ARM_GROUND);
+//            intakePower2 = 0.25;
+//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        } else if (gamepad1.dpad_left) {
+//            intakeMotor2.setTargetPosition(ARM_BACKDROP);
+//            intakePower2 = 0.25;
+//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        }
 
         if (gamepad1.dpad_right) {
             liftPower = 1;
@@ -186,11 +186,11 @@ public class DecodeTeleOp1P extends DecodeConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        intakeMotor.setPower(intakePower);
-        intakeMotor2.setPower(intakePower2);
-        liftMotor.setPower(liftPower);
-        clawServoL.setPosition(clawLPos);
-        clawServoR.setPosition(clawRPos);
+//        intakeMotor.setPower(intakePower);
+//        intakeMotor2.setPower(intakePower2);
+//        liftMotor.setPower(liftPower);
+//        clawServoL.setPosition(clawLPos);
+//        clawServoR.setPosition(clawRPos);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -202,9 +202,9 @@ public class DecodeTeleOp1P extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
-        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
-        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
-        telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
+//        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
+//        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
+//        telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
