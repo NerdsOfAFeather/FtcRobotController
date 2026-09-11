@@ -21,8 +21,6 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public DcMotorEx outputMotor = null;
     IMU imu;
 
-    private static final double TURN_SPEED = 0.5;
-
     public void initDriveHardware() {
 
         leftFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontLeftDrive");

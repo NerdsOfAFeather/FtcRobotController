@@ -52,7 +52,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class TuningOpModes {
-    // TODO: change this to TankDrive.class if you're using tank
     public static final Class<?> DRIVE_CLASS = MecanumDrive.class;
 
     public static final String GROUP = "quickstart";
@@ -89,7 +88,7 @@ public final class TuningOpModes {
             }
 
             @Override
-            public float getHeadingVelocity(UnnormalizedAngleUnit unit) {
+            public float getHeadingVelocity(@NonNull UnnormalizedAngleUnit unit) {
                 return (float) pl.driver.getHeadingVelocity(unit);
             }
 
@@ -101,6 +100,7 @@ public final class TuningOpModes {
                 pl.driver.setEncoderDirections(parDirection, perpDirection);
             }
 
+            @NonNull
             @Override
             public DcMotorSimple.Direction getParDirection() {
                 return parDirection == GoBildaPinpointDriver.EncoderDirection.FORWARD ?
@@ -115,6 +115,7 @@ public final class TuningOpModes {
                 pl.driver.setEncoderDirections(parDirection, perpDirection);
             }
 
+            @NonNull
             @Override
             public DcMotorSimple.Direction getPerpDirection() {
                 return perpDirection == GoBildaPinpointDriver.EncoderDirection.FORWARD ?

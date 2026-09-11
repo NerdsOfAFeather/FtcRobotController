@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageTeleOp", group="OpMode")
+@TeleOp(name="DecodeTeleOp", group="OpMode")
 public class DecodeTeleOp extends DecodeConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -133,6 +132,7 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+        telemetry.addData("Output Power", outputPower);
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
