@@ -108,22 +108,22 @@ public class DecodeTeleOp extends DecodeConfig {
         if (gamepad2.a) {
             outputPos = nextAvailable(outputMotor, 0);
             outputManual = false;
-            outputPower = 0.5;
+            outputPower = 0.25;
         } else if (gamepad2.b) {
             outputPos = nextAvailable(outputMotor, 60);
             outputManual = false;
-            outputPower = 0.5;
+            outputPower = 0.25;
         } else if (gamepad2.y) {
             outputPos = nextAvailable(outputMotor, 60);
             outputManual = false;
-            outputPower = 0.5;
+            outputPower = 0.25;
         } else if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
             outputManual = true;
-            outputPower = -gamepad2.right_stick_y / 2;
+            outputPower = -gamepad2.right_stick_y / 16;
         } else if (outputManual) {
             outputPower = 0;
         } else {
-            outputPower = 1;
+            outputPower = .25;
         }
 
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
@@ -173,9 +173,11 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         //telemetry.addData("Intake Power", intakePower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
-        telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
+        telemetry.addData("EncoderCenter", leftBackDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
         telemetry.addData("Output Encoder", outputMotor.getCurrentPosition());
+        telemetry.addData("FlyLeft Encoder", flywheelLeft.getCurrentPosition());
+        telemetry.addData("FlyRight Encoder", flywheelRight.getCurrentPosition());
         telemetry.addData("Output Power", outputPower);
         telemetry.addData("Flywheel Power", flywheelPower);
         // Show joystick information as some other illustrative data
