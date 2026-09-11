@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="DecodeCVTest", group="OpMode")
-//@Disabled
+@Disabled
 public class DecodeCVTest extends DecodeConfig {
 
     private final ElapsedTime runtime = new ElapsedTime();
