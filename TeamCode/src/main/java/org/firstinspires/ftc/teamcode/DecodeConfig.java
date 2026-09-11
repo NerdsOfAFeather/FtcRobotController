@@ -131,11 +131,17 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         private class SpinUp implements Action {
             private boolean initialized = false;
 
+            private final double speedMultiplier;
+
+            public SpinUp(double speedMultiplier) {
+                this.speedMultiplier = speedMultiplier;
+            }
+
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    flywheelLeft.setPower(1.0);
-                    flywheelRight.setPower(1.0);
+                    flywheelLeft.setPower(speedMultiplier);
+                    flywheelRight.setPower(speedMultiplier);
                     initialized = true;
                 }
 
@@ -167,7 +173,11 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         }
 
         public Action spinUp() {
-            return new SpinUp();
+            return new SpinUp(1.0);
+        }
+
+        public Action spinUpSlower() {
+            return new SpinUp(0.7);
         }
 
         public Action spinDown() {

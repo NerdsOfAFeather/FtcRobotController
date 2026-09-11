@@ -56,31 +56,64 @@ public class DecodeAuto extends DecodeConfig {
     public void start() {
         runtime.reset();
 
-        Pose2d startPos = new Pose2d(-50, -50, Math.toRadians(225));
+        if (team == BLUE_SHORT || team == RED_SHORT) {
+            Pose2d startPos = new Pose2d(0.0, 0.0, 0);
 
-        Vector2d launchPos = new Vector2d(-6.0, -6.0);
+            Vector2d launchPos = new Vector2d(-55.0, 0.0);
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
+            MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
 
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(startPos).splineTo(launchPos, Math.toRadians(45));
+            TrajectoryActionBuilder tab1 = drive.actionBuilder(startPos).lineToX(-50.0);
 
-        TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(launchPos, Math.toRadians(225)))
-                .splineTo(new Vector2d(-16.0, -16.0), Math.toRadians(225))
-                .lineToX(-48);
+            TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(launchPos, 0))
+                    .strafeTo(new Vector2d(-50.0, -40.0));
 
-        Flywheels flywheels = new Flywheels(hardwareMap);
-        Flappers flappers = new Flappers(hardwareMap);
+            Flywheels flywheels = new Flywheels(hardwareMap);
+            Flappers flappers = new Flappers(hardwareMap);
 
-        Actions.runBlocking(new SequentialAction(
-                // tab1.build(),
-                flywheels.spinUp(),
-                sleep(5.0),
-                flappers.turnOn(),
-                sleep(5.0),
-                flappers.turnOff(),
-                flywheels.spinDown()
-                // tab2.build()
-        ));
+            Actions.runBlocking(new SequentialAction(
+                    tab1.build(),
+                    flywheels.spinUpSlower(),
+                    sleep(5.0),
+                    flappers.turnOn(),
+                    sleep(1.0),
+                    flappers.turnOff(),
+                    sleep(1.0),
+                    flappers.turnOn(),
+                    sleep(5.0),
+                    flappers.turnOff(),
+                    flywheels.spinDown(),
+                    sleep(2.0),
+                    tab2.build()
+            ));
+        } else if (team == BLUE_LONG || team == RED_LONG) {
+            Pose2d startPos = new Pose2d(0, 0, 0);
+
+            Vector2d launchPos = new Vector2d(0.0, -25.0);
+
+            MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
+
+            TrajectoryActionBuilder tab = drive.actionBuilder(new Pose2d(launchPos, 0))
+                    .lineToX(8.0);
+
+            Flywheels flywheels = new Flywheels(hardwareMap);
+            Flappers flappers = new Flappers(hardwareMap);
+
+            Actions.runBlocking(new SequentialAction(
+                    flywheels.spinUp(),
+                    sleep(5.0),
+                    flappers.turnOn(),
+                    sleep(1.0),
+                    flappers.turnOff(),
+                    sleep(1.0),
+                    flappers.turnOn(),
+                    sleep(5.0),
+                    flappers.turnOff(),
+                    flywheels.spinDown(),
+                    sleep(2.0),
+                    tab.build()
+            ));
+        }
 
     }
 
