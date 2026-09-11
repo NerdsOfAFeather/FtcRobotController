@@ -2,11 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347*/
-@TeleOp(name = "CenterStageTeleOp1P", group = "Linear Opmode")
+@TeleOp(name = "DecodeTeleOp1P", group = "Linear Opmode")
 @Disabled
 public class DecodeTeleOp1P extends DecodeConfig {
 

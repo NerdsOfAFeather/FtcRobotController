@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageCVTest", group="OpMode")
+@TeleOp(name="DecodeCVTest", group="OpMode")
 //@Disabled
 public class DecodeCVTest extends DecodeConfig {
 
