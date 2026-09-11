@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeamColor.BLUE_LONG;
-import static org.firstinspires.ftc.teamcode.TeamColor.RED_LONG;
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,38 +8,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //@Disabled
 public class DecodeCVTest extends DecodeConfig {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void init() {
         initDriveHardware();
-        initEOCV();
-    }
+        initAprilTag();
+        initBlobLocators();
+        buildVisionPortal();
 
-    @Override
-    public void init_loop() {
-        //telemetry.addData("Position", getPosition());
-        //telemetry.addData("Bingus", "Bongus");
-        //telemetry.update();
-        if (gamepad1.dpad_left) {
-            setStage(TemplatePipelineStage.LEFT);
-        } else if (gamepad1.dpad_right) {
-            setStage(TemplatePipelineStage.RIGHT);
-        } else if (gamepad1.dpad_up) {
-            setStage(TemplatePipelineStage.CENTER);
-        } else if (gamepad1.dpad_down) {
-            setStage(TemplatePipelineStage.FULL);
-        } else if (gamepad1.right_bumper) {
-            setStage(TemplatePipelineStage.FILTERED_CENTER);
-        } else if (gamepad1.left_bumper) {
-            setStage(TemplatePipelineStage.FILTERED_LEFT);
-        }
-        if (gamepad1.x) {
-            team = BLUE_LONG;
-        } else if (gamepad1.b) {
-            team = RED_LONG;
-        }
-        
+        // Wait for the DS start button to be touched.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch START to start OpMode");
+        telemetry.update();
+
     }
 
     @Override
@@ -53,10 +32,25 @@ public class DecodeCVTest extends DecodeConfig {
     @Override
     public void loop() {
 
+        telemetryAprilTag();
+        telemetryColorBlob();
+
+        // Push telemetry to the Driver Station.
+        telemetry.update();
+
+        // Save CPU resources; can resume streaming when needed.
+        if (gamepad1.dpad_down) {
+            pausePortalStream();
+        } else if (gamepad1.dpad_up) {
+            resumePortalStream();
+        }
+
+        // Share the CPU.
+        sleep(20);
     }
 
     @Override
     public void stop() {
-        stopEOCV();
+        closeVisionPortal();
     }
 }
