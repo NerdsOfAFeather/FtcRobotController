@@ -139,9 +139,9 @@ public class DecodeTeleOp extends DecodeConfig {
         }
 
         if (gamepad2.left_stick_y >= 0.2) { // Down
-            flywheelVelocity = gamepad2.left_stick_y * 10_000 * flywheelPowerMultiplier;
+            flywheelVelocity = gamepad2.left_stick_y * 900 * flywheelPowerMultiplier;
         } else if (gamepad2.left_stick_y <= -0.2) { // Up
-            flywheelVelocity = -gamepad2.left_stick_y * 10_500 * flywheelPowerMultiplier;
+            flywheelVelocity = -gamepad2.left_stick_y * 1_000 * flywheelPowerMultiplier;
         } else {
             flywheelVelocity = 0;
         }

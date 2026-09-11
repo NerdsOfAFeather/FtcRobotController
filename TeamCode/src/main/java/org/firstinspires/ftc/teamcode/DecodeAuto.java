@@ -59,14 +59,14 @@ public class DecodeAuto extends DecodeConfig {
         if (team == BLUE_SHORT || team == RED_SHORT) {
             Pose2d startPos = new Pose2d(0.0, 0.0, 0);
 
-            Vector2d launchPos = new Vector2d(-65.0, 0.0);
+            Vector2d launchPos = new Vector2d(-20.0, 0.0);
 
             MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
 
-            TrajectoryActionBuilder tab1 = drive.actionBuilder(startPos).lineToX(-65.0);
+            TrajectoryActionBuilder tab1 = drive.actionBuilder(startPos).lineToX(-20.0);
 
             TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(launchPos, 0))
-                    .strafeTo(new Vector2d(-50.0, team == BLUE_SHORT ? 40.0 : -40.0));
+                    .strafeTo(new Vector2d(-10.0, team == BLUE_SHORT ? 20.0 : -20.0));
 
             Flywheels flywheels = new Flywheels(hardwareMap);
             Flappers flappers = new Flappers(hardwareMap);
@@ -74,20 +74,19 @@ public class DecodeAuto extends DecodeConfig {
             Actions.runBlocking(new SequentialAction(
                     tab1.build(),
                     flywheels.spinUpSlower(),
-                    sleep(5.0),
+                    sleep(4.0),
                     flappers.turnOn(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOff(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOn(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOff(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOn(),
-                    sleep(3.0),
+                    sleep(2.0),
                     flappers.turnOff(),
                     flywheels.spinDown(),
-                    sleep(2.0),
                     tab2.build()
             ));
         } else if (team == BLUE_LONG || team == RED_LONG) {
@@ -98,7 +97,7 @@ public class DecodeAuto extends DecodeConfig {
             MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
 
             TrajectoryActionBuilder tab = drive.actionBuilder(new Pose2d(launchPos, 0))
-                    .lineToX(32.0);
+                    .lineToX(5.0);
 
             Flywheels flywheels = new Flywheels(hardwareMap);
             Flappers flappers = new Flappers(hardwareMap);
@@ -107,18 +106,17 @@ public class DecodeAuto extends DecodeConfig {
                     flywheels.spinUp(),
                     sleep(5.0),
                     flappers.turnOn(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOff(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOn(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOff(),
-                    sleep(1.0),
+                    sleep(0.9),
                     flappers.turnOn(),
-                    sleep(3.0),
+                    sleep(2.0),
                     flappers.turnOff(),
                     flywheels.spinDown(),
-                    sleep(2.0),
                     tab.build()
             ));
         }

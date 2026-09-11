@@ -140,8 +140,8 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    flywheelLeft.setPower(speedMultiplier);
-                    flywheelRight.setPower(speedMultiplier);
+                    flywheelLeft.setVelocity(1_000 * speedMultiplier);
+                    flywheelRight.setVelocity(1_000 * speedMultiplier);
                     initialized = true;
                 }
 
@@ -173,11 +173,11 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         }
 
         public Action spinUp() {
-            return new SpinUp(0.8);
+            return new SpinUp(1.0);
         }
 
         public Action spinUpSlower() {
-            return new SpinUp(0.5);
+            return new SpinUp(0.9);
         }
 
         public Action spinDown() {
