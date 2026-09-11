@@ -18,10 +18,10 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public DcMotorEx leftBackDrive = null;
     public DcMotorEx rightFrontDrive = null;
     public DcMotorEx rightBackDrive = null;
+    public DcMotorEx outputMotor = null;
     IMU imu;
 
     private static final double TURN_SPEED = 0.5;
-
 
     public void initDriveHardware() {
 
@@ -39,6 +39,18 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void initIntakeHardware() {
+
+    }
+
+    public void initOutputHardware() {
+
+        outputMotor = hardwareMap.get(DcMotorEx.class, "Output");
+
+        outputMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
     public void initIMU() {

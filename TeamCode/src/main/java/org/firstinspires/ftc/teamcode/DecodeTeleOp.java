@@ -13,16 +13,12 @@ public class DecodeTeleOp extends DecodeConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    double clawLPos = 0.5;
-    double clawRPos = 0.5;
-    double clawLtime = 0;
-    double clawRtime = 0;
-    boolean servoLOpen = false;
-    boolean servoROpen = false;
+    double outputPower = 0.0;
 
     @Override
     public void init() {
         initDriveHardware();
+        initOutputHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -40,8 +36,6 @@ public class DecodeTeleOp extends DecodeConfig {
         double leftBackPower;
         double rightBackPower;
         double intakePower;
-        double intakePower2;
-        double liftPower;
 
         if (gamepad1.right_bumper && !slowMode){
             slowMode = true;
@@ -88,27 +82,6 @@ public class DecodeTeleOp extends DecodeConfig {
             rightBackPower /= 2;
         }
 
-        if (gamepad1.left_trigger >= 0.3 && runtime.milliseconds() - clawLtime > 500) {
-            if (servoLOpen) {
-                clawLPos = 0.5; // Close
-                servoLOpen = false;
-            } else {
-                clawLPos = 1.0;
-                servoLOpen = true;
-            }
-            clawLtime = runtime.milliseconds();
-        }
-        if (gamepad1.right_trigger >= 0.3 && runtime.milliseconds() - clawRtime > 500) {
-            if (servoROpen) {
-                clawRPos = 0.5; // Close
-                servoROpen = false;
-            } else {
-                clawRPos = 0.0;
-                servoROpen = true;
-            }
-            clawRtime = runtime.milliseconds();
-        }
-
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
             intakePower = Math.pow(-gamepad2.left_stick_y, 2);
             if (gamepad2.left_stick_y < 0) {
@@ -117,51 +90,13 @@ public class DecodeTeleOp extends DecodeConfig {
         } else {
             intakePower = 0;
         }
-//
-//        if (Math.abs(gamepad2.right_stick_y) >= 0.2) { // Up = 0, Down = 560, Backdrop value =
-//            intakeMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            intakePower2 = Math.pow(gamepad2.right_stick_y*.6, 2);
-//            if (gamepad2.right_stick_y < 0) {
-//                intakePower2 = -intakePower2;
-//            }
-//        } else if (intakeMotor2.getMode().equals(DcMotor.RunMode.RUN_USING_ENCODER)) {
-//            intakePower2 = 0;
-//        } else {
-//            if (intakeMotor2.getTargetPosition() == ARM_GROUND) {
-//                intakePower2 = 0.25;
-//                if (intakeMotor2.getCurrentPosition() > 20) {
-//                    intakePower2 = 0.1;
-//                }
-//            } else if (intakeMotor2.getTargetPosition() == ARM_BACKDROP && intakeMotor2.getCurrentPosition() > ARM_BACKDROP) {
-//                intakePower2 = 0.25;
-//                if (intakeMotor2.getCurrentPosition() > 10) {
-//                    intakePower2 = 0.1;
-//                }
-//            } else {
-//                intakePower2 = 0.25;
-//            }
-//        }
-//
-//        if (gamepad2.dpad_up) {
-//            intakeMotor2.setTargetPosition(0);
-//            intakePower2 = 0.25;
-//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        } else if (gamepad2.dpad_down) {
-//            intakeMotor2.setTargetPosition(ARM_GROUND);
-//            intakePower2 = 0.25;
-//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        } else if (gamepad2.dpad_left) {
-//            intakeMotor2.setTargetPosition(ARM_BACKDROP);
-//            intakePower2 = 0.25;
-//            intakeMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        }
 
-        if (gamepad2.right_bumper) {
-            liftPower = 1;
-        } else if (gamepad2.left_bumper) {
-            liftPower = -1;
-        } else {
-            liftPower = 0;
+        if (gamepad1.a) {
+            outputPower += 0.1;
+        } else if (gamepad1.b) {
+            outputPower -= 0.1;
+        } else if (gamepad1.y) {
+            outputPower = 0.0;
         }
 
         // This is test code:
@@ -185,11 +120,8 @@ public class DecodeTeleOp extends DecodeConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-//        intakeMotor.setPower(intakePower);
-//        intakeMotor2.setPower(intakePower2);
-//        liftMotor.setPower(liftPower);
-//        clawServoL.setPosition(clawLPos);
-//        clawServoR.setPosition(clawRPos);
+
+        outputMotor.setPower(outputPower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -201,9 +133,6 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
-//        telemetry.addData("intakeMotor", intakeMotor.getCurrentPosition());
-//        telemetry.addData("intakeMotor2", intakeMotor2.getCurrentPosition());
-//        telemetry.addData("Lift Motor", liftMotor.getCurrentPosition());
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
