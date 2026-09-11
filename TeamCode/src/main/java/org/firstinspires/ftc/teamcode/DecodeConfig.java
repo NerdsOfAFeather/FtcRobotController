@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
@@ -57,6 +58,9 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
 
         flywheelLeft.setDirection(Direction.REVERSE);
         flywheelRight.setDirection(Direction.FORWARD);
+
+        outputMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outputMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void initIMU() {
@@ -75,6 +79,35 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
     public void initAuto() {
         initDriveHardware();
         initIMU();
+    }
+
+    public int nextAvailable(DcMotor motor, int position) {
+        // Position should always be between 0 and 119 (inclusive)
+        int currentPos = motor.getCurrentPosition();
+        int remainder = currentPos % 120;
+        int toAdd;
+        if (position > remainder) {
+            toAdd = position - remainder;
+        } else if (position < remainder) {
+            toAdd = (120 - currentPos) + position;
+        } else {
+            toAdd = 120;
+        }
+        return currentPos + toAdd;
+    }
+
+    public class LastGamepadState {
+        public boolean a;
+        public boolean b;
+        public boolean x;
+        public boolean y;
+
+        public LastGamepadState(Gamepad gamepad) {
+            a = gamepad.a;
+            b = gamepad.b;
+            x = gamepad.x;
+            y = gamepad.y;
+        }
     }
 
 }

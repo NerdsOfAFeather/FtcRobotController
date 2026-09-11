@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -12,6 +13,9 @@ public class DecodeTeleOp extends DecodeConfig {
     double lateral;
     double yaw;
     boolean slowMode;
+    boolean inverted;
+    int outputPos = 0;
+    boolean outputManual = true;
 
     @Override
     public void init() {
@@ -37,10 +41,16 @@ public class DecodeTeleOp extends DecodeConfig {
         double outputPower;
         double flywheelPower;
 
-        if (gamepad1.right_bumper && !slowMode){
+        if (gamepad1.right_bumper && !slowMode) {
             slowMode = true;
-        } else if (gamepad1.left_bumper && slowMode){
+        } else if (gamepad1.left_bumper && slowMode) {
             slowMode = false;
+        }
+
+        if (gamepad1.right_trigger >= 0.3 && !inverted) {
+            inverted = true;
+        } else if (gamepad1.left_trigger >= 0.3 && inverted) {
+            inverted = false;
         }
 
 
@@ -91,16 +101,42 @@ public class DecodeTeleOp extends DecodeConfig {
 //            intakePower = 0;
 //        }
 
-        if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
-            outputPower = gamepad2.right_stick_y;
-        } else {
+        // 180 deg = 120 ticks
+        // Initial = 0 deg
+        // 2nd = 90 deg
+        // Final = 270 deg
+        if (gamepad2.a) {
+            outputPos = nextAvailable(outputMotor, 0);
+            outputManual = false;
+            outputPower = 0.5;
+        } else if (gamepad2.b) {
+            outputPos = nextAvailable(outputMotor, 60);
+            outputManual = false;
+            outputPower = 0.5;
+        } else if (gamepad2.y) {
+            outputPos = nextAvailable(outputMotor, 60);
+            outputManual = false;
+            outputPower = 0.5;
+        } else if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
+            outputManual = true;
+            outputPower = -gamepad2.right_stick_y / 2;
+        } else if (outputManual) {
             outputPower = 0;
+        } else {
+            outputPower = 1;
         }
 
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
-            flywheelPower = gamepad2.left_stick_y;
+            flywheelPower = -gamepad2.left_stick_y;
         } else {
             flywheelPower = 0;
+        }
+
+        if (outputManual) {
+            outputMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            outputMotor.setTargetPosition(outputPos);
+            outputMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         // This is test code:
@@ -139,6 +175,7 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
+        telemetry.addData("Output Encoder", outputMotor.getCurrentPosition());
         telemetry.addData("Output Power", outputPower);
         telemetry.addData("Flywheel Power", flywheelPower);
         // Show joystick information as some other illustrative data
