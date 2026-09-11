@@ -66,7 +66,7 @@ public class DecodeTeleOp extends DecodeConfig {
             lateral = 0;
         }
         if (Math.abs(gamepad1.right_stick_x) >= 0.2) {
-            yaw = gamepad1.right_stick_x;
+            yaw = -gamepad1.right_stick_x;
         } else {
             yaw = 0;
         }

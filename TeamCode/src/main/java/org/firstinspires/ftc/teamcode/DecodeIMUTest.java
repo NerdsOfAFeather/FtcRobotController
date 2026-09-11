@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+/** Created by Gavin for FTC Team 6347 */
 @TeleOp(name = "IMU Test")
 @Disabled
 public class DecodeIMUTest extends DecodeConfig {
