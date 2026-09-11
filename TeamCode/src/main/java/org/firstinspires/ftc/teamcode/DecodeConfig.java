@@ -37,10 +37,10 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "FrontRightDrive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "BackRightDrive");
 
-        leftFrontDrive.setDirection(Direction.FORWARD);
+        leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.FORWARD);
         rightFrontDrive.setDirection(Direction.REVERSE);
-        rightBackDrive.setDirection(Direction.REVERSE);
+        rightBackDrive.setDirection(Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
