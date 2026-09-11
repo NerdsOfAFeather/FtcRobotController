@@ -7,12 +7,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name="DecodeTeleOp", group="OpMode")
 public class DecodeTeleOp extends DecodeConfig {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     double axial;
     double lateral;
     double yaw;
     boolean slowMode;
-    double outputPower = 0.0;
 
     @Override
     public void init() {
@@ -34,7 +33,8 @@ public class DecodeTeleOp extends DecodeConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        double intakePower;
+        // double intakePower;
+        double outputPower;
         double flywheelPower;
 
         if (gamepad1.right_bumper && !slowMode){
@@ -82,21 +82,19 @@ public class DecodeTeleOp extends DecodeConfig {
             rightBackPower /= 2;
         }
 
-        if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
-            intakePower = Math.pow(-gamepad2.left_stick_y, 2);
-            if (gamepad2.left_stick_y < 0) {
-                intakePower = -intakePower;
-            }
-        } else {
-            intakePower = 0;
-        }
+//        if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
+//            intakePower = Math.pow(-gamepad2.left_stick_y, 2);
+//            if (gamepad2.left_stick_y < 0) {
+//                intakePower = -intakePower;
+//            }
+//        } else {
+//            intakePower = 0;
+//        }
 
-        if (gamepad1.a) {
-            outputPower += 0.1;
-        } else if (gamepad1.b) {
-            outputPower -= 0.1;
-        } else if (gamepad1.y) {
-            outputPower = 0.0;
+        if (Math.abs(gamepad2.right_stick_y) >= 0.2) {
+            outputPower = gamepad2.right_stick_y;
+        } else {
+            outputPower = 0;
         }
 
         if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
@@ -137,11 +135,12 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        telemetry.addData("Intake Power", intakePower);
+        //telemetry.addData("Intake Power", intakePower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftFrontDrive.getCurrentPosition());
         telemetry.addData("EncoderLeft", rightFrontDrive.getCurrentPosition());
         telemetry.addData("Output Power", outputPower);
+        telemetry.addData("Flywheel Power", flywheelPower);
         // Show joystick information as some other illustrative data
         telemetry.addLine("Left joystick | ")
                 .addData("x", gamepad1.left_stick_x)
