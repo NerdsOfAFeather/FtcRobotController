@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
@@ -20,6 +19,7 @@ public class DecodeTeleOp extends DecodeConfig {
     @Override
     public void init() {
         initDriveHardware();
+        initIntakeHardware();
         telemetry.addData("Bingus", "Bongus");
         telemetry.update();
     }
@@ -36,7 +36,7 @@ public class DecodeTeleOp extends DecodeConfig {
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        // double intakePower;
+        double intakePower;
         double outputPower;
         double flywheelPower;
 
@@ -84,6 +84,12 @@ public class DecodeTeleOp extends DecodeConfig {
             rightBackPower /= 2;
         }
 
+        if (Math.abs(gamepad2.left_stick_y) >= 0.2) {
+            intakePower = -gamepad2.left_stick_y;
+        } else {
+            intakePower = 0;
+        }
+
         // This is test code:
         //
         // Uncomment the following code to test your motor directions.
@@ -105,6 +111,7 @@ public class DecodeTeleOp extends DecodeConfig {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+        intakeMotor.setPower(intakePower);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Left Trigger", gamepad1.left_trigger);
@@ -112,6 +119,7 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+        telemetry.addData("Intake Power", intakePower);
         //telemetry.addData("Intake Power", intakePower);
         telemetry.addData("EncoderRight", rightBackDrive.getCurrentPosition());
         telemetry.addData("EncoderCenter", leftBackDrive.getCurrentPosition());
