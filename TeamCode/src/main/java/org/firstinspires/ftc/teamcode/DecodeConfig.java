@@ -173,11 +173,11 @@ public abstract class DecodeConfig extends DecodeObjectDetection {
         }
 
         public Action spinUp() {
-            return new SpinUp(1.0);
+            return new SpinUp(0.8);
         }
 
         public Action spinUpSlower() {
-            return new SpinUp(0.7);
+            return new SpinUp(0.5);
         }
 
         public Action spinDown() {

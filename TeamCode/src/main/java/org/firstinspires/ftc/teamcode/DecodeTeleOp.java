@@ -139,9 +139,9 @@ public class DecodeTeleOp extends DecodeConfig {
         }
 
         if (gamepad2.left_stick_y >= 0.2) { // Down
-            flywheelPower = gamepad2.left_stick_y * 0.7;
+            flywheelPower = gamepad2.left_stick_y * 0.5;
         } else if (gamepad2.left_stick_y <= -0.2) { // Up
-            flywheelPower = -gamepad2.left_stick_y;
+            flywheelPower = -gamepad2.left_stick_y * 0.8;
         } else {
             flywheelPower = 0;
         }
