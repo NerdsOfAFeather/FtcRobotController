@@ -13,7 +13,7 @@ public class DecodeTeleOp extends DecodeConfig {
     double lateral;
     double yaw;
     boolean slowMode;
-    boolean inverted;
+    boolean inverted = true;
     int outputPos = 0;
     boolean outputManual = true;
     boolean lastDown = false;
