@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
@@ -77,7 +78,7 @@ import java.util.List;
  */
 
 @TeleOp(name="DecodeAprilTagTest", group = "Concept")
-// @Disabled
+@Disabled
 public class DecodeAprilTagTest extends DecodeConfig {
 
     final double TURN_GAIN   =  0.01  ;   // Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
