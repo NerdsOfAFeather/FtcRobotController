@@ -72,14 +72,14 @@ public class DecodeAuto extends DecodeConfig {
         Flappers flappers = new Flappers(hardwareMap);
 
         Actions.runBlocking(new SequentialAction(
-                tab1.build(),
+                // tab1.build(),
                 flywheels.spinUp(),
                 sleep(5.0),
                 flappers.turnOn(),
-                sleep(10.0),
+                sleep(5.0),
                 flappers.turnOff(),
-                flywheels.spinDown(),
-                tab2.build()
+                flywheels.spinDown()
+                // tab2.build()
         ));
 
     }
