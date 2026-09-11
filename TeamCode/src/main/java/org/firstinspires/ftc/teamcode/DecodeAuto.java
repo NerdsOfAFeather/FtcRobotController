@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -51,16 +55,37 @@ public class DecodeAuto extends DecodeConfig {
     @Override
     public void start() {
         runtime.reset();
+
+        Pose2d startPos = new Pose2d(-50, -50, Math.toRadians(225));
+
+        Vector2d launchPos = new Vector2d(-6.0, -6.0);
+
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
+
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(startPos).splineTo(launchPos, Math.toRadians(45));
+
+        TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(launchPos, Math.toRadians(225)))
+                .splineTo(new Vector2d(-16.0, -16.0), Math.toRadians(225))
+                .lineToX(-48);
+
+        Flywheels flywheels = new Flywheels(hardwareMap);
+        Flappers flappers = new Flappers(hardwareMap);
+
+        Actions.runBlocking(new SequentialAction(
+                tab1.build(),
+                flywheels.spinUp(),
+                sleep(5.0),
+                flappers.turnOn(),
+                sleep(10.0),
+                flappers.turnOff(),
+                flywheels.spinDown(),
+                tab2.build()
+        ));
+
     }
 
     @Override
     public void loop() {
-        rightFrontDrive.setPower(-0.5);
-        leftFrontDrive.setPower(-0.5);
-        rightBackDrive.setPower(-0.5);
-        leftBackDrive.setPower(-0.5);
     }
 
-    @Override
-    public void stop() {}
 }

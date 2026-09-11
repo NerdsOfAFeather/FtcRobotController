@@ -47,7 +47,7 @@ public abstract class DecodeObjectDetection extends OpMode {
     private final Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 0, 0, 0);
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, -90, 0, 0);
+            0, -100, 0, 0);
 
 
     /**
@@ -70,7 +70,7 @@ public abstract class DecodeObjectDetection extends OpMode {
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
                 // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                .setLensIntrinsics(50, 50, 350, 200)
                 // ... these parameters are fx, fy, cx, cy.
 
                 .build();
@@ -82,7 +82,7 @@ public abstract class DecodeObjectDetection extends OpMode {
         // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second (default)
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second (default)
         // Note: Decimation can be changed on-the-fly to adapt during a match.
-        //aprilTag.setDecimation(3);
+        aprilTag.setDecimation(4);
     }
 
     protected void initBlobLocators() {
@@ -259,7 +259,9 @@ public abstract class DecodeObjectDetection extends OpMode {
     protected void telemetryColorBlob() {
 
         // Read the current list
-        List<ColorBlobLocatorProcessor.Blob> blobs = purpleLocator.getBlobs();
+        List<ColorBlobLocatorProcessor.Blob> purpleBlobs = purpleLocator.getBlobs();
+
+        List<ColorBlobLocatorProcessor.Blob> greenBlobs = greenLocator.getBlobs();
 
         /*
          * The list of Blobs can be filtered to remove unwanted Blobs.
@@ -296,11 +298,19 @@ public abstract class DecodeObjectDetection extends OpMode {
          */
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                50, 20000, blobs);  // filter out very small blobs.
+                150, 20000, purpleBlobs);  // filter out very small blobs.
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.6, 1, blobs);     /* filter out non-circular blobs.
+                0.6, 1, purpleBlobs);
+
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                150, 20000, greenBlobs);  // filter out very small blobs.
+
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+                0.6, 1, greenBlobs);     /* filter out non-circular blobs.
          * NOTE: You may want to adjust the minimum value depending on your use case.
          * Circularity values will be affected by shadows, and will therefore vary based
          * on the location of the camera on your robot and venue lighting. It is strongly
@@ -318,8 +328,19 @@ public abstract class DecodeObjectDetection extends OpMode {
 
         telemetry.addLine("Circularity Radius Center");
 
+        telemetry.addLine("Purple Blobs: ");
+
         // Display the Blob's circularity, and the size (radius) and center location of its circleFit.
-        for (ColorBlobLocatorProcessor.Blob b : blobs) {
+        for (ColorBlobLocatorProcessor.Blob b : purpleBlobs) {
+
+            Circle circleFit = b.getCircle();
+            telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
+                    b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
+        }
+
+        telemetry.addLine("Green Blobs: ");
+
+        for (ColorBlobLocatorProcessor.Blob b : greenBlobs) {
 
             Circle circleFit = b.getCircle();
             telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
@@ -327,6 +348,11 @@ public abstract class DecodeObjectDetection extends OpMode {
         }
 
     }
+
+    protected ArtifactDetection getArtifactCounts() {
+        return new ArtifactDetection(purpleLocator, greenLocator);
+    }
+
 
     public final void sleep(long milliseconds) {
         try {
@@ -336,6 +362,16 @@ public abstract class DecodeObjectDetection extends OpMode {
         }
     }
 
+    public static class ArtifactDetection {
+        int purple;
+
+        int green;
+
+        public ArtifactDetection(ColorBlobLocatorProcessor purpleLocator, ColorBlobLocatorProcessor greenLocator) {
+            this.purple = purpleLocator.getBlobs().size();
+            this.green = greenLocator.getBlobs().size();
+        }
+    }
 
 }
 

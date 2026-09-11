@@ -47,13 +47,6 @@ public class DecodeTeleOp extends DecodeConfig {
             slowMode = false;
         }
 
-        if (gamepad1.right_trigger >= 0.3 && !inverted) {
-            inverted = true;
-        } else if (gamepad1.left_trigger >= 0.3 && inverted) {
-            inverted = false;
-        }
-
-
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
         if (Math.abs(gamepad1.left_stick_y) >= 0.2) {
             axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
@@ -91,15 +84,6 @@ public class DecodeTeleOp extends DecodeConfig {
             leftBackPower /= 2;
             rightBackPower /= 2;
         }
-
-//        if (Math.abs(gamepad2.left_stick_y) >= 0.2) { // Up =  Down = 0
-//            intakePower = Math.pow(-gamepad2.left_stick_y, 2);
-//            if (gamepad2.left_stick_y < 0) {
-//                intakePower = -intakePower;
-//            }
-//        } else {
-//            intakePower = 0;
-//        }
 
         // 180 deg = 120 ticks
         // Initial = 0 deg
@@ -191,6 +175,4 @@ public class DecodeTeleOp extends DecodeConfig {
         telemetry.update();
     }
 
-    @Override
-    public void stop() {}
 }
