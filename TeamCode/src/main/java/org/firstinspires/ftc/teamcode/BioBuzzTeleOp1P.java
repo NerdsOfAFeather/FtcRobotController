@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**Created by Gavin for FTC Team 6347*/
 @TeleOp(name = "CenterStageTeleOp1P", group = "Linear Opmode")
 @Disabled
-public class TemplateTeleOp1P extends TemplateConfig {
+public class BioBuzzTeleOp1P extends BioBuzzConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
     double axial;

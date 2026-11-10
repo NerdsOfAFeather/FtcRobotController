@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**Created by Gavin for FTC Team 6347 */
 @TeleOp(name="CenterStageCVTest", group="OpMode")
 //@Disabled
-public class TemplateCVTest extends TemplateConfig {
+public class BioBuzzCVTest extends BioBuzzConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
 

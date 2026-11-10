@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
-@TeleOp(name="CenterStageTeleOp", group="OpMode")
-public class TemplateTeleOp extends TemplateConfig {
+@TeleOp(name="BioBuzzTeleOp", group="OpMode")
+public class BioBuzzTeleOp extends BioBuzzConfig {
 
     private ElapsedTime runtime = new ElapsedTime();
     double axial;

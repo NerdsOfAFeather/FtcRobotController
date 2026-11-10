@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**Created by Gavin for FTC Team 6347 */
 @Autonomous(name = "CenterStageAutoLong", group = "Autonomous", preselectTeleOp = "CenterStageTeleOp")
-public class TemplateAuto extends TemplateConfig {
+public class BioBuzzAuto extends BioBuzzConfig {
     static int delay = 0;
     private ElapsedTime runtime = new ElapsedTime();
 

@@ -7,15 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
+
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /** Created by Gavin for FTC Team 6347 */
-public abstract class TemplateConfig extends TemplateObjectDetection {
+public abstract class BioBuzzConfig extends TemplateObjectDetection {
 
     public DcMotorEx leftFrontDrive = null;
     public DcMotorEx leftBackDrive = null;
@@ -36,7 +35,7 @@ public abstract class TemplateConfig extends TemplateObjectDetection {
 
         leftFrontDrive.setDirection(Direction.REVERSE);
         leftBackDrive.setDirection(Direction.REVERSE);
-        rightFrontDrive.setDirection(Direction.FORWARD);
+        rightFrontDrive.setDirection(Direction.REVERSE);
         rightBackDrive.setDirection(Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
